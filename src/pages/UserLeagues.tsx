@@ -4,6 +4,13 @@ import { getUserLeagues, getUser, avatarUrl } from '../api/sleeper';
 
 const CURRENT_SEASON = '2025';
 
+const STATUS_LABEL: Record<string, string> = {
+  complete: 'Season complete',
+  in_season: 'In season',
+  pre_draft: 'Pre-draft',
+  drafting: 'Drafting',
+};
+
 export default function UserLeagues() {
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
@@ -20,7 +27,12 @@ export default function UserLeagues() {
     enabled: !!userId,
   });
 
-  if (isLoading) return <div className="loading">Loading leagues…</div>;
+  if (isLoading) return (
+    <div className="page">
+      <div className="skeleton-header" />
+      {[1,2,3].map(i => <div key={i} className="skeleton-card" />)}
+    </div>
+  );
   if (isError) return <div className="error-page">Failed to load leagues.</div>;
 
   const avatar = user ? avatarUrl(user.avatar) : null;
@@ -29,46 +41,55 @@ export default function UserLeagues() {
     <div className="page">
       <header className="page-header">
         <div>
-          {avatar && <img src={avatar} alt="avatar" className="avatar" />}
+          {avatar
+            ? <img src={avatar} alt="avatar" className="avatar" />
+            : <div className="avatar avatar-placeholder" />
+          }
           <div>
             <h2>{user?.display_name ?? user?.username ?? 'Your Leagues'}</h2>
-            <p className="subtitle">{CURRENT_SEASON} Season</p>
+            <p className="subtitle">{CURRENT_SEASON} Season · {leagues?.length ?? 0} league{leagues?.length !== 1 ? 's' : ''}</p>
           </div>
         </div>
+        <button className="back-btn" onClick={() => navigate('/')}>← Back</button>
       </header>
 
       {!leagues?.length ? (
-        <p className="empty">No leagues found for this season.</p>
+        <div className="empty-state">
+          <div className="empty-state-icon">🏈</div>
+          <p>No leagues found for {CURRENT_SEASON}.</p>
+          <p className="empty-state-sub">Make sure you're in a Sleeper league this season.</p>
+        </div>
       ) : (
         <ul className="league-list">
-          {leagues.map(league => (
-            <li
-              key={league.league_id}
-              className="league-item"
-              onClick={() => navigate(`/league/${league.league_id}`, { state: { userId } })}
-            >
-              {league.avatar && (
-                <img
-                  src={avatarUrl(league.avatar) ?? undefined}
-                  alt="league"
-                  className="avatar-sm"
-                />
-              )}
-              <div className="league-info">
-                <span className="league-name">{league.name}</span>
-                <span className="league-meta">
-                  {league.total_rosters} teams · {league.status}
-                </span>
-              </div>
-              <span className="chevron">›</span>
-            </li>
-          ))}
+          {leagues.map(league => {
+            const statusLabel = STATUS_LABEL[league.status] ?? league.status;
+            const isActive = league.status === 'in_season';
+            const isComplete = league.status === 'complete';
+            return (
+              <li
+                key={league.league_id}
+                className="league-item"
+                onClick={() => navigate(`/league/${league.league_id}`, { state: { userId } })}
+              >
+                {league.avatar
+                  ? <img src={avatarUrl(league.avatar) ?? undefined} alt="league" className="league-avatar" />
+                  : <div className="league-avatar league-avatar-placeholder">🏈</div>
+                }
+                <div className="league-info">
+                  <span className="league-name">{league.name}</span>
+                  <span className="league-meta">{league.total_rosters} teams</span>
+                </div>
+                <div className="league-item-right">
+                  <span className={`league-status-badge ${isActive ? 'status-active' : isComplete ? 'status-complete' : ''}`}>
+                    {statusLabel}
+                  </span>
+                  <span className="chevron">›</span>
+                </div>
+              </li>
+            );
+          })}
         </ul>
       )}
-
-      <button className="back-btn" onClick={() => navigate('/')}>
-        ← Back
-      </button>
     </div>
   );
 }
