@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getUser } from '../api/sleeper';
@@ -21,15 +21,15 @@ export default function Home() {
     if (trimmed) setSubmitted(trimmed);
   };
 
-  if (user) {
-    navigate(`/user/${user.user_id}`);
-  }
+  useEffect(() => {
+    if (user) navigate(`/user/${user.user_id}`);
+  }, [user, navigate]);
 
   return (
     <div className="home">
       <div className="home-card">
         <h1>Snap</h1>
-        <p>Your Sleeper fantasy football dashboard</p>
+        <p>The almanac for your Sleeper league — standings, stats, and stories.</p>
         <form onSubmit={handleSubmit}>
           <input
             type="text"

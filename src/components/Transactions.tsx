@@ -1,9 +1,15 @@
-import type { SleeperTransaction, SleeperRoster, SleeperUser } from '../types/sleeper';
+import type { SleeperTransaction, SleeperRoster, SleeperUser, PlayersMap } from '../types/sleeper';
+
+const POS_COLORS: Record<string, string> = {
+  QB: '#e8500a', RB: '#1c6b46', WR: '#1a6fa8', TE: '#8b5e0a',
+  K: '#6b1c6b', DEF: '#444', FLEX: '#555',
+};
 
 interface Props {
   transactions: SleeperTransaction[];
   userMap: Map<string, SleeperUser>;
   rosters: SleeperRoster[];
+  players?: PlayersMap;
   isLoading: boolean;
 }
 
@@ -22,7 +28,20 @@ function formatDate(ms: number) {
   });
 }
 
-export default function Transactions({ transactions, userMap, rosters, isLoading }: Props) {
+function PlayerChip({ playerId, players }: { playerId: string; players?: PlayersMap }) {
+  const p = players?.[playerId];
+  const name = p?.full_name ?? p?.last_name ?? `Player ${playerId}`;
+  const pos = p?.position ?? '';
+  const color = POS_COLORS[pos] ?? '#555';
+  return (
+    <span className="player-chip">
+      {pos && <span className="player-pos" style={{ background: color }}>{pos}</span>}
+      <span>{name}</span>
+    </span>
+  );
+}
+
+export default function Transactions({ transactions, userMap, rosters, players, isLoading }: Props) {
   if (isLoading) return <div className="loading">Loading transactions…</div>;
   if (!transactions.length) return <div className="empty">No transactions this week.</div>;
 
@@ -51,12 +70,18 @@ export default function Transactions({ transactions, userMap, rosters, isLoading
             <div className="tx-teams">{teams.join(' ↔ ')}</div>
             {adds.length > 0 && (
               <div className="tx-adds">
-                + {adds.join(', ')}
+                <span className="tx-label-add">+</span>
+                <span className="tx-player-list">
+                  {adds.map(id => <PlayerChip key={id} playerId={id} players={players} />)}
+                </span>
               </div>
             )}
             {drops.length > 0 && (
               <div className="tx-drops">
-                − {drops.join(', ')}
+                <span className="tx-label-drop">−</span>
+                <span className="tx-player-list">
+                  {drops.map(id => <PlayerChip key={id} playerId={id} players={players} />)}
+                </span>
               </div>
             )}
           </li>

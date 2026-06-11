@@ -28,10 +28,12 @@ export default function UserLeagues() {
   return (
     <div className="page">
       <header className="page-header">
-        {avatar && <img src={avatar} alt="avatar" className="avatar" />}
         <div>
-          <h2>{user?.display_name ?? user?.username ?? 'Your Leagues'}</h2>
-          <p className="subtitle">{CURRENT_SEASON} Season</p>
+          {avatar && <img src={avatar} alt="avatar" className="avatar" />}
+          <div>
+            <h2>{user?.display_name ?? user?.username ?? 'Your Leagues'}</h2>
+            <p className="subtitle">{CURRENT_SEASON} Season</p>
+          </div>
         </div>
       </header>
 
@@ -43,7 +45,7 @@ export default function UserLeagues() {
             <li
               key={league.league_id}
               className="league-item"
-              onClick={() => navigate(`/league/${league.league_id}`)}
+              onClick={() => navigate(`/league/${league.league_id}`, { state: { userId } })}
             >
               {league.avatar && (
                 <img

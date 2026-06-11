@@ -1,0 +1,200 @@
+import type { SleeperRoster, SleeperUser, SleeperMatchup, SleeperTransaction, SleeperLeague, PlayersMap } from '../types/sleeper';
+import { avatarUrl } from '../api/sleeper';
+
+interface Props {
+  userId?: string;
+  rosters: SleeperRoster[];
+  userMap: Map<string, SleeperUser>;
+  players?: PlayersMap;
+  seasonMatchups?: Record<number, SleeperMatchup[]>;
+  seasonTransactions?: Record<number, SleeperTransaction[]>;
+  league?: SleeperLeague;
+  isLoading: boolean;
+}
+
+const POS_COLOR: Record<string, string> = {
+  QB: '#e8500a', RB: '#1c6b46', WR: '#1a6fa8', TE: '#8b5e0a',
+  K: '#6b1c6b', DEF: '#444',
+};
+
+function posColor(pos: string) { return POS_COLOR[pos] ?? '#888'; }
+
+function StatPill({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
+  return (
+    <div className={`myteam-stat ${highlight ? 'myteam-stat-hl' : ''}`}>
+      <div className="myteam-stat-value">{value}</div>
+      <div className="myteam-stat-label">{label}</div>
+    </div>
+  );
+}
+
+export default function MyTeam({ userId, rosters, userMap, players, seasonMatchups, seasonTransactions, league, isLoading }: Props) {
+  if (!userId) return <div className="empty">Sign in to see your team card.</div>;
+  if (isLoading) return <div className="loading">Loading your team…</div>;
+
+  const myRoster = rosters.find(r => r.owner_id === userId);
+  if (!myRoster) return <div className="empty">You're not in this league.</div>;
+
+  const me = userMap.get(userId);
+  const av = me ? avatarUrl(me.avatar) : null;
+
+  const wins = myRoster.settings.wins ?? 0;
+  const losses = myRoster.settings.losses ?? 0;
+  const pf = (myRoster.settings.fpts ?? 0) + (myRoster.settings.fpts_decimal ?? 0) / 100;
+  const pa = (myRoster.settings.fpts_against ?? 0) + (myRoster.settings.fpts_against_decimal ?? 0) / 100;
+  const streak = myRoster.settings.streak ?? 0;
+
+  // Standing among all rosters
+  const sorted = [...rosters].sort((a, b) => {
+    const wd = (b.settings.wins ?? 0) - (a.settings.wins ?? 0);
+    const pfa = (a.settings.fpts ?? 0) + (a.settings.fpts_decimal ?? 0) / 100;
+    const pfb = (b.settings.fpts ?? 0) + (b.settings.fpts_decimal ?? 0) / 100;
+    return wd !== 0 ? wd : pfb - pfa;
+  });
+  const standing = sorted.findIndex(r => r.roster_id === myRoster.roster_id) + 1;
+  const playoffSpots = league?.settings.playoff_teams ?? Math.floor(rosters.length / 2);
+  const inPlayoffs = standing <= playoffSpots;
+
+  // Current week matchup
+  const currentWeek = league?.settings?.leg ?? 1;
+  const currentMatchups = seasonMatchups?.[currentWeek] ?? [];
+  const myMatchup = currentMatchups.find(m => m.roster_id === myRoster.roster_id);
+  const oppMatchup = myMatchup
+    ? currentMatchups.find(m => m.matchup_id === myMatchup.matchup_id && m.roster_id !== myRoster.roster_id)
+    : undefined;
+  const oppRoster = oppMatchup ? rosters.find(r => r.roster_id === oppMatchup.roster_id) : undefined;
+  const oppUser = oppRoster ? userMap.get(oppRoster.owner_id) : undefined;
+  const oppAv = oppUser ? avatarUrl(oppUser.avatar) : null;
+
+  // Starters this week
+  const starters = myMatchup?.starters ?? myRoster.starters ?? [];
+  const starterPts = myMatchup?.players_points ?? {};
+
+  // Recent transactions (last 5 involving my roster)
+  const recentTx: SleeperTransaction[] = [];
+  if (seasonTransactions) {
+    const allTx = Object.values(seasonTransactions).flat();
+    for (const tx of allTx.sort((a, b) => b.created - a.created)) {
+      if (tx.roster_ids.includes(myRoster.roster_id)) {
+        recentTx.push(tx);
+        if (recentTx.length >= 5) break;
+      }
+    }
+  }
+
+  const streakLabel = streak > 0 ? `W${Math.abs(streak)}` : streak < 0 ? `L${Math.abs(streak)}` : '—';
+
+
+  return (
+    <div className="myteam-wrap">
+
+      {/* Header card */}
+      <div className="myteam-header">
+        <div className="myteam-identity">
+          {av && <img src={av} alt="" className="myteam-avatar" />}
+          <div>
+            <div className="myteam-name">{me?.display_name ?? me?.username ?? 'Your Team'}</div>
+            <div className="myteam-league">{league?.name} · {league?.season}</div>
+          </div>
+        </div>
+        <div className="myteam-record-block">
+          <span className="myteam-record">{wins}–{losses}</span>
+          <span className="myteam-standing">{standing}{ordinal(standing)} place</span>
+          <span className="myteam-playoff-badge" style={{ background: inPlayoffs ? 'var(--green)' : 'var(--red)' }}>
+            {inPlayoffs ? '✓ Playoff' : '✗ Out'}
+          </span>
+        </div>
+      </div>
+
+      {/* Stats row */}
+      <div className="myteam-stats">
+        <StatPill label="Points For" value={pf.toFixed(1)} />
+        <StatPill label="Points Against" value={pa.toFixed(1)} />
+        <StatPill label="Streak" value={streakLabel} highlight={streak !== 0} />
+        <StatPill label="Standing" value={`${standing} / ${rosters.length}`} />
+      </div>
+
+      {/* Current matchup */}
+      {myMatchup && oppMatchup && (
+        <div className="myteam-section">
+          <div className="myteam-section-title">Week {currentWeek} Matchup</div>
+          <div className="myteam-matchup-card">
+            <div className={`myteam-matchup-side ${myMatchup.points >= oppMatchup.points ? 'winning' : ''}`}>
+              {av && <img src={av} alt="" className="avatar-sm" />}
+              <span className="myteam-matchup-team">{me?.display_name ?? 'You'}</span>
+              <span className="myteam-matchup-score">{myMatchup.points.toFixed(2)}</span>
+            </div>
+            <div className="myteam-matchup-vs">vs</div>
+            <div className={`myteam-matchup-side right ${oppMatchup.points > myMatchup.points ? 'winning' : ''}`}>
+              <span className="myteam-matchup-score">{oppMatchup.points.toFixed(2)}</span>
+              <span className="myteam-matchup-team">{oppUser?.display_name ?? oppUser?.username ?? `Team ${oppMatchup.roster_id}`}</span>
+              {oppAv && <img src={oppAv} alt="" className="avatar-sm" />}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Starters */}
+      {starters.length > 0 && players && (
+        <div className="myteam-section">
+          <div className="myteam-section-title">
+            {myMatchup ? `Week ${currentWeek} Starters` : 'Current Starters'}
+          </div>
+          <ul className="myteam-starters">
+            {starters.map(pid => {
+              const p = players[pid];
+              const pos = p?.position ?? '—';
+              const name = p?.full_name ?? p?.last_name ?? pid;
+              const team = p?.team ?? '';
+              const pts = starterPts[pid];
+              return (
+                <li key={pid} className="myteam-starter-row">
+                  <span className="myteam-starter-pos" style={{ background: posColor(pos) }}>{pos}</span>
+                  <span className="myteam-starter-name">{name}</span>
+                  <span className="myteam-starter-team">{team}</span>
+                  {pts !== undefined && <span className="myteam-starter-pts">{pts.toFixed(2)}</span>}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
+
+      {/* Recent moves */}
+      {recentTx.length > 0 && (
+        <div className="myteam-section">
+          <div className="myteam-section-title">Recent Moves</div>
+          <ul className="myteam-tx-list">
+            {recentTx.map(tx => {
+              const adds = Object.keys(tx.adds ?? {});
+              const drops = Object.keys(tx.drops ?? {});
+              const date = new Date(tx.created).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+              return (
+                <li key={tx.transaction_id} className="myteam-tx-row">
+                  <span className={`tx-type tx-${tx.type}`}>{tx.type === 'free_agent' ? 'FA' : tx.type === 'waiver' ? 'WVR' : 'TRD'}</span>
+                  <div className="myteam-tx-players">
+                    {adds.map(pid => {
+                      const p = players?.[pid];
+                      return <span key={pid} className="myteam-tx-add">+ {p?.full_name ?? p?.last_name ?? pid}</span>;
+                    })}
+                    {drops.map(pid => {
+                      const p = players?.[pid];
+                      return <span key={pid} className="myteam-tx-drop">− {p?.full_name ?? p?.last_name ?? pid}</span>;
+                    })}
+                  </div>
+                  <span className="myteam-tx-date">{date}</span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ordinal(n: number): string {
+  const s = ['th', 'st', 'nd', 'rd'];
+  const v = n % 100;
+  return s[(v - 20) % 10] ?? s[v] ?? s[0];
+}
