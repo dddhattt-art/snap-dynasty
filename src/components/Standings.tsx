@@ -24,9 +24,9 @@ export default function Standings({ rosters, userMap }: Props) {
           <th>#</th>
           <th>Team</th>
           <th>W-L</th>
-          <th>Strk</th>
+          <th className="col-hide-xs">Strk</th>
           <th>PF</th>
-          <th>PA</th>
+          <th className="col-hide-xs">PA</th>
         </tr>
       </thead>
       <tbody>
@@ -48,9 +48,9 @@ export default function Standings({ rosters, userMap }: Props) {
                 <span>{user?.display_name ?? user?.username ?? `Team ${roster.roster_id}`}</span>
               </td>
               <td>{record}</td>
-              <td><span className={`streak ${streakClass}`}>{streakLabel}</span></td>
+              <td className="col-hide-xs"><span className={`streak ${streakClass}`}>{streakLabel}</span></td>
               <td>{pf.toFixed(2)}</td>
-              <td>{pa.toFixed(2)}</td>
+              <td className="col-hide-xs">{pa.toFixed(2)}</td>
             </tr>
           );
         })}

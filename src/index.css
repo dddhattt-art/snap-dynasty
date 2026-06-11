@@ -588,11 +588,11 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .myteam-section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
 .myteam-section-title { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--orange); padding: 0.55rem 1rem; background: var(--surface2); border-bottom: 1px solid var(--border); }
 
-.myteam-matchup-card { display: flex; align-items: center; gap: 0.8rem; padding: 1rem 1.2rem; }
+.myteam-matchup-card { display: flex; align-items: center; gap: 0.5rem; padding: 0.8rem 0.9rem; overflow: hidden; }
 .myteam-matchup-side { display: flex; align-items: center; gap: 0.5rem; flex: 1; }
 .myteam-matchup-side.right { flex-direction: row-reverse; }
 .myteam-matchup-team { font-weight: 700; font-size: 0.88rem; flex: 1; }
-.myteam-matchup-score { font-size: 1.4rem; font-weight: 900; font-family: var(--font-display); color: var(--text-dim); }
+.myteam-matchup-score { font-size: 1.2rem; font-weight: 900; font-family: var(--font-display); color: var(--text-dim); white-space: nowrap; }
 .myteam-matchup-side.winning .myteam-matchup-score { color: var(--green); }
 .myteam-matchup-vs { font-size: 0.72rem; color: var(--text-dim); font-weight: 700; flex-shrink: 0; }
 
@@ -1310,3 +1310,85 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .report-bar-col { display: flex; flex-direction: column; align-items: center; gap: 2px; flex: 1; height: 100%; justify-content: flex-end; }
 .report-bar { width: 100%; border-radius: 2px 2px 0 0; min-height: 4px; transition: height 0.2s; }
 .report-bar-label { font-size: 0.6rem; color: var(--text-dim); }
+
+/* ————— Mobile (≤ 480px) ————— */
+@media (max-width: 480px) {
+
+  /* Global */
+  body { font-size: 14px; }
+
+  /* Home card */
+  .home-card { padding: 2rem 1.2rem 1.8rem; border-radius: 14px; }
+  .home-title { font-size: 2rem; }
+
+  /* UserLeagues page */
+  .page { padding: 1.2rem 0.8rem 3rem; }
+  .page-header h2 { font-size: 1.3rem; }
+  .page-header { flex-wrap: wrap; }
+
+  /* Dashboard content area */
+  .content { padding: 1rem 0.75rem 4rem; }
+  .content-title { font-size: 1.3rem; margin-bottom: 0.8rem; }
+
+  /* Tables — wrap in scrollable container */
+  .standings-table { font-size: 0.8rem; }
+  .standings-table th, .standings-table td { padding: 0.5rem 0.45rem; }
+  /* Hide lower-priority columns on tiny screens */
+  .standings-table .col-hide-xs { display: none; }
+
+  /* My Team */
+  .myteam-wrap { gap: 0.9rem; }
+  .myteam-header { padding: 0.9rem; flex-direction: row; flex-wrap: wrap; }
+  .myteam-pills { gap: 0.5rem; }
+  .myteam-pill { padding: 0.6rem 0.7rem; flex: 1 1 80px; }
+  .myteam-pill-value { font-size: 1.1rem; }
+  .myteam-card { padding: 0.8rem; }
+  .myteam-matchup-score { font-size: 1.2rem; }
+  .myteam-starter-row { gap: 0.4rem; }
+
+  /* Matchup Predictor — stack vertically on mobile */
+  .predictor-teams { flex-direction: column; gap: 0.6rem; }
+  .predictor-side { width: 100%; justify-content: space-between; }
+  .predictor-side.right { flex-direction: row; }
+  .predictor-middle { flex-direction: row; align-items: center; width: 100%; }
+  .predictor-vs { display: none; }
+  .predictor-prob-bar { flex: 1; }
+  .predictor-prob-labels { min-width: 80px; justify-content: space-around; }
+
+  /* Trade History */
+  .trade-sides { flex-direction: column; }
+  .trade-arrow { display: none; }
+  .trade-side { border-bottom: 1px solid var(--border); padding-bottom: 0.6rem; }
+  .trade-side:last-child { border-bottom: none; padding-bottom: 0; }
+
+  /* Report Card */
+  .report-selector { gap: 0.3rem; }
+  .report-selector-btn { padding: 0.25rem 0.55rem; font-size: 0.75rem; }
+  .report-card { padding: 1rem; }
+  .report-card-header { gap: 0.7rem; }
+  .report-grade { font-size: 1.9rem; }
+  .report-narrative { font-size: 0.88rem; padding: 0.7rem; }
+
+  /* Bench heatmap — smaller cells */
+  .bench-heatmap-team-col { width: 80px; font-size: 0.68rem; }
+  .bench-heatmap-wk { width: 28px; font-size: 0.62rem; }
+  .bench-heatmap-cell { width: 28px; height: 26px; font-size: 0.58rem; }
+
+  /* Settings grid — single column */
+  .settings-grid { grid-template-columns: 1fr; }
+
+  /* News */
+  .news-injury-row { flex-wrap: wrap; gap: 0.4rem; }
+  .news-injury-name { min-width: 100%; }
+
+  /* Player chips in transactions */
+  .player-chip { font-size: 0.72rem; padding: 0.15rem 0.4rem; }
+
+  /* Playoff odds / efficiency bars — keep them from overflowing */
+  .eff-bar { max-width: 50px; }
+  .odds-bar { max-width: 50px; }
+
+  /* Record detail */
+  .record-detail-teams { flex-direction: column; gap: 0.6rem; }
+  .record-detail-vs { display: none; }
+}
