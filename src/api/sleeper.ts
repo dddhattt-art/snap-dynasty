@@ -45,8 +45,23 @@ export const getLosersBracket = (leagueId: string) =>
 export const getDraftPicks = (draftId: string) =>
   api.get<SleeperDraftPick[]>(`/draft/${draftId}/picks`).then(r => r.data);
 
-export const getAllPlayers = (): Promise<PlayersMap> =>
-  axios.get(`${BASE}/players/nfl`).then(r => r.data);
+const PLAYERS_CACHE_KEY = 'snap_players_cache';
+const PLAYERS_CACHE_TTL = 24 * 60 * 60 * 1000;
+
+export const getAllPlayers = async (): Promise<PlayersMap> => {
+  try {
+    const raw = localStorage.getItem(PLAYERS_CACHE_KEY);
+    if (raw) {
+      const { ts, data } = JSON.parse(raw);
+      if (Date.now() - ts < PLAYERS_CACHE_TTL) return data;
+    }
+  } catch {}
+  const data: PlayersMap = await axios.get(`${BASE}/players/nfl`).then(r => r.data);
+  try {
+    localStorage.setItem(PLAYERS_CACHE_KEY, JSON.stringify({ ts: Date.now(), data }));
+  } catch {}
+  return data;
+};
 
 export const getSeasonTransactions = async (
   leagueId: string,
