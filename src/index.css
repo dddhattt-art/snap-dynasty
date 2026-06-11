@@ -491,8 +491,9 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   gap: 0.6rem;
 }
 
-.matchup-side { flex: 1; display: flex; align-items: center; gap: 0.55rem; }
+.matchup-side { flex: 1; display: flex; align-items: center; gap: 0.55rem; min-width: 0; }
 .matchup-side.right { flex-direction: row-reverse; }
+.matchup-side .team-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .matchup-side.winning .score { color: var(--accent); }
 .matchup-side.winning .team-name { color: var(--text); font-weight: 700; }
 
@@ -1142,37 +1143,61 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 
 /* ————— Player News ————— */
 .news-wrap { display: flex; flex-direction: column; gap: 1.2rem; }
-.news-section-title { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-dim); margin-bottom: 0.6rem; }
-.news-injury-grid { display: flex; flex-direction: column; gap: 0.4rem; }
-.news-injury-row {
-  display: flex; align-items: center; gap: 0.7rem;
-  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
-  padding: 0.6rem 0.9rem; font-size: 0.84rem;
+
+.news-block {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow);
 }
-.news-injury-name { flex: 1; font-weight: 600; }
-.news-injury-team { color: var(--text-dim); font-size: 0.77rem; }
-.news-badge {
-  font-size: 0.68rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;
-  padding: 0.15rem 0.45rem; border-radius: 10px; color: #fff;
+.news-block-title {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--text-dim); padding: 0.6rem 1rem;
+  background: var(--surface2); border-bottom: 1px solid var(--border);
 }
-.news-badge-out { background: var(--red); }
-.news-badge-q { background: var(--yellow); }
-.news-badge-ir { background: #6b1c9e; }
-.news-badge-d { background: var(--text-dim); }
-.news-trending-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-@media (max-width: 600px) { .news-trending-cols { grid-template-columns: 1fr; } }
-.news-trending-card {
-  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-  padding: 0.9rem; box-shadow: var(--shadow);
+.news-trend-icon { font-size: 0.9rem; font-weight: 900; line-height: 1; }
+.news-trend-up { color: var(--green); }
+.news-trend-down { color: var(--red); }
+
+/* Injury list */
+.news-injury-list { display: flex; flex-direction: column; }
+.news-injury-card {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.65rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.84rem;
 }
-.news-trending-list { display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.6rem; }
-.news-trending-row { display: flex; align-items: center; gap: 0.6rem; font-size: 0.83rem; }
-.news-trend-count {
-  font-size: 0.72rem; font-weight: 700; color: var(--orange);
-  background: rgba(232,80,10,0.1); padding: 0.1rem 0.4rem; border-radius: 8px;
-  margin-left: auto; white-space: nowrap;
+.news-injury-card:last-child { border-bottom: none; }
+
+/* Trending lists */
+.news-trending-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+@media (max-width: 640px) { .news-trending-grid { grid-template-columns: 1fr; } }
+
+.news-trend-list { display: flex; flex-direction: column; }
+.news-trend-row {
+  display: flex; align-items: center; gap: 0.65rem;
+  padding: 0.6rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.83rem;
 }
-.news-trend-name { flex: 1; font-weight: 500; }
+.news-trend-row:last-child { border-bottom: none; }
+.news-trend-rank { font-size: 0.7rem; color: var(--text-dim); font-weight: 700; min-width: 16px; }
+
+/* Shared player info */
+.news-pos-badge {
+  flex-shrink: 0; font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
+  color: #fff; padding: 0.2rem 0.4rem; border-radius: 5px; letter-spacing: 0.04em;
+}
+.news-pos-sm { font-size: 0.6rem; padding: 0.15rem 0.35rem; }
+.news-player-details { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.1rem; }
+.news-player-name { font-weight: 600; font-size: 0.86rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.news-player-meta { font-size: 0.73rem; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.news-owner { color: var(--accent); font-weight: 600; }
+.news-status-badge {
+  flex-shrink: 0; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.news-count {
+  flex-shrink: 0; font-size: 0.72rem; font-weight: 800;
+  padding: 0.15rem 0.45rem; border-radius: 8px; white-space: nowrap;
+}
+.news-count-add { background: rgba(28,107,70,0.1); color: var(--green); }
+.news-count-drop { background: rgba(196,61,46,0.1); color: var(--red); }
 
 /* ————— Bench Points ————— */
 .bench-wrap { display: flex; flex-direction: column; gap: 1.4rem; }
@@ -1377,10 +1402,6 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   /* Settings grid — single column */
   .settings-grid { grid-template-columns: 1fr; }
 
-  /* News */
-  .news-injury-row { flex-wrap: wrap; gap: 0.4rem; }
-  .news-injury-name { min-width: 100%; }
-
   /* Player chips in transactions */
   .player-chip { font-size: 0.72rem; padding: 0.15rem 0.4rem; }
 
@@ -1391,4 +1412,25 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   /* Record detail */
   .record-detail-teams { flex-direction: column; gap: 0.6rem; }
   .record-detail-vs { display: none; }
+
+  /* Matchups — stack teams vertically */
+  .matchup-card { flex-direction: column; gap: 0; padding: 0.75rem 1rem; }
+  .matchup-side { width: 100%; flex-direction: row; justify-content: flex-start; gap: 0.6rem; padding: 0.3rem 0; }
+  .matchup-side.right { flex-direction: row; }
+  .matchup-side.right .score { margin-left: auto; }
+  .matchup-side .score { margin-left: auto; }
+  .matchup-vs { font-size: 0.62rem; color: var(--border); padding: 0.05rem 0; align-self: center; }
+  .score { font-size: 1.05rem; min-width: 52px; text-align: right; }
+
+  /* Bench Points — scrollable table, hide low-priority columns */
+  .bench-table-section { overflow-x: auto; }
+  .bench-table-section .col-hide-xs { display: none; }
+  .bench-table-section .standings-table { min-width: 320px; }
+  .bench-bar-wrap { flex-direction: column; align-items: flex-start; gap: 2px; }
+  .bench-bar { width: 60px; }
+
+  /* Tables with avatars — hide avatar on mobile to save space */
+  .standings-table .team-cell .avatar-xs { display: none; }
+  .standings-table .team-cell { font-size: 0.78rem; }
+  .standings-table th, .standings-table td { padding: 0.45rem 0.4rem; }
 }

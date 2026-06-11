@@ -68,10 +68,10 @@ export default function BenchPoints({ rosters, userMap, seasonMatchups, isLoadin
             <tr>
               <th>#</th>
               <th>Team</th>
-              <th>Total Bench Pts</th>
+              <th>Total Bench</th>
               <th>Avg/Wk</th>
-              <th>Worst Week</th>
-              <th>Efficiency</th>
+              <th className="col-hide-xs">Worst Wk</th>
+              <th className="col-hide-xs">Effic.</th>
             </tr>
           </thead>
           <tbody>
@@ -97,10 +97,10 @@ export default function BenchPoints({ rosters, userMap, seasonMatchups, isLoadin
                     </div>
                   </td>
                   <td>{avg.toFixed(1)}</td>
-                  <td className="bench-worst">
+                  <td className="bench-worst col-hide-xs">
                     {s.worstWeek ? <><span className="tx-type tx-waiver">Wk {s.worstWeek.week}</span> {s.worstWeek.bench.toFixed(1)}</> : '—'}
                   </td>
-                  <td>
+                  <td className="col-hide-xs">
                     <span style={{ color: efficiency >= 65 ? 'var(--green)' : efficiency >= 50 ? 'var(--yellow)' : 'var(--red)' }}>
                       {efficiency.toFixed(1)}%
                     </span>
