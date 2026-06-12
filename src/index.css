@@ -83,6 +83,56 @@ h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.01em; }
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* ————— App loader (Suspense fallback) ————— */
+@keyframes loader-fill {
+  0%   { width: 0%; opacity: 1; }
+  70%  { width: 85%; opacity: 1; }
+  100% { width: 85%; opacity: 0.5; }
+}
+@keyframes loader-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.3; transform: scale(0.7); }
+}
+.app-loader {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  background: var(--bg);
+}
+.app-loader-logo {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: var(--accent);
+  display: flex;
+  align-items: baseline;
+  gap: 0.05em;
+  letter-spacing: -0.02em;
+}
+.app-loader-dot {
+  color: var(--orange);
+  animation: loader-dot 1.2s ease-in-out infinite;
+  display: inline-block;
+}
+.app-loader-bar {
+  width: 120px;
+  height: 2px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.app-loader-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--orange));
+  border-radius: 2px;
+  animation: loader-fill 1.8s ease-out forwards;
+}
+
 /* ————— Home ————— */
 .home {
   display: flex;

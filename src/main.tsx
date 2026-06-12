@@ -21,7 +21,15 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <Suspense fallback={<div className="page"><div className="skeleton-header" /><div className="skeleton-card" /><div className="skeleton-card" /></div>}>
+        <Suspense fallback={
+          <div className="app-loader">
+            <div className="app-loader-logo">
+              <span className="app-loader-snap">Snap</span>
+              <span className="app-loader-dot">·</span>
+            </div>
+            <div className="app-loader-bar"><div className="app-loader-fill" /></div>
+          </div>
+        }>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/user/:userId" element={<UserLeagues />} />
