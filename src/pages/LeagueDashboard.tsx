@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -155,6 +155,7 @@ export default function LeagueDashboard() {
     queryKey: ['league', leagueId],
     queryFn: () => getLeague(leagueId!),
     enabled: !!leagueId,
+    staleTime: 30 * 60 * 1000,
   });
 
   const currentWeek = league?.settings?.leg ?? 1;
@@ -163,12 +164,14 @@ export default function LeagueDashboard() {
     queryKey: ['rosters', leagueId],
     queryFn: () => getRosters(leagueId!),
     enabled: !!leagueId,
+    staleTime: 30 * 60 * 1000,
   });
 
   const { data: users } = useQuery<SleeperUser[]>({
     queryKey: ['league-users', leagueId],
     queryFn: () => getLeagueUsers(leagueId!),
     enabled: !!leagueId,
+    staleTime: 30 * 60 * 1000,
   });
 
   const { data: matchups, isLoading: matchupsLoading } = useQuery<SleeperMatchup[]>({
@@ -236,7 +239,10 @@ export default function LeagueDashboard() {
     staleTime: 30 * 60 * 1000,
   });
 
-  const userMap = new Map<string, SleeperUser>((users ?? []).map(u => [u.user_id, u]));
+  const userMap = useMemo(
+    () => new Map<string, SleeperUser>((users ?? []).map(u => [u.user_id, u])),
+    [users]
+  );
   const showWeekControls = tab === 'matchups' || tab === 'transactions';
 
   const r = rosters ?? [];

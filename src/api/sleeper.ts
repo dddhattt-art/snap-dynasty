@@ -1,4 +1,3 @@
-import axios from 'axios';
 import type {
   SleeperUser,
   SleeperLeague,
@@ -13,37 +12,44 @@ import type {
 const BASE = 'https://api.sleeper.app/v1';
 const CDN = 'https://sleepercdn.com';
 
-const api = axios.create({ baseURL: BASE });
+async function get<T>(url: string, params?: Record<string, string | number>): Promise<T> {
+  const full = params
+    ? `${url}?${new URLSearchParams(Object.entries(params).map(([k, v]) => [k, String(v)]))}`
+    : url;
+  const res = await fetch(full);
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+  return res.json();
+}
 
 export const getUser = (username: string) =>
-  api.get<SleeperUser>(`/user/${username}`).then(r => r.data);
+  get<SleeperUser>(`${BASE}/user/${username}`);
 
 export const getUserLeagues = (userId: string, season: string) =>
-  api.get<SleeperLeague[]>(`/user/${userId}/leagues/nfl/${season}`).then(r => r.data);
+  get<SleeperLeague[]>(`${BASE}/user/${userId}/leagues/nfl/${season}`);
 
 export const getRosters = (leagueId: string) =>
-  api.get<SleeperRoster[]>(`/league/${leagueId}/rosters`).then(r => r.data);
+  get<SleeperRoster[]>(`${BASE}/league/${leagueId}/rosters`);
 
 export const getLeagueUsers = (leagueId: string) =>
-  api.get<SleeperUser[]>(`/league/${leagueId}/users`).then(r => r.data);
+  get<SleeperUser[]>(`${BASE}/league/${leagueId}/users`);
 
 export const getMatchups = (leagueId: string, week: number) =>
-  api.get<SleeperMatchup[]>(`/league/${leagueId}/matchups/${week}`).then(r => r.data);
+  get<SleeperMatchup[]>(`${BASE}/league/${leagueId}/matchups/${week}`);
 
 export const getTransactions = (leagueId: string, week: number) =>
-  api.get<SleeperTransaction[]>(`/league/${leagueId}/transactions/${week}`).then(r => r.data);
+  get<SleeperTransaction[]>(`${BASE}/league/${leagueId}/transactions/${week}`);
 
 export const getLeague = (leagueId: string) =>
-  api.get<SleeperLeague>(`/league/${leagueId}`).then(r => r.data);
+  get<SleeperLeague>(`${BASE}/league/${leagueId}`);
 
 export const getWinnersBracket = (leagueId: string) =>
-  api.get<SleeperBracketMatch[]>(`/league/${leagueId}/winners_bracket`).then(r => r.data);
+  get<SleeperBracketMatch[]>(`${BASE}/league/${leagueId}/winners_bracket`);
 
 export const getLosersBracket = (leagueId: string) =>
-  api.get<SleeperBracketMatch[]>(`/league/${leagueId}/losers_bracket`).then(r => r.data);
+  get<SleeperBracketMatch[]>(`${BASE}/league/${leagueId}/losers_bracket`);
 
 export const getDraftPicks = (draftId: string) =>
-  api.get<SleeperDraftPick[]>(`/draft/${draftId}/picks`).then(r => r.data);
+  get<SleeperDraftPick[]>(`${BASE}/draft/${draftId}/picks`);
 
 const PLAYERS_CACHE_KEY = 'snap_players_cache';
 const PLAYERS_CACHE_TTL = 24 * 60 * 60 * 1000;
@@ -56,7 +62,7 @@ export const getAllPlayers = async (): Promise<PlayersMap> => {
       if (Date.now() - ts < PLAYERS_CACHE_TTL) return data;
     }
   } catch {}
-  const data: PlayersMap = await axios.get(`${BASE}/players/nfl`).then(r => r.data);
+  const data = await get<PlayersMap>(`${BASE}/players/nfl`);
   try {
     localStorage.setItem(PLAYERS_CACHE_KEY, JSON.stringify({ ts: Date.now(), data }));
   } catch {}
@@ -106,8 +112,8 @@ export const getSeasonMatchups = async (
   return Object.fromEntries(entries);
 };
 
-export const getTrendingPlayers = (type: 'add' | 'drop', lookback_hours = 24, limit = 25): Promise<{ player_id: string; count: number }[]> =>
-  axios.get(`${BASE}/players/nfl/trending/${type}`, { params: { lookback_hours, limit } }).then(r => r.data);
+export const getTrendingPlayers = (type: 'add' | 'drop', lookback_hours = 24, limit = 25) =>
+  get<{ player_id: string; count: number }[]>(`${BASE}/players/nfl/trending/${type}`, { lookback_hours, limit });
 
 export const getAllTimeMatchups = async (
   history: { league: SleeperLeague; rosters: SleeperRoster[]; users: SleeperUser[]; bracket: SleeperBracketMatch[] }[]
