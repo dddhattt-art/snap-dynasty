@@ -132,3 +132,33 @@ export const avatarUrl = (avatarId: string | null, full = false) =>
   avatarId
     ? `${CDN}/avatars/${full ? 'original/' : 'thumbs/'}${avatarId}`
     : null;
+
+export interface EspnArticle {
+  id: number;
+  headline: string;
+  description: string;
+  published: string;
+  link: string;
+  athleteIds: number[];
+}
+
+export const getEspnNflNews = async (limit = 50): Promise<EspnArticle[]> => {
+  const ESPN = 'https://site.api.espn.com/apis/site/v2/sports/football/nfl';
+  const res = await fetch(`${ESPN}/news?limit=${limit}`);
+  if (!res.ok) throw new Error('ESPN news unavailable');
+  const data = await res.json();
+  return (data.articles ?? []).map((a: Record<string, unknown>) => {
+    const athleteIds = ((a.categories as {type?: string; athleteId?: number}[] | undefined) ?? [])
+      .filter(c => c.type === 'athlete' && c.athleteId)
+      .map(c => c.athleteId as number);
+    const webLink = (a.links as {web?: {href?: string}} | undefined)?.web?.href ?? '';
+    return {
+      id: a.id as number,
+      headline: a.headline as string,
+      description: (a.description as string | undefined) ?? '',
+      published: a.published as string,
+      link: webLink,
+      athleteIds,
+    };
+  });
+};

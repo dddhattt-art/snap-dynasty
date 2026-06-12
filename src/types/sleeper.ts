@@ -117,6 +117,10 @@ export interface SleeperPlayer {
   age: number | null;
   number: number | null;
   injury_status: string | null;
+  injury_notes: string | null;
+  practice_participation: string | null;
+  practice_description: string | null;
+  espn_id: number | null;
   search_rank: number;
 }
 

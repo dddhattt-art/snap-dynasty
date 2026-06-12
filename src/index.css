@@ -1433,6 +1433,38 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .news-count-add { background: rgba(28,107,70,0.1); color: var(--green); }
 .news-count-drop { background: rgba(196,61,46,0.1); color: var(--red); }
 
+/* News feed (ESPN articles) */
+.news-feed { display: flex; flex-direction: column; }
+.news-feed-item {
+  display: flex; flex-direction: column; gap: 0.35rem;
+  padding: 0.85rem 1rem; border-bottom: 1px solid var(--border);
+  text-decoration: none; color: inherit; transition: background 0.12s;
+}
+.news-feed-item:last-child { border-bottom: none; }
+.news-feed-item:hover { background: var(--surface2); }
+.news-feed-meta {
+  display: flex; align-items: center; gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.news-feed-player { font-weight: 700; font-size: 0.86rem; }
+.news-feed-team {
+  font-size: 0.72rem; color: var(--text-dim); font-weight: 600;
+  background: var(--surface2); padding: 0.1rem 0.4rem; border-radius: 4px;
+}
+.news-feed-time { font-size: 0.72rem; color: var(--text-dim); margin-left: auto; white-space: nowrap; }
+.news-feed-headline {
+  font-size: 0.88rem; font-weight: 600; color: var(--text);
+  line-height: 1.35;
+}
+.news-feed-desc {
+  font-size: 0.81rem; color: var(--text-dim); line-height: 1.45;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.news-injury-note {
+  font-size: 0.76rem; color: var(--text-dim); font-style: italic;
+  line-height: 1.35; margin-top: 0.1rem;
+}
+
 /* ————— Bench Points ————— */
 .bench-wrap { display: flex; flex-direction: column; gap: 1.4rem; }
 .bench-table-section {
