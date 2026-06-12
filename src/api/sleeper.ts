@@ -142,7 +142,7 @@ export interface EspnArticle {
   athleteIds: number[];
 }
 
-export const getEspnNflNews = async (limit = 50): Promise<EspnArticle[]> => {
+export const getEspnNflNews = async (limit = 100): Promise<EspnArticle[]> => {
   const ESPN = 'https://site.api.espn.com/apis/site/v2/sports/football/nfl';
   const res = await fetch(`${ESPN}/news?limit=${limit}`);
   if (!res.ok) throw new Error('ESPN news unavailable');
