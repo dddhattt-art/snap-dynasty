@@ -66,7 +66,7 @@ export default function PositionalBreakdown({ rosters, userMap, seasonMatchups, 
             return (
               <tr key={roster.roster_id}>
                 <td className="team-cell">
-                  {av && <img src={av} alt="" className="avatar-xs" />}
+                  {av && <img loading="lazy" src={av} alt="" className="avatar-xs" />}
                   <span>{user?.display_name ?? user?.username ?? `Team ${roster.roster_id}`}</span>
                 </td>
                 {POSITIONS.map(pos => (

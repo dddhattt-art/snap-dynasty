@@ -44,7 +44,7 @@ export default function Standings({ rosters, userMap }: Props) {
             <tr key={roster.roster_id} className={i < 6 ? 'playoff-spot' : ''}>
               <td className="rank">{i + 1}</td>
               <td className="team-cell">
-                {avatar && <img src={avatar} alt="" className="avatar-xs" />}
+                {avatar && <img loading="lazy" src={avatar} alt="" className="avatar-xs" />}
                 <span>{user?.display_name ?? user?.username ?? `Team ${roster.roster_id}`}</span>
               </td>
               <td>{record}</td>

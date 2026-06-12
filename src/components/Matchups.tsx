@@ -37,7 +37,7 @@ export default function Matchups({ matchups, rosters, userMap, isLoading }: Prop
         return (
           <div key={a.matchup_id} className="matchup-card">
             <div className={`matchup-side ${aWins ? 'winning' : ''}`}>
-              {avatarA && <img src={avatarA} alt="" className="avatar-sm" />}
+              {avatarA && <img loading="lazy" src={avatarA} alt="" className="avatar-sm" />}
               <span className="team-name">
                 {userA?.display_name ?? userA?.username ?? `Team ${a.roster_id}`}
               </span>
@@ -49,7 +49,7 @@ export default function Matchups({ matchups, rosters, userMap, isLoading }: Prop
               <span className="team-name">
                 {userB?.display_name ?? userB?.username ?? `Team ${b.roster_id}`}
               </span>
-              {avatarB && <img src={avatarB} alt="" className="avatar-sm" />}
+              {avatarB && <img loading="lazy" src={avatarB} alt="" className="avatar-sm" />}
             </div>
           </div>
         );

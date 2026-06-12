@@ -39,11 +39,11 @@ function BracketMatch({
   return (
     <div className="bracket-match">
       <div className={`bracket-team ${match.w === match.t1 ? 'bracket-winner' : match.l === match.t1 ? 'bracket-loser' : ''}`}>
-        {t1.avatar && <img src={t1.avatar} alt="" className="avatar-xs" />}
+        {t1.avatar && <img loading="lazy" src={t1.avatar} alt="" className="avatar-xs" />}
         <span>{t1.name}</span>
       </div>
       <div className={`bracket-team ${match.w === match.t2 ? 'bracket-winner' : match.l === match.t2 ? 'bracket-loser' : ''}`}>
-        {t2.avatar && <img src={t2.avatar} alt="" className="avatar-xs" />}
+        {t2.avatar && <img loading="lazy" src={t2.avatar} alt="" className="avatar-xs" />}
         <span>{t2.name}</span>
       </div>
     </div>

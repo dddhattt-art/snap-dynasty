@@ -104,7 +104,7 @@ export default function MatchupPredictor({ rosters, userMap, seasonMatchups, lea
             <div className="predictor-teams">
               {/* Team A */}
               <div className={`predictor-side ${favored === 'a' ? 'predictor-favored' : ''}`}>
-                {avA && <img src={avA} alt="" className="avatar-sm" />}
+                {avA && <img loading="lazy" src={avA} alt="" className="avatar-sm" />}
                 <div className="predictor-team-info">
                   <span className="predictor-team-name">{teamName(rA, userMap)}</span>
                   <span className="predictor-avg">avg {avgA.toFixed(1)}</span>
@@ -137,7 +137,7 @@ export default function MatchupPredictor({ rosters, userMap, seasonMatchups, lea
                   <span className="predictor-team-name">{teamName(rB, userMap)}</span>
                   <span className="predictor-avg">avg {avgB.toFixed(1)}</span>
                 </div>
-                {avB && <img src={avB} alt="" className="avatar-sm" />}
+                {avB && <img loading="lazy" src={avB} alt="" className="avatar-sm" />}
               </div>
             </div>
           </div>

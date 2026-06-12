@@ -87,7 +87,7 @@ export default function BenchPoints({ rosters, userMap, seasonMatchups, isLoadin
                 <tr key={s.rosterId}>
                   <td className="rank-cell">{i + 1}</td>
                   <td className="team-cell">
-                    {av && <img src={av} alt="" className="avatar-xs" />}
+                    {av && <img loading="lazy" src={av} alt="" className="avatar-xs" />}
                     <span>{teamName(r, userMap)}</span>
                   </td>
                   <td>

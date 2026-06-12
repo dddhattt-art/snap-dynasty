@@ -101,7 +101,7 @@ export default function DraftGrade({ picks, rosters, userMap, seasonMatchups, is
               <tr key={ownerId}>
                 <td className="rank">{i + 1}</td>
                 <td className="team-cell">
-                  {av && <img src={av} alt="" className="avatar-xs" />}
+                  {av && <img loading="lazy" src={av} alt="" className="avatar-xs" />}
                   <span>{user?.display_name ?? user?.username ?? ownerId}</span>
                 </td>
                 <td>

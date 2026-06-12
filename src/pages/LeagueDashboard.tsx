@@ -270,7 +270,7 @@ export default function LeagueDashboard() {
         <button className="side-brand" onClick={() => navigate(-1)}>← Snap</button>
         <div className="side-league">
           <div className="side-league-name">
-            {league?.avatar && <img src={avatarUrl(league.avatar) ?? undefined} alt="" className="avatar-xs" />}
+            {league?.avatar && <img loading="lazy" src={avatarUrl(league.avatar) ?? undefined} alt="" className="avatar-xs" />}
             <span>{league?.name ?? 'Loading…'}</span>
           </div>
           <div className="side-league-meta">{league?.season ?? ''} · Week {currentWeek}</div>

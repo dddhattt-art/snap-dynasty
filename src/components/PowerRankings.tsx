@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import type { SleeperRoster, SleeperUser, SleeperMatchup } from '../types/sleeper';
 import { avatarUrl } from '../api/sleeper';
 
@@ -17,44 +18,45 @@ export default function PowerRankings({ rosters, userMap, seasonMatchups, isLoad
   if (isLoading) return <div className="loading">Computing power rankings…</div>;
   if (!rosters.length) return <div className="empty">No data available.</div>;
 
-  const weeks = seasonMatchups ? Object.keys(seasonMatchups).map(Number).sort((a, b) => a - b) : [];
-  const recentWeeks = weeks.slice(-3);
+  const ranked = useMemo(() => {
+    const weeks = seasonMatchups ? Object.keys(seasonMatchups).map(Number).sort((a, b) => a - b) : [];
+    const recentWeeks = weeks.slice(-3);
 
-  const recentPts = new Map<number, number>();
-  for (const roster of rosters) {
-    let pts = 0;
-    for (const week of recentWeeks) {
-      const matchup = (seasonMatchups?.[week] ?? []).find(m => m.roster_id === roster.roster_id);
-      if (matchup) pts += matchup.points;
+    const recentPts = new Map<number, number>();
+    for (const roster of rosters) {
+      let pts = 0;
+      for (const week of recentWeeks) {
+        const matchup = (seasonMatchups?.[week] ?? []).find(m => m.roster_id === roster.roster_id);
+        if (matchup) pts += matchup.points;
+      }
+      recentPts.set(roster.roster_id, pts);
     }
-    recentPts.set(roster.roster_id, pts);
-  }
 
-  const pf = (r: SleeperRoster) =>
-    (r.settings.fpts ?? 0) + (r.settings.fpts_decimal ?? 0) / 100;
+    const pf = (r: SleeperRoster) => (r.settings.fpts ?? 0) + (r.settings.fpts_decimal ?? 0) / 100;
+    const winsRank = rankAsc(rosters, r => (r.settings.wins ?? 0) + pf(r) / 10000);
+    const pfRank = rankAsc(rosters, pf);
+    const recentRank = rankAsc(rosters, r => recentPts.get(r.roster_id) ?? 0);
 
-  const winsRank = rankAsc(rosters, r => (r.settings.wins ?? 0) + pf(r) / 10000);
-  const pfRank = rankAsc(rosters, pf);
-  const recentRank = rankAsc(rosters, r => recentPts.get(r.roster_id) ?? 0);
+    const standingsRank = new Map(
+      [...rosters]
+        .sort((a, b) => {
+          const wd = (b.settings.wins ?? 0) - (a.settings.wins ?? 0);
+          return wd !== 0 ? wd : pf(b) - pf(a);
+        })
+        .map((r, i) => [r.roster_id, i + 1])
+    );
 
-  const standingsRank = new Map(
-    [...rosters]
-      .sort((a, b) => {
-        const wd = (b.settings.wins ?? 0) - (a.settings.wins ?? 0);
-        return wd !== 0 ? wd : pf(b) - pf(a);
-      })
-      .map((r, i) => [r.roster_id, i + 1])
-  );
+    const score = (r: SleeperRoster) => {
+      const n = rosters.length;
+      return (winsRank.get(r) ?? 1) / n * 0.40 +
+             (pfRank.get(r) ?? 1) / n * 0.35 +
+             (recentRank.get(r) ?? 1) / n * 0.25;
+    };
 
-  const score = (r: SleeperRoster) => {
-    const n = rosters.length;
-    const wr = (winsRank.get(r) ?? 1) / n;
-    const pr = (pfRank.get(r) ?? 1) / n;
-    const rr = (recentRank.get(r) ?? 1) / n;
-    return wr * 0.40 + pr * 0.35 + rr * 0.25;
-  };
+    return { rows: [...rosters].sort((a, b) => score(b) - score(a)), standingsRank, recentPts, recentWeeks };
+  }, [rosters, seasonMatchups]);
 
-  const ranked = [...rosters].sort((a, b) => score(b) - score(a));
+  const { rows, standingsRank, recentPts, recentWeeks } = ranked;
 
   return (
     <div className="pr-wrap">
@@ -71,7 +73,7 @@ export default function PowerRankings({ rosters, userMap, seasonMatchups, isLoad
           </tr>
         </thead>
         <tbody>
-          {ranked.map((roster, i) => {
+          {rows.map((roster, i) => {
             const user = userMap.get(roster.owner_id);
             const av = user ? avatarUrl(user.avatar) : null;
             const standRank = standingsRank.get(roster.roster_id) ?? i + 1;
@@ -83,7 +85,7 @@ export default function PowerRankings({ rosters, userMap, seasonMatchups, isLoad
               <tr key={roster.roster_id}>
                 <td className="rank">{i + 1}</td>
                 <td className="team-cell">
-                  {av && <img src={av} alt="" className="avatar-xs" />}
+                  {av && <img loading="lazy" src={av} alt="" className="avatar-xs" />}
                   <span>{user?.display_name ?? user?.username ?? `Team ${roster.roster_id}`}</span>
                 </td>
                 <td>

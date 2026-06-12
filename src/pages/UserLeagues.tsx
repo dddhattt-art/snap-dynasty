@@ -2,6 +2,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getUserLeagues, getUser, avatarUrl } from '../api/sleeper';
 
+// Prefetch dashboard chunk while user is browsing leagues
+import('./LeagueDashboard');
+
 const CURRENT_SEASON = '2025';
 
 const STATUS_LABEL: Record<string, string> = {
@@ -42,7 +45,7 @@ export default function UserLeagues() {
       <header className="page-header">
         <div>
           {avatar
-            ? <img src={avatar} alt="avatar" className="avatar" />
+            ? <img loading="lazy" src={avatar} alt="avatar" className="avatar" />
             : <div className="avatar avatar-placeholder" />
           }
           <div>
@@ -72,7 +75,7 @@ export default function UserLeagues() {
                 onClick={() => navigate(`/league/${league.league_id}`, { state: { userId } })}
               >
                 {league.avatar
-                  ? <img src={avatarUrl(league.avatar) ?? undefined} alt="league" className="league-avatar" />
+                  ? <img loading="lazy" src={avatarUrl(league.avatar) ?? undefined} alt="league" className="league-avatar" />
                   : <div className="league-avatar league-avatar-placeholder">🏈</div>
                 }
                 <div className="league-info">

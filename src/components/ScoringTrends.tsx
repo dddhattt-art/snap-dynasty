@@ -59,7 +59,7 @@ export default function ScoringTrends({ rosters, userMap, seasonMatchups, isLoad
               onClick={() => setSelectedId(r.roster_id)}
               style={r.roster_id === (selectedId ?? activeRosters[0]?.roster_id) ? { borderColor: COLORS[i % COLORS.length] } : {}}
             >
-              {av && <img src={av} alt="" className="avatar-xs" />}
+              {av && <img loading="lazy" src={av} alt="" className="avatar-xs" />}
               <span>{u?.display_name ?? u?.username ?? `T${r.roster_id}`}</span>
             </button>
           );

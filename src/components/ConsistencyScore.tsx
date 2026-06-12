@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import type { SleeperRoster, SleeperUser, SleeperMatchup } from '../types/sleeper';
 import { avatarUrl } from '../api/sleeper';
 
@@ -27,18 +28,19 @@ export default function ConsistencyScore({ rosters, userMap, seasonMatchups, isL
   if (isLoading) return <div className="loading">Computing consistency scores…</div>;
   if (!seasonMatchups || !rosters.length) return <div className="empty">No season data yet.</div>;
 
-  const weeks = Object.keys(seasonMatchups).map(Number).sort((a, b) => a - b);
-
-  const stats = rosters.map(r => {
-    const scores = weeks.map(w => seasonMatchups[w].find(m => m.roster_id === r.roster_id)?.points ?? 0).filter(p => p > 0);
-    const mean = scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
-    const variance = scores.length > 1 ? scores.reduce((s, p) => s + (p - mean) ** 2, 0) / scores.length : 0;
-    const std = Math.sqrt(variance);
-    const cv = mean > 0 ? std / mean : 0;
-    const min = Math.min(...scores);
-    const max = Math.max(...scores);
-    return { roster: r, mean, std, cv, min, max };
-  }).sort((a, b) => a.cv - b.cv);
+  const stats = useMemo(() => {
+    const weeks = Object.keys(seasonMatchups).map(Number).sort((a, b) => a - b);
+    return rosters.map(r => {
+      const scores = weeks.map(w => seasonMatchups[w].find(m => m.roster_id === r.roster_id)?.points ?? 0).filter(p => p > 0);
+      const mean = scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
+      const variance = scores.length > 1 ? scores.reduce((s, p) => s + (p - mean) ** 2, 0) / scores.length : 0;
+      const std = Math.sqrt(variance);
+      const cv = mean > 0 ? std / mean : 0;
+      const min = Math.min(...scores);
+      const max = Math.max(...scores);
+      return { roster: r, mean, std, cv, min, max };
+    }).sort((a, b) => a.cv - b.cv);
+  }, [rosters, seasonMatchups]);
 
   return (
     <div>
@@ -58,7 +60,7 @@ export default function ConsistencyScore({ rosters, userMap, seasonMatchups, isL
               <tr key={roster.roster_id}>
                 <td className="rank">{i + 1}</td>
                 <td className="team-cell">
-                  {av && <img src={av} alt="" className="avatar-xs" />}
+                  {av && <img loading="lazy" src={av} alt="" className="avatar-xs" />}
                   <span>{user?.display_name ?? user?.username ?? `Team ${roster.roster_id}`}</span>
                 </td>
                 <td>{mean.toFixed(1)}</td>

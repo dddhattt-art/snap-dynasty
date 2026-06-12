@@ -132,7 +132,7 @@ export default function SeasonCharts({ rosters, userMap, seasonMatchups, isLoadi
             onClick={() => toggle(series.rosterId)}
           >
             <span className="legend-dot" style={{ background: series.color }} />
-            {series.avatar && <img src={series.avatar} alt="" className="avatar-xs" />}
+            {series.avatar && <img loading="lazy" src={series.avatar} alt="" className="avatar-xs" />}
             <span>{series.label}</span>
           </button>
         ))}

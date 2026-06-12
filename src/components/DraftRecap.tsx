@@ -51,7 +51,7 @@ export default function DraftRecap({ picks, rosters, userMap, isLoading }: Props
                     </div>
                     <div className="draft-player-name">{pick.metadata?.player_name ?? pick.player_id}</div>
                     <div className="draft-pick-owner">
-                      {av && <img src={av} alt="" className="avatar-xs" />}
+                      {av && <img loading="lazy" src={av} alt="" className="avatar-xs" />}
                       <span>{user?.display_name ?? user?.username ?? `Team ${pick.roster_id}`}</span>
                     </div>
                   </div>

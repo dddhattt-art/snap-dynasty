@@ -115,7 +115,7 @@ export default function LeagueHistory({ history, isLoading }: Props) {
             return (
               <tr key={c.userId}>
                 <td className="team-cell">
-                  {av && <img src={av} alt="" className="avatar-xs" />}
+                  {av && <img loading="lazy" src={av} alt="" className="avatar-xs" />}
                   <span>{user?.display_name ?? user?.username ?? c.userId}</span>
                 </td>
                 <td>{c.seasons}</td>
@@ -157,7 +157,7 @@ export default function LeagueHistory({ history, isLoading }: Props) {
                   return (
                     <li key={roster.roster_id} className="history-season-row">
                       <span className="rank">{i + 1}</span>
-                      {av && <img src={av} alt="" className="avatar-xs" />}
+                      {av && <img loading="lazy" src={av} alt="" className="avatar-xs" />}
                       <span className={isChamp ? 'history-champ' : ''}>
                         {isChamp && '🏆 '}{user?.display_name ?? user?.username ?? `Team ${roster.roster_id}`}
                       </span>

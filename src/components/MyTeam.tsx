@@ -91,7 +91,7 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
       {/* Header card */}
       <div className="myteam-header">
         <div className="myteam-identity">
-          {av && <img src={av} alt="" className="myteam-avatar" />}
+          {av && <img loading="lazy" src={av} alt="" className="myteam-avatar" />}
           <div>
             <div className="myteam-name">{me?.display_name ?? me?.username ?? 'Your Team'}</div>
             <div className="myteam-league">{league?.name} · {league?.season}</div>
@@ -120,7 +120,7 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
           <div className="myteam-section-title">Week {currentWeek} Matchup</div>
           <div className="myteam-matchup-card">
             <div className={`myteam-matchup-side ${myMatchup.points >= oppMatchup.points ? 'winning' : ''}`}>
-              {av && <img src={av} alt="" className="avatar-sm" />}
+              {av && <img loading="lazy" src={av} alt="" className="avatar-sm" />}
               <span className="myteam-matchup-team">{me?.display_name ?? 'You'}</span>
               <span className="myteam-matchup-score">{myMatchup.points.toFixed(2)}</span>
             </div>
@@ -128,7 +128,7 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
             <div className={`myteam-matchup-side right ${oppMatchup.points > myMatchup.points ? 'winning' : ''}`}>
               <span className="myteam-matchup-score">{oppMatchup.points.toFixed(2)}</span>
               <span className="myteam-matchup-team">{oppUser?.display_name ?? oppUser?.username ?? `Team ${oppMatchup.roster_id}`}</span>
-              {oppAv && <img src={oppAv} alt="" className="avatar-sm" />}
+              {oppAv && <img loading="lazy" src={oppAv} alt="" className="avatar-sm" />}
             </div>
           </div>
         </div>

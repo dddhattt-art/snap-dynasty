@@ -59,7 +59,7 @@ export default function Roster({ rosters, userMap, players, isLoading }: Props) 
               className={`roster-team-btn ${r.roster_id === roster.roster_id ? 'active' : ''}`}
               onClick={() => setSelectedRosterId(r.roster_id)}
             >
-              {av && <img src={av} alt="" className="avatar-xs" />}
+              {av && <img loading="lazy" src={av} alt="" className="avatar-xs" />}
               <span>{u?.display_name ?? u?.username ?? `Team ${r.roster_id}`}</span>
             </button>
           );
@@ -68,7 +68,7 @@ export default function Roster({ rosters, userMap, players, isLoading }: Props) 
 
       <div className="roster-header">
         {user && avatarUrl(user.avatar) && (
-          <img src={avatarUrl(user.avatar)!} alt="" className="avatar-sm" />
+          <img loading="lazy" src={avatarUrl(user.avatar)!} alt="" className="avatar-sm" />
         )}
         <span className="roster-owner">{user?.display_name ?? user?.username ?? `Team ${roster.roster_id}`}</span>
         <span className="roster-count">{allPlayers.length} players</span>

@@ -169,7 +169,7 @@ export default function ReportCard({ rosters, userMap, seasonMatchups, league, i
       {selected && (
         <div className="report-card">
           <div className="report-card-header">
-            {av && <img src={av} alt="" className="report-avatar" />}
+            {av && <img loading="lazy" src={av} alt="" className="report-avatar" />}
             <div className="report-card-identity">
               <div className="report-card-name">{user?.display_name ?? user?.username ?? 'Team'}</div>
               <div className="report-card-season">{league?.name} · {league?.season}</div>

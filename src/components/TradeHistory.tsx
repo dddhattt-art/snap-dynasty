@@ -19,7 +19,7 @@ function TeamAvatar({ rosterId, rosters, userMap }: { rosterId: number; rosters:
   const r = rosters.find(x => x.roster_id === rosterId);
   const u = userMap.get(r?.owner_id ?? '');
   const av = u ? avatarUrl(u.avatar) : null;
-  return av ? <img src={av} alt="" className="avatar-xs" /> : <div className="avatar-xs" style={{ background: 'var(--surface2)', borderRadius: '50%' }} />;
+  return av ? <img loading="lazy" src={av} alt="" className="avatar-xs" /> : <div className="avatar-xs" style={{ background: 'var(--surface2)', borderRadius: '50%' }} />;
 }
 
 export default function TradeHistory({ seasonTransactions, rosters, userMap, players, isLoading }: Props) {

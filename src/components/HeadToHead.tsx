@@ -74,7 +74,7 @@ export default function HeadToHead({ rosters, userMap, seasonMatchups, isLoading
           <div className="h2h-summary">
             <div className={`h2h-summary-side ${winsA > winsB ? 'h2h-leader' : ''}`}>
               {userA && avatarUrl(userA.avatar) && (
-                <img src={avatarUrl(userA.avatar)!} alt="" className="avatar-sm" />
+                <img loading="lazy" src={avatarUrl(userA.avatar)!} alt="" className="avatar-sm" />
               )}
               <div>
                 <div className="h2h-summary-name">{teamLabel(teamA)}</div>
@@ -88,7 +88,7 @@ export default function HeadToHead({ rosters, userMap, seasonMatchups, isLoading
                 <div className="h2h-summary-record">{winsB}-{winsA} · {totalB.toFixed(1)} pts</div>
               </div>
               {userB && avatarUrl(userB.avatar) && (
-                <img src={avatarUrl(userB.avatar)!} alt="" className="avatar-sm" />
+                <img loading="lazy" src={avatarUrl(userB.avatar)!} alt="" className="avatar-sm" />
               )}
             </div>
           </div>

@@ -107,7 +107,7 @@ export default function PlayoffOdds({ rosters, userMap, seasonMatchups, league, 
               <tr key={roster.roster_id} className={i < playoffSpots ? 'playoff-spot' : ''}>
                 <td className="rank">{i + 1}</td>
                 <td className="team-cell">
-                  {av && <img src={av} alt="" className="avatar-xs" />}
+                  {av && <img loading="lazy" src={av} alt="" className="avatar-xs" />}
                   <span>{user?.display_name ?? user?.username ?? `Team ${roster.roster_id}`}</span>
                 </td>
                 <td>{record}</td>

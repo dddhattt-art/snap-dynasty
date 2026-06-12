@@ -44,7 +44,7 @@ function TeamAvatar({ rosterId, rosters, userMap, size = 'avatar-xs' }: {
   const r = rosters.find(x => x.roster_id === rosterId);
   const u = userMap.get(r?.owner_id ?? '');
   const av = u ? avatarUrl(u.avatar) : null;
-  return av ? <img src={av} alt="" className={size} /> : null;
+  return av ? <img loading="lazy" src={av} alt="" className={size} /> : null;
 }
 
 function MatchupDetail({ entry, seasonMatchups, players }: {
