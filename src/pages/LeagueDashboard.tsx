@@ -137,7 +137,7 @@ const SEASON_TABS: Tab[] = [
   'playoff-odds','trends','blowouts','positional','records','consistency','whatif',
   'bench','predictor','report-card',
 ];
-const PLAYERS_TABS: Tab[] = ['roster','free-agents','trade','optimal','activity','waiver-value','positional','draft-grade','transactions','records','news','trade-history'];
+const PLAYERS_TABS: Tab[] = ['myteam','roster','free-agents','trade','optimal','activity','waiver-value','positional','draft-grade','transactions','records','news','trade-history'];
 const SEASON_TX_TABS: Tab[] = ['myteam','activity','waiver-value','trade-history'];
 
 export default function LeagueDashboard() {
