@@ -100,20 +100,25 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
 
   const streakLabel = streak > 0 ? `W${Math.abs(streak)}` : streak < 0 ? `L${Math.abs(streak)}` : '—';
 
-  // Position ranks — score every player league-wide this week, rank within position
+  // Season-long position rank — accumulate points across all weeks, rank within position
   const positionRank = new Map<string, number>(); // pid -> rank at position
-  if (players && currentMatchups.length) {
-    const seen = new Set<string>();
-    const byPos = new Map<string, { pid: string; pts: number }[]>();
-    for (const m of currentMatchups) {
-      for (const [pid, pts] of Object.entries(m.players_points ?? {})) {
-        if (seen.has(pid)) continue;
-        seen.add(pid);
-        const pos = players[pid]?.position;
-        if (!pos) continue;
-        if (!byPos.has(pos)) byPos.set(pos, []);
-        byPos.get(pos)!.push({ pid, pts: pts as number });
+  if (players && seasonMatchups) {
+    const seasonTotals = new Map<string, { pts: number; pos: string }>();
+    for (const weekMatchups of Object.values(seasonMatchups)) {
+      for (const m of weekMatchups) {
+        for (const [pid, pts] of Object.entries(m.players_points ?? {})) {
+          const pos = players[pid]?.position;
+          if (!pos) continue;
+          const existing = seasonTotals.get(pid);
+          if (existing) existing.pts += pts as number;
+          else seasonTotals.set(pid, { pts: pts as number, pos });
+        }
       }
+    }
+    const byPos = new Map<string, { pid: string; pts: number }[]>();
+    for (const [pid, { pts, pos }] of seasonTotals) {
+      if (!byPos.has(pos)) byPos.set(pos, []);
+      byPos.get(pos)!.push({ pid, pts });
     }
     for (const group of byPos.values()) {
       group.sort((a, b) => b.pts - a.pts);
@@ -234,17 +239,21 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
               return (
                 <li key={pid} className={`myteam-starter-row ${suboptimal ? 'suboptimal' : ''}`}>
                   <span className="myteam-starter-pos" style={{ background: posColor(pos) }}>{pos}</span>
-                  <span className="myteam-starter-name">{name}</span>
-                  {rank && <span className="myteam-starter-rank">#{rank} {pos}</span>}
-                  <span className="myteam-starter-team">{team}</span>
-                  {suboptimal && <span className="myteam-swap-flag" title="A bench player at this position scored more">⚠</span>}
-                  {pts !== undefined && <span className="myteam-starter-pts">{pts.toFixed(2)}</span>}
+                  <div className="myteam-starter-info">
+                    <span className="myteam-starter-name">{name}</span>
+                    <span className="myteam-starter-team">{team}</span>
+                  </div>
+                  <div className="myteam-starter-right">
+                    {rank && <span className="myteam-starter-rank">#{rank} {pos}</span>}
+                    {suboptimal && <span className="myteam-swap-flag" title="A bench player outscored this starter">⚠</span>}
+                    {pts !== undefined && <span className="myteam-starter-pts">{pts.toFixed(2)}</span>}
+                  </div>
                 </li>
               );
             })}
             {starterTotal > 0 && (
               <li className="myteam-starter-row myteam-starter-total">
-                <span className="myteam-starter-name">Total</span>
+                <span className="myteam-starter-info" style={{ flex: 1 }}>Total</span>
                 <span className="myteam-starter-pts">{starterTotal.toFixed(2)}</span>
               </li>
             )}
@@ -267,10 +276,14 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
               return (
                 <li key={pid} className="myteam-starter-row bench-row">
                   <span className="myteam-starter-pos" style={{ background: posColor(pos), opacity: 0.7 }}>{pos}</span>
-                  <span className="myteam-starter-name">{name}</span>
-                  {rank && <span className="myteam-starter-rank">#{rank} {pos}</span>}
-                  <span className="myteam-starter-team">{team}</span>
-                  {pts !== undefined && <span className="myteam-starter-pts bench-pts">{pts.toFixed(2)}</span>}
+                  <div className="myteam-starter-info">
+                    <span className="myteam-starter-name">{name}</span>
+                    <span className="myteam-starter-team">{team}</span>
+                  </div>
+                  <div className="myteam-starter-right">
+                    {rank && <span className="myteam-starter-rank">#{rank} {pos}</span>}
+                    {pts !== undefined && <span className="myteam-starter-pts bench-pts">{pts.toFixed(2)}</span>}
+                  </div>
                 </li>
               );
             })}

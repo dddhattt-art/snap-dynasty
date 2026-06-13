@@ -819,8 +819,10 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .myteam-starter-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.875rem; }
 .myteam-starter-row:last-child { border-bottom: none; }
 .myteam-starter-pos { font-size: 0.62rem; font-weight: 700; color: #fff; padding: 0.12rem 0.35rem; border-radius: 4px; width: 2.2rem; text-align: center; flex-shrink: 0; }
-.myteam-starter-name { flex: 1; font-weight: 600; }
-.myteam-starter-team { font-size: 0.75rem; color: var(--text-dim); flex-shrink: 0; margin-left: auto; }
+.myteam-starter-info { display: flex; flex-direction: column; gap: 0.1rem; flex: 1; min-width: 0; }
+.myteam-starter-right { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+.myteam-starter-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.myteam-starter-team { font-size: 0.75rem; color: var(--text-dim); }
 .myteam-starter-pts { font-weight: 700; font-size: 0.88rem; color: var(--accent); flex-shrink: 0; padding-right: 0.25rem; }
 .myteam-starter-rank { font-size: 0.68rem; font-weight: 700; color: var(--text-dim); background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 0.05rem 0.3rem; flex-shrink: 0; }
 .myteam-swap-flag { font-size: 0.8rem; flex-shrink: 0; }
