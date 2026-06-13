@@ -1,5 +1,6 @@
+import { useQuery } from '@tanstack/react-query';
 import type { SleeperRoster, SleeperUser, SleeperMatchup, SleeperTransaction, SleeperLeague, PlayersMap } from '../types/sleeper';
-import { avatarUrl } from '../api/sleeper';
+import { avatarUrl, getEspnNflNews } from '../api/sleeper';
 
 interface Props {
   userId?: string;
@@ -28,7 +29,21 @@ function StatPill({ label, value, highlight }: { label: string; value: string; h
   );
 }
 
+function timeAgo(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime();
+  const h = Math.floor(diff / 3600000);
+  if (h < 1) return `${Math.floor(diff / 60000)}m ago`;
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h / 24)}d ago`;
+}
+
 export default function MyTeam({ userId, rosters, userMap, players, seasonMatchups, seasonTransactions, league, isLoading }: Props) {
+  const { data: espnNews } = useQuery({
+    queryKey: ['espn-nfl-news'],
+    queryFn: () => getEspnNflNews(),
+    staleTime: 15 * 60 * 1000,
+  });
+
   if (!userId) return <div className="empty">Sign in to see your team card.</div>;
   if (isLoading) return <div className="loading">Loading your team…</div>;
 
@@ -83,6 +98,37 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
   }
 
   const streakLabel = streak > 0 ? `W${Math.abs(streak)}` : streak < 0 ? `L${Math.abs(streak)}` : '—';
+
+  // ESPN news for my players — match by espn_id first, fall back to name
+  const myPids = new Set(myRoster.players ?? []);
+  const espnById = new Map<number, typeof espnNews[0][]>();
+  const espnByName = new Map<string, typeof espnNews[0][]>();
+  for (const article of espnNews ?? []) {
+    for (const id of article.athleteIds) {
+      if (!espnById.has(id)) espnById.set(id, []);
+      espnById.get(id)!.push(article);
+    }
+    for (const name of article.athleteNames) {
+      if (!espnByName.has(name)) espnByName.set(name, []);
+      espnByName.get(name)!.push(article);
+    }
+  }
+  const myNews: { pid: string; headline: string; description: string; published: string; link: string }[] = [];
+  const seenArticleLinks = new Set<string>();
+  for (const pid of myPids) {
+    const p = players?.[pid];
+    if (!p) continue;
+    const byId = p.espn_id ? (espnById.get(p.espn_id) ?? []) : [];
+    const byName = p.full_name ? (espnByName.get(p.full_name.toLowerCase()) ?? []) : [];
+    const articles = byId.length ? byId : byName;
+    for (const article of articles) {
+      if (!seenArticleLinks.has(article.link)) {
+        seenArticleLinks.add(article.link);
+        myNews.push({ pid, ...article });
+      }
+    }
+  }
+  myNews.sort((a, b) => new Date(b.published).getTime() - new Date(a.published).getTime());
 
 
   return (
@@ -157,6 +203,31 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
               );
             })}
           </ul>
+        </div>
+      )}
+
+      {/* My players in the news */}
+      {myNews.length > 0 && (
+        <div className="myteam-section">
+          <div className="myteam-section-title">Your Players in the News</div>
+          <div className="news-feed">
+            {myNews.slice(0, 5).map((item) => {
+              const p = players?.[item.pid];
+              const pos = p?.position ?? '?';
+              return (
+                <a key={item.link} href={item.link} target="_blank" rel="noopener noreferrer" className="news-feed-item">
+                  <div className="news-feed-meta">
+                    <span className="news-pos-badge" style={{ background: POS_COLOR[pos] ?? '#888' }}>{pos}</span>
+                    <span className="news-feed-player">{p?.full_name ?? item.pid}</span>
+                    {p?.team && <span className="news-feed-team">{p.team}</span>}
+                    <span className="news-feed-time">{timeAgo(item.published)}</span>
+                  </div>
+                  <div className="news-feed-headline">{item.headline}</div>
+                  {item.description && <div className="news-feed-desc">{item.description}</div>}
+                </a>
+              );
+            })}
+          </div>
         </div>
       )}
 

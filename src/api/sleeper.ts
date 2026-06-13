@@ -140,6 +140,7 @@ export interface EspnArticle {
   published: string;
   link: string;
   athleteIds: number[];
+  athleteNames: string[]; // normalized lowercase for name-based fallback matching
 }
 
 export const getEspnNflNews = async (limit = 100): Promise<EspnArticle[]> => {
@@ -148,9 +149,10 @@ export const getEspnNflNews = async (limit = 100): Promise<EspnArticle[]> => {
   if (!res.ok) throw new Error('ESPN news unavailable');
   const data = await res.json();
   return (data.articles ?? []).map((a: Record<string, unknown>) => {
-    const athleteIds = ((a.categories as {type?: string; athleteId?: number}[] | undefined) ?? [])
-      .filter(c => c.type === 'athlete' && c.athleteId)
-      .map(c => c.athleteId as number);
+    type Cat = { type?: string; athleteId?: number; description?: string };
+    const athletes = ((a.categories as Cat[] | undefined) ?? []).filter(c => c.type === 'athlete');
+    const athleteIds = athletes.filter(c => c.athleteId).map(c => c.athleteId as number);
+    const athleteNames = athletes.filter(c => c.description).map(c => c.description!.toLowerCase());
     const webLink = (a.links as {web?: {href?: string}} | undefined)?.web?.href ?? '';
     return {
       id: a.id as number,
@@ -159,6 +161,7 @@ export const getEspnNflNews = async (limit = 100): Promise<EspnArticle[]> => {
       published: a.published as string,
       link: webLink,
       athleteIds,
+      athleteNames,
     };
   });
 };

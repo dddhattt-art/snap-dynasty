@@ -57,12 +57,17 @@ export default function PlayerNews({ rosters, userMap, players, isLoading }: Pro
     for (const pid of r.players ?? []) ownedMap.set(pid, { rosterId: r.roster_id, name });
   }
 
-  // Build ESPN id → articles map
-  const espnMap = new Map<number, EspnArticle[]>();
+  // Build ESPN id → articles and name → articles maps
+  const espnById = new Map<number, EspnArticle[]>();
+  const espnByName = new Map<string, EspnArticle[]>();
   for (const article of espnNews ?? []) {
     for (const id of article.athleteIds) {
-      if (!espnMap.has(id)) espnMap.set(id, []);
-      espnMap.get(id)!.push(article);
+      if (!espnById.has(id)) espnById.set(id, []);
+      espnById.get(id)!.push(article);
+    }
+    for (const name of article.athleteNames) {
+      if (!espnByName.has(name)) espnByName.set(name, []);
+      espnByName.get(name)!.push(article);
     }
   }
 
@@ -74,8 +79,10 @@ export default function PlayerNews({ rosters, userMap, players, isLoading }: Pro
   const seenArticleIds = new Set<number>();
   for (const pid of rosteredPids) {
     const player = players?.[pid];
-    if (!player?.espn_id) continue;
-    const articles = espnMap.get(player.espn_id) ?? [];
+    if (!player) continue;
+    const byId = player.espn_id ? (espnById.get(player.espn_id) ?? []) : [];
+    const byName = player.full_name ? (espnByName.get(player.full_name.toLowerCase()) ?? []) : [];
+    const articles = byId.length ? byId : byName;
     for (const article of articles) {
       if (!seenArticleIds.has(article.id)) {
         seenArticleIds.add(article.id);
