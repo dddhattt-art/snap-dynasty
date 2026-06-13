@@ -1364,12 +1364,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .myteam-matchup-team { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; flex: 1; }
 .myteam-matchup-score { font-size: 1.5rem; font-weight: 800; font-family: var(--font-display); }
 .myteam-matchup-vs { color: var(--text-dim); font-weight: 700; font-size: 0.85rem; }
-.myteam-starters { display: flex; flex-direction: column; gap: 0.4rem; }
-.myteam-starter-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.35rem 0; border-bottom: 1px solid var(--border); }
-.myteam-starter-row:last-child { border-bottom: none; }
-.myteam-starter-player { flex: 1; font-size: 0.88rem; }
-.myteam-starter-team { font-size: 0.75rem; color: var(--text-dim); }
-.myteam-starter-pts { font-weight: 700; font-size: 0.9rem; min-width: 40px; text-align: right; }
+.myteam-starters { list-style: none; }
 .myteam-moves { display: flex; flex-direction: column; gap: 0.5rem; }
 .myteam-move-row { display: flex; align-items: center; gap: 0.6rem; font-size: 0.82rem; padding: 0.3rem 0; border-bottom: 1px solid var(--border); }
 .myteam-move-row:last-child { border-bottom: none; }
