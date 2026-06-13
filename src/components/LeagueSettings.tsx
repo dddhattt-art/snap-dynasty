@@ -15,6 +15,10 @@ const WAIVER_DAYS: Record<number, string> = {
   4: 'Thursday', 5: 'Friday', 6: 'Saturday',
 };
 
+function fmt(n: number): string {
+  return Number.isInteger(n) ? String(n) : n.toFixed(1);
+}
+
 function scoringFormat(s: Record<string, number>): string {
   const rec = s['rec'] ?? 0;
   if (rec === 1) return 'PPR';
@@ -97,17 +101,17 @@ export default function LeagueSettings({ league }: Props) {
       </Section>
 
       <Section title="Key Scoring">
-        {tdPts != null    && <Row label="Pass TD"    value={`+${tdPts} pts`} />}
-        {intPts != null   && <Row label="INT"        value={`${intPts} pts`} />}
-        {rushYdPts != null && <Row label="Rush Yd"   value={`+${rushYdPts} pts`} />}
-        {recPts != null   && <Row label="Reception"  value={`+${recPts} pts`} />}
-        {recYdPts != null && <Row label="Rec Yd"     value={`+${recYdPts} pts`} />}
+        {tdPts != null    && <Row label="Pass TD"    value={`+${fmt(tdPts)} pts`} />}
+        {intPts != null   && <Row label="INT"        value={`${fmt(intPts)} pts`} />}
+        {rushYdPts != null && <Row label="Rush Yd"   value={`+${fmt(rushYdPts)} pts`} />}
+        {recPts != null   && <Row label="Reception"  value={`+${fmt(recPts)} pts`} />}
+        {recYdPts != null && <Row label="Rec Yd"     value={`+${fmt(recYdPts)} pts`} />}
       </Section>
 
       {extraScoring.length > 0 && (
         <Section title="More Scoring Rules">
           {extraScoring.map(([k, v]) => (
-            <Row key={k} label={k.replace(/_/g, ' ')} value={`${v > 0 ? '+' : ''}${v} pts`} />
+            <Row key={k} label={k.replace(/_/g, ' ')} value={`${v > 0 ? '+' : ''}${fmt(v)} pts`} />
           ))}
         </Section>
       )}
