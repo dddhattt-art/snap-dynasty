@@ -74,20 +74,29 @@ function BracketSection({
   for (const match of matches) {
     const pos = positions.get(match.m);
     if (!pos) continue;
-    const midX = pos.x + MATCH_W + GAP / 2;
 
-    for (const [slot, src] of [
-      ['t1', match.t1_from?.w],
-      ['t2', match.t2_from?.w],
-    ] as [string, number | undefined][]) {
-      if (!src) continue;
-      const fp = positions.get(src);
-      if (!fp) continue;
-      const fromX = fp.x + MATCH_W;
-      const fromY = fp.centerY;
-      const toX = pos.x;
-      const toY = slot === 't1' ? pos.centerY - ROW / 2 : pos.centerY + ROW / 2;
-      paths.push({ key: `${src}-${slot}-${match.m}`, d: `M ${fromX} ${fromY} H ${midX} V ${toY} H ${toX}` });
+    const fp1 = match.t1_from?.w ? positions.get(match.t1_from.w) : undefined;
+    const fp2 = match.t2_from?.w ? positions.get(match.t2_from.w) : undefined;
+
+    if (fp1 && fp2) {
+      // Both sides come from previous matches: classic bracket connector
+      // two horizontals → shared vertical bar → single horizontal to next match
+      const midX = fp1.x + MATCH_W + GAP / 2;
+      const d = [
+        `M ${fp1.x + MATCH_W} ${fp1.centerY} H ${midX}`,
+        `M ${fp2.x + MATCH_W} ${fp2.centerY} H ${midX}`,
+        `M ${midX} ${fp1.centerY} V ${fp2.centerY}`,
+        `M ${midX} ${pos.centerY} H ${pos.x}`,
+      ].join(' ');
+      paths.push({ key: `conn-${match.m}`, d });
+    } else if (fp1) {
+      // Only t1 has a feeder (t2 is a bye)
+      const midX = fp1.x + MATCH_W + GAP / 2;
+      paths.push({ key: `conn-${match.m}`, d: `M ${fp1.x + MATCH_W} ${fp1.centerY} H ${midX} V ${pos.centerY} H ${pos.x}` });
+    } else if (fp2) {
+      // Only t2 has a feeder (t1 is a bye)
+      const midX = fp2.x + MATCH_W + GAP / 2;
+      paths.push({ key: `conn-${match.m}`, d: `M ${fp2.x + MATCH_W} ${fp2.centerY} H ${midX} V ${pos.centerY} H ${pos.x}` });
     }
   }
 
