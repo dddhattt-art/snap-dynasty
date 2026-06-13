@@ -241,10 +241,12 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
                   <span className="myteam-starter-pos" style={{ background: posColor(pos) }}>{pos}</span>
                   <div className="myteam-starter-info">
                     <span className="myteam-starter-name">{name}</span>
-                    <span className="myteam-starter-team">{team}</span>
+                    <div className="myteam-starter-meta">
+                      <span className="myteam-starter-team">{team}</span>
+                      {rank && <span className="myteam-starter-rank">#{rank} {pos}</span>}
+                    </div>
                   </div>
                   <div className="myteam-starter-right">
-                    {rank && <span className="myteam-starter-rank">#{rank} {pos}</span>}
                     {suboptimal && <span className="myteam-swap-flag" title="A bench player outscored this starter">⚠</span>}
                     {pts !== undefined && <span className="myteam-starter-pts">{pts.toFixed(2)}</span>}
                   </div>
@@ -278,10 +280,12 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
                   <span className="myteam-starter-pos" style={{ background: posColor(pos), opacity: 0.7 }}>{pos}</span>
                   <div className="myteam-starter-info">
                     <span className="myteam-starter-name">{name}</span>
-                    <span className="myteam-starter-team">{team}</span>
+                    <div className="myteam-starter-meta">
+                      <span className="myteam-starter-team">{team}</span>
+                      {rank && <span className="myteam-starter-rank">#{rank} {pos}</span>}
+                    </div>
                   </div>
                   <div className="myteam-starter-right">
-                    {rank && <span className="myteam-starter-rank">#{rank} {pos}</span>}
                     {pts !== undefined && <span className="myteam-starter-pts bench-pts">{pts.toFixed(2)}</span>}
                   </div>
                 </li>
