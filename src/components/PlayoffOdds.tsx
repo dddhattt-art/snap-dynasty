@@ -92,7 +92,7 @@ export default function PlayoffOdds({ rosters, userMap, seasonMatchups, league, 
           ? `Season complete. Top ${playoffSpots} teams make playoffs.`
           : `${N_SIMS.toLocaleString()} simulations · ${remainingWeeks} week${remainingWeeks > 1 ? 's' : ''} remaining · top ${playoffSpots} make playoffs.`}
       </p>
-      <table className="standings-table">
+      <div className="table-scroll"><table className="standings-table">
         <thead>
           <tr><th>#</th><th>Team</th><th>Record</th><th>Playoff %</th></tr>
         </thead>
@@ -121,7 +121,7 @@ export default function PlayoffOdds({ rosters, userMap, seasonMatchups, league, 
             );
           })}
         </tbody>
-      </table>
+      </table></div>
     </div>
   );
 }

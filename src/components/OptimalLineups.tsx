@@ -35,7 +35,7 @@ export default function OptimalLineups({ rosters, userMap, seasonMatchups, isLoa
   return (
     <div>
       <p className="pr-formula">Optimal lineup = best possible starters each week. Efficiency = actual ÷ optimal.</p>
-      <table className="standings-table">
+      <div className="table-scroll"><table className="standings-table">
         <thead>
           <tr>
             <th>#</th><th>Team</th><th>Actual</th><th>Optimal</th><th>Left on Bench</th><th>Efficiency</th>
@@ -65,7 +65,7 @@ export default function OptimalLineups({ rosters, userMap, seasonMatchups, isLoa
             );
           })}
         </tbody>
-      </table>
+      </table></div>
     </div>
   );
 }

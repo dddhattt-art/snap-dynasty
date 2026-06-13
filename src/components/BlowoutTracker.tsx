@@ -44,6 +44,7 @@ export default function BlowoutTracker({ rosters, userMap, seasonMatchups, isLoa
   return (
     <div>
       <p className="pr-formula">Blowout = margin &gt;{BLOWOUT} pts · Close = margin &lt;{CLOSE} pts · Normal = everything else.</p>
+      <div className="table-scroll">
       <table className="standings-table">
         <thead>
           <tr>
@@ -77,6 +78,7 @@ export default function BlowoutTracker({ rosters, userMap, seasonMatchups, isLoa
           })}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

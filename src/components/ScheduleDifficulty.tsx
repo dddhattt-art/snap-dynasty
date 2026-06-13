@@ -39,7 +39,7 @@ export default function ScheduleDifficulty({ rosters, userMap, seasonMatchups, i
   return (
     <div>
       <p className="pr-formula">Average strength of opponents faced, measured by their season scoring average. League avg: {leagueAvg.toFixed(1)} pts/week.</p>
-      <table className="standings-table">
+      <div className="table-scroll"><table className="standings-table">
         <thead>
           <tr>
             <th>#</th><th>Team</th><th>Avg Opp Score</th><th>vs League Avg</th>
@@ -66,7 +66,7 @@ export default function ScheduleDifficulty({ rosters, userMap, seasonMatchups, i
             );
           })}
         </tbody>
-      </table>
+      </table></div>
     </div>
   );
 }

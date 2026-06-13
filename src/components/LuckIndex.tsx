@@ -48,7 +48,7 @@ export default function LuckIndex({ rosters, userMap, seasonMatchups, isLoading 
         All-play W-L: how you'd do if you played every team every week.
         Luck = actual wins minus expected wins.
       </p>
-      <table className="standings-table">
+      <div className="table-scroll"><table className="standings-table">
         <thead>
           <tr>
             <th>#</th><th>Team</th><th>Actual</th><th>All-Play</th><th>Luck</th>
@@ -78,7 +78,7 @@ export default function LuckIndex({ rosters, userMap, seasonMatchups, isLoading 
             );
           })}
         </tbody>
-      </table>
+      </table></div>
     </div>
   );
 }

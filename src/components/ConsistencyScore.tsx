@@ -47,7 +47,7 @@ export default function ConsistencyScore({ rosters, userMap, seasonMatchups, isL
       <p className="pr-formula">
         Consistency = coefficient of variation (lower = more consistent). Grade A = most reliable week-to-week.
       </p>
-      <table className="standings-table">
+      <div className="table-scroll"><table className="standings-table">
         <thead>
           <tr><th>#</th><th>Team</th><th>Avg</th><th>Std Dev</th><th>Range</th><th>Grade</th></tr>
         </thead>
@@ -75,7 +75,7 @@ export default function ConsistencyScore({ rosters, userMap, seasonMatchups, isL
             );
           })}
         </tbody>
-      </table>
+      </table></div>
     </div>
   );
 }

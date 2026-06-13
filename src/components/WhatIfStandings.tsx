@@ -114,7 +114,7 @@ export default function WhatIfStandings({ rosters, userMap, seasonMatchups, isLo
             })}
           </div>
 
-          <table className="standings-table" style={{ marginTop: '1.2rem' }}>
+          <div className="table-scroll" style={{ marginTop: '1.2rem' }}><table className="standings-table">
             <thead>
               <tr><th>#</th><th>Team</th><th>Wins</th><th>Δ Rank</th></tr>
             </thead>
@@ -141,7 +141,7 @@ export default function WhatIfStandings({ rosters, userMap, seasonMatchups, isLo
                 );
               })}
             </tbody>
-          </table>
+          </table></div>
         </>
       )}
     </div>

@@ -88,7 +88,7 @@ export default function DraftGrade({ picks, rosters, userMap, seasonMatchups, is
         Grade based on how each pick performed vs. the average for that round.
         A+ = consistently outperformed draft position.
       </p>
-      <table className="standings-table">
+      <div className="table-scroll"><table className="standings-table">
         <thead>
           <tr><th>#</th><th>Team</th><th>Grade</th><th>Best Pick</th><th>Worst Pick</th></tr>
         </thead>
@@ -121,7 +121,7 @@ export default function DraftGrade({ picks, rosters, userMap, seasonMatchups, is
             );
           })}
         </tbody>
-      </table>
+      </table></div>
     </div>
   );
 }
