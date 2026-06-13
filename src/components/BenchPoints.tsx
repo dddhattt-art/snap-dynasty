@@ -92,7 +92,9 @@ export default function BenchPoints({ rosters, userMap, seasonMatchups, isLoadin
                   </td>
                   <td>
                     <div className="bench-bar-wrap">
-                      <div className="bench-bar" style={{ width: `${barW}%` }} />
+                      <div className="bench-bar-track">
+                        <div className="bench-bar" style={{ width: `${barW}%` }} />
+                      </div>
                       <span>{s.totalBench.toFixed(1)}</span>
                     </div>
                   </td>

@@ -1454,10 +1454,11 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   overflow-x: auto; -webkit-overflow-scrolling: touch; box-shadow: var(--shadow);
 }
 .bench-table-section .standings-table { min-width: 480px; }
-.bench-bar-wrap { position: relative; display: flex; align-items: center; gap: 0.5rem; }
+.bench-bar-wrap { display: flex; align-items: center; gap: 0.6rem; }
+.bench-bar-track { width: 120px; flex-shrink: 0; height: 6px; border-radius: 3px; background: var(--border); overflow: hidden; }
 .bench-bar {
-  height: 6px; border-radius: 3px; background: var(--orange); opacity: 0.7;
-  min-width: 4px; flex-shrink: 0;
+  height: 100%; border-radius: 3px; background: var(--orange); opacity: 0.8;
+  min-width: 3px;
 }
 .bench-worst { white-space: nowrap; }
 .bench-heatmap-section {
@@ -1685,8 +1686,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   .bench-table-section { overflow-x: auto; }
   .bench-table-section .col-hide-xs { display: none; }
   .bench-table-section .standings-table { min-width: 320px; }
-  .bench-bar-wrap { flex-direction: column; align-items: flex-start; gap: 2px; }
-  .bench-bar { width: 60px; }
+  .bench-bar-track { width: 60px; }
 
   /* Tables with avatars — hide avatar on mobile to save space */
   .standings-table .team-cell .avatar-xs { display: none; }
