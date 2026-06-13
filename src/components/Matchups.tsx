@@ -33,23 +33,39 @@ export default function Matchups({ matchups, rosters, userMap, isLoading }: Prop
         const avatarB = userB ? avatarUrl(userB.avatar) : null;
         const aWins = a.points > b.points;
         const bWins = b.points > a.points;
+        const played = a.points > 0 || b.points > 0;
 
         return (
           <div key={a.matchup_id} className="matchup-card">
-            <div className={`matchup-side ${aWins ? 'winning' : ''}`}>
-              {avatarA && <img loading="lazy" src={avatarA} alt="" className="avatar-sm" />}
-              <span className="team-name">
-                {userA?.display_name ?? userA?.username ?? `Team ${a.roster_id}`}
-              </span>
-              <span className="score">{a.points.toFixed(2)}</span>
+            {/* Team A */}
+            <div className={`mu-row ${aWins ? 'mu-winner' : played ? 'mu-loser' : ''}`}>
+              <div className="mu-team">
+                {avatarA
+                  ? <img loading="lazy" src={avatarA} alt="" className="avatar-xs" />
+                  : <div className="avatar-xs avatar-placeholder" />}
+                <span className="mu-name">
+                  {userA?.display_name ?? userA?.username ?? `Team ${a.roster_id}`}
+                </span>
+              </div>
+              <span className="mu-score">{a.points > 0 ? a.points.toFixed(2) : '—'}</span>
             </div>
-            <div className="matchup-vs">vs</div>
-            <div className={`matchup-side right ${bWins ? 'winning' : ''}`}>
-              <span className="score">{b.points.toFixed(2)}</span>
-              <span className="team-name">
-                {userB?.display_name ?? userB?.username ?? `Team ${b.roster_id}`}
-              </span>
-              {avatarB && <img loading="lazy" src={avatarB} alt="" className="avatar-sm" />}
+
+            {/* Divider */}
+            <div className="mu-divider">
+              <span className="mu-vs">vs</span>
+            </div>
+
+            {/* Team B */}
+            <div className={`mu-row ${bWins ? 'mu-winner' : played ? 'mu-loser' : ''}`}>
+              <div className="mu-team">
+                {avatarB
+                  ? <img loading="lazy" src={avatarB} alt="" className="avatar-xs" />
+                  : <div className="avatar-xs avatar-placeholder" />}
+                <span className="mu-name">
+                  {userB?.display_name ?? userB?.username ?? `Team ${b.roster_id}`}
+                </span>
+              </div>
+              <span className="mu-score">{b.points > 0 ? b.points.toFixed(2) : '—'}</span>
             </div>
           </div>
         );
