@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -146,7 +146,7 @@ export default function LeagueDashboard() {
   const location = useLocation();
   const userId: string | undefined = (location.state as { userId?: string } | null)?.userId;
   const [tab, setTab] = useState<Tab>(userId ? 'myteam' : 'standings');
-  const [week, setWeek] = useState(1);
+  const [week, setWeek] = useState<number | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const selectTab = (id: Tab) => { setTab(id); setSidebarOpen(false); };
@@ -159,6 +159,11 @@ export default function LeagueDashboard() {
   });
 
   const currentWeek = league?.settings?.leg ?? 1;
+  const selectedWeek = week ?? currentWeek;
+
+  useEffect(() => {
+    if (currentWeek > 1 && week === null) setWeek(currentWeek);
+  }, [currentWeek]);
 
   const { data: rosters } = useQuery<SleeperRoster[]>({
     queryKey: ['rosters', leagueId],
@@ -175,14 +180,14 @@ export default function LeagueDashboard() {
   });
 
   const { data: matchups, isLoading: matchupsLoading } = useQuery<SleeperMatchup[]>({
-    queryKey: ['matchups', leagueId, week],
-    queryFn: () => getMatchups(leagueId!, week),
+    queryKey: ['matchups', leagueId, selectedWeek],
+    queryFn: () => getMatchups(leagueId!, selectedWeek),
     enabled: !!leagueId && tab === 'matchups',
   });
 
   const { data: transactions, isLoading: txLoading } = useQuery<SleeperTransaction[]>({
-    queryKey: ['transactions', leagueId, week],
-    queryFn: () => getTransactions(leagueId!, week),
+    queryKey: ['transactions', leagueId, selectedWeek],
+    queryFn: () => getTransactions(leagueId!, selectedWeek),
     enabled: !!leagueId && tab === 'transactions',
   });
 
@@ -297,11 +302,15 @@ export default function LeagueDashboard() {
         <header className="content-header">
           <h2 className="content-title">{TITLES[tab]}</h2>
           {showWeekControls && (
-            <div className="week-controls">
-              <button onClick={() => setWeek(w => Math.max(1, w - 1))}>‹</button>
-              <span>Week {week}</span>
-              <button onClick={() => setWeek(w => Math.min(18, w + 1))}>›</button>
-            </div>
+            <select
+              className="week-select"
+              value={selectedWeek}
+              onChange={e => setWeek(Number(e.target.value))}
+            >
+              {Array.from({ length: currentWeek }, (_, i) => i + 1).map(w => (
+                <option key={w} value={w}>Week {w}</option>
+              ))}
+            </select>
           )}
         </header>
 
