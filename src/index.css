@@ -637,6 +637,68 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 }
 .week-select:focus { outline: none; border-color: var(--navy); }
 
+/* ————— My Schedule ————— */
+.myschedule-wrap { display: flex; flex-direction: column; gap: 1rem; }
+
+.myschedule-summary {
+  background: var(--navy);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.myschedule-me { display: flex; align-items: center; gap: 0.6rem; flex: 1; min-width: 0; }
+.myschedule-me-name { color: var(--navy-text); font-weight: 700; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.myschedule-stats { display: flex; gap: 1.25rem; flex-shrink: 0; }
+.myschedule-stat { display: flex; flex-direction: column; align-items: center; gap: 0.1rem; }
+.myschedule-stat-val { color: var(--navy-text); font-size: 1rem; font-weight: 700; }
+.myschedule-stat-lbl { color: var(--navy-dim); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.08em; }
+
+.myschedule-list { display: flex; flex-direction: column; gap: 0.4rem; }
+
+.myschedule-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 0.65rem 1rem;
+  border: 1.5px solid var(--border);
+  transition: border-color 0.15s;
+}
+.myschedule-row.ms-win  { border-left: 3px solid var(--green); }
+.myschedule-row.ms-loss { border-left: 3px solid #e05c5c; }
+.myschedule-row.ms-current { box-shadow: 0 0 0 2px var(--navy); }
+
+.ms-week-badge { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 36px; }
+.ms-week-num { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-dim); }
+.ms-now-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--navy); }
+
+.ms-opp { display: flex; align-items: center; gap: 0.5rem; flex: 1; min-width: 0; }
+.ms-opp-name { font-size: 0.88rem; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ms-loss .ms-opp-name { color: var(--text-dim); }
+
+.ms-right { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+.ms-score { font-size: 0.82rem; color: var(--text-dim); font-variant-numeric: tabular-nums; }
+.ms-win .ms-score { color: var(--text); font-weight: 600; }
+
+.ms-close-badge {
+  font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+  background: #fff3cd; color: #856404; border-radius: 4px; padding: 1px 5px;
+}
+.ms-upcoming-label { font-size: 0.75rem; color: var(--text-dim); }
+
+.ms-result-badge {
+  font-size: 0.72rem; font-weight: 800; width: 22px; height: 22px;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.ms-result-badge.ms-W { background: rgba(28,138,78,0.12); color: var(--green); }
+.ms-result-badge.ms-L { background: rgba(220,60,60,0.1); color: #e05c5c; }
+.ms-result-badge.ms-T { background: var(--surface2); color: var(--text-dim); }
+.ms-result-badge.ms-upcoming { display: none; }
+
 /* ————— Cards & tables ————— */
 .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .table-scroll .standings-table { min-width: 480px; }
