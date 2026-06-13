@@ -350,6 +350,7 @@ export default function LeagueDashboard() {
           { id: 'standings' as Tab, icon: '🏅', label: 'Standings' },
           { id: 'matchups'  as Tab, icon: '⚔️', label: 'Matchups' },
           { id: 'news'      as Tab, icon: '🏥', label: 'News' },
+          { id: 'roster'    as Tab, icon: '📋', label: 'Roster' },
         ].map(item => (
           <button
             key={item.id}
@@ -360,13 +361,6 @@ export default function LeagueDashboard() {
             <span className="bottom-tab-label">{item.label}</span>
           </button>
         ))}
-        <button
-          className={`bottom-tab ${sidebarOpen ? 'active' : ''}`}
-          onClick={() => setSidebarOpen(o => !o)}
-        >
-          <span className="bottom-tab-icon">☰</span>
-          <span className="bottom-tab-label">More</span>
-        </button>
       </nav>
     </div>
   );

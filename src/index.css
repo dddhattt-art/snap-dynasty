@@ -561,9 +561,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
     box-shadow: 4px 0 24px rgba(0,0,0,0.12);
     box-sizing: border-box;
   }
-  .sidebar.open {
-    display: block;
-  }
+  .sidebar.open { display: none; }
 
   /* Overlay */
   .sidebar-overlay {
@@ -601,24 +599,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
     letter-spacing: 0.07em;
     font-weight: 600;
   }
-  .hamburger {
-    background: none;
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    padding: 0.35rem 0.55rem;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    color: var(--text);
-  }
-  .hamburger span {
-    display: block;
-    width: 18px;
-    height: 2px;
-    background: currentColor;
-    border-radius: 2px;
-  }
+  .hamburger { display: none; }
 
   .content { padding: 1rem 0.9rem 6rem; }
   .content-title { font-size: 1.4rem; }
