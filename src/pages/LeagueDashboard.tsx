@@ -64,7 +64,7 @@ const NAV: NavGroup[] = [
       { id: 'myteam',       label: 'My Team',          icon: '⚡' },
       { id: 'my-schedule',  label: 'My Schedule',      icon: '📆' },
       { id: 'standings',    label: 'Standings',        icon: '🏅' },
-      { id: 'matchups',     label: 'Matchups',         icon: '⚔️' },
+      { id: 'matchups',     label: 'Matchups',         icon: '🏈' },
       { id: 'roster',       label: 'Rosters',          icon: '📋' },
       { id: 'playoffs',     label: 'Playoff Bracket',  icon: '🏆' },
       { id: 'draft',        label: 'Draft Board',      icon: '🎯' },
@@ -150,8 +150,17 @@ export default function LeagueDashboard() {
   const [tab, setTab] = useState<Tab>(userId ? 'myteam' : 'standings');
   const [week, setWeek] = useState<number | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(
+    new Set(['Charts', 'Tools', 'The Ledger'])
+  );
 
   const selectTab = (id: Tab) => { setTab(id); setSidebarOpen(false); };
+  const toggleGroup = (title: string) =>
+    setCollapsedGroups(prev => {
+      const next = new Set(prev);
+      next.has(title) ? next.delete(title) : next.add(title);
+      return next;
+    });
 
   const { data: league } = useQuery({
     queryKey: ['league', leagueId],
@@ -283,10 +292,15 @@ export default function LeagueDashboard() {
           <div className="side-league-meta">{league?.season ?? ''} · Week {currentWeek}</div>
         </div>
 
-        {NAV.map(group => (
+        {NAV.map(group => {
+          const collapsed = collapsedGroups.has(group.title);
+          return (
           <nav key={group.title} className="nav-group">
-            <div className="nav-group-title">{group.title}</div>
-            {group.items.map(item => (
+            <button className="nav-group-title" onClick={() => toggleGroup(group.title)}>
+              <span>{group.title}</span>
+              <span className={`nav-group-chevron ${collapsed ? '' : 'open'}`}>›</span>
+            </button>
+            {!collapsed && group.items.map(item => (
               <button
                 key={item.id}
                 className={`nav-item ${tab === item.id ? 'active' : ''}`}
@@ -297,7 +311,8 @@ export default function LeagueDashboard() {
               </button>
             ))}
           </nav>
-        ))}
+          );
+        })}
       </aside>
 
       <main className="content">
@@ -360,7 +375,7 @@ export default function LeagueDashboard() {
         {[
           { id: 'myteam'    as Tab, icon: '⚡', label: 'My Team' },
           { id: 'standings' as Tab, icon: '🏅', label: 'Standings' },
-          { id: 'matchups'  as Tab, icon: '⚔️', label: 'Matchups' },
+          { id: 'matchups'  as Tab, icon: '🏈', label: 'Matchups' },
           { id: 'news'      as Tab, icon: '🏥', label: 'News' },
           { id: 'roster'    as Tab, icon: '📋', label: 'Roster' },
         ].map(item => (
