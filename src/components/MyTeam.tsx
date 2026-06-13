@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import type { SleeperRoster, SleeperUser, SleeperMatchup, SleeperTransaction, SleeperLeague, PlayersMap } from '../types/sleeper';
 import { avatarUrl, getEspnNflNews } from '../api/sleeper';
+import type { EspnArticle } from '../api/sleeper';
 
 interface Props {
   userId?: string;
@@ -101,8 +102,8 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
 
   // ESPN news for my players — match by espn_id first, fall back to name
   const myPids = new Set(myRoster.players ?? []);
-  const espnById = new Map<number, typeof espnNews[0][]>();
-  const espnByName = new Map<string, typeof espnNews[0][]>();
+  const espnById = new Map<number, EspnArticle[]>();
+  const espnByName = new Map<string, EspnArticle[]>();
   for (const article of espnNews ?? []) {
     for (const id of article.athleteIds) {
       if (!espnById.has(id)) espnById.set(id, []);
