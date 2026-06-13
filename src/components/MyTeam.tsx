@@ -235,7 +235,7 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
                 <li key={pid} className={`myteam-starter-row ${suboptimal ? 'suboptimal' : ''}`}>
                   <span className="myteam-starter-pos" style={{ background: posColor(pos) }}>{pos}</span>
                   <span className="myteam-starter-name">{name}</span>
-                  {rank && <span className="myteam-starter-rank">{pos}{rank}</span>}
+                  {rank && <span className="myteam-starter-rank">#{rank} {pos}</span>}
                   <span className="myteam-starter-team">{team}</span>
                   {suboptimal && <span className="myteam-swap-flag" title="A bench player at this position scored more">⚠</span>}
                   {pts !== undefined && <span className="myteam-starter-pts">{pts.toFixed(2)}</span>}
@@ -268,7 +268,7 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
                 <li key={pid} className="myteam-starter-row bench-row">
                   <span className="myteam-starter-pos" style={{ background: posColor(pos), opacity: 0.7 }}>{pos}</span>
                   <span className="myteam-starter-name">{name}</span>
-                  {rank && <span className="myteam-starter-rank">{pos}{rank}</span>}
+                  {rank && <span className="myteam-starter-rank">#{rank} {pos}</span>}
                   <span className="myteam-starter-team">{team}</span>
                   {pts !== undefined && <span className="myteam-starter-pts bench-pts">{pts.toFixed(2)}</span>}
                 </li>
