@@ -139,6 +139,7 @@ h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.01em; }
   align-items: center;
   justify-content: center;
   min-height: 100vh;
+  min-height: 100dvh;
   padding: 1.5rem;
 }
 
@@ -581,6 +582,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
     align-items: center;
     justify-content: space-between;
     padding: 0.8rem 1rem;
+    padding-top: calc(0.8rem + env(safe-area-inset-top, 0px));
     border-bottom: 1px solid var(--border);
     background: var(--surface);
     position: sticky;
@@ -601,7 +603,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   }
   .hamburger { display: none; }
 
-  .content { padding: 1rem 0.9rem 6rem; }
+  .content { padding: 1rem 0.9rem calc(5.5rem + env(safe-area-inset-bottom, 0px)); }
   .content-title { font-size: 1.4rem; }
   .content-header { margin-bottom: 1rem; }
 
@@ -1584,9 +1586,12 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   /* Global */
   body { font-size: 14px; }
 
-  /* Home card */
-  .home-card { padding: 2rem 1.2rem 1.8rem; border-radius: 14px; }
+  /* Home */
+  .home { padding: 1rem; align-items: center; }
+  .home-card { padding: 2rem 1.2rem 1.8rem; border-radius: 14px; max-width: 100%; }
   .home-title { font-size: 2rem; }
+  .home-card form { flex-direction: column; }
+  .home-cta { width: 100%; justify-content: center; }
 
   /* UserLeagues page */
   .page { padding: 1.2rem 0.8rem 3rem; }
@@ -1594,7 +1599,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   .page-header { flex-wrap: wrap; }
 
   /* Dashboard content area */
-  .content { padding: 1rem 0.75rem 4rem; }
+  .content { padding: 1rem 0.75rem calc(5rem + env(safe-area-inset-bottom, 0px)); }
   .content-title { font-size: 1.3rem; margin-bottom: 0.8rem; }
 
   /* Tables — wrap in scrollable container */
