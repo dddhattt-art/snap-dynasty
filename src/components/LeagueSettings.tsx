@@ -82,7 +82,13 @@ export default function LeagueSettings({ league }: Props) {
       </Section>
 
       <Section title="Roster">
-        <Row label="Positions" value={league.roster_positions.join(', ')} />
+        <Row label="Positions" value={
+          (() => {
+            const counts = new Map<string, number>();
+            for (const p of league.roster_positions) counts.set(p, (counts.get(p) ?? 0) + 1);
+            return [...counts.entries()].map(([p, n]) => `${n} ${p}`).join(', ');
+          })()
+        } />
         {s.taxi_slots ? <Row label="Taxi Squad" value={`${s.taxi_slots} slots`} /> : null}
         {s.reserve_slots ? <Row label="IR Slots" value={`${s.reserve_slots} slots`} /> : null}
         {s.reserve_allow_out === 1 ? <Row label="IR Eligibility" value="OUT allowed" /> : null}
