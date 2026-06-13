@@ -6,6 +6,7 @@ interface Props {
   rosters: SleeperRoster[];
   userMap: Map<string, SleeperUser>;
   players: PlayersMap | undefined;
+  userId?: string;
   isLoading: boolean;
 }
 
@@ -23,9 +24,10 @@ function posColor(pos: string) {
   return POS_COLOR[pos] ?? 'var(--text-dim)';
 }
 
-export default function Roster({ rosters, userMap, players, isLoading }: Props) {
+export default function Roster({ rosters, userMap, players, userId, isLoading }: Props) {
+  const myRoster = userId ? rosters.find(r => r.owner_id === userId) : undefined;
   const [selectedRosterId, setSelectedRosterId] = useState<number | null>(
-    rosters[0]?.roster_id ?? null
+    myRoster?.roster_id ?? rosters[0]?.roster_id ?? null
   );
 
   if (isLoading) return <div className="loading">Loading players…</div>;
