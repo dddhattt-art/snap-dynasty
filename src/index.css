@@ -820,8 +820,16 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .myteam-starter-row:last-child { border-bottom: none; }
 .myteam-starter-pos { font-size: 0.62rem; font-weight: 700; color: #fff; padding: 0.12rem 0.35rem; border-radius: 4px; width: 2.2rem; text-align: center; flex-shrink: 0; }
 .myteam-starter-name { flex: 1; font-weight: 600; }
-.myteam-starter-team { font-size: 0.75rem; color: var(--text-dim); flex-shrink: 0; }
-.myteam-starter-pts { font-weight: 700; font-size: 0.88rem; color: var(--accent); flex-shrink: 0; margin-left: auto; padding-right: 0.25rem; }
+.myteam-starter-team { font-size: 0.75rem; color: var(--text-dim); flex-shrink: 0; margin-left: auto; }
+.myteam-starter-pts { font-weight: 700; font-size: 0.88rem; color: var(--accent); flex-shrink: 0; padding-right: 0.25rem; }
+.myteam-starter-rank { font-size: 0.68rem; font-weight: 700; color: var(--text-dim); background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 0.05rem 0.3rem; flex-shrink: 0; }
+.myteam-swap-flag { font-size: 0.8rem; flex-shrink: 0; }
+.myteam-starter-row.suboptimal { background: rgba(220, 120, 0, 0.04); }
+.myteam-starter-row.suboptimal .myteam-starter-name { color: var(--orange); }
+.myteam-starter-row.myteam-starter-total { border-top: 2px solid var(--border); font-weight: 700; }
+.myteam-starter-row.myteam-starter-total .myteam-starter-pts { font-size: 1rem; color: var(--text); }
+.bench-row { opacity: 0.75; }
+.bench-pts { color: var(--text-dim) !important; }
 
 .myteam-tx-list { list-style: none; }
 .myteam-tx-row { display: flex; align-items: flex-start; gap: 0.6rem; padding: 0.55rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.82rem; }

@@ -100,6 +100,41 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
 
   const streakLabel = streak > 0 ? `W${Math.abs(streak)}` : streak < 0 ? `L${Math.abs(streak)}` : '—';
 
+  // Position ranks — score every player league-wide this week, rank within position
+  const positionRank = new Map<string, number>(); // pid -> rank at position
+  if (players && currentMatchups.length) {
+    const seen = new Set<string>();
+    const byPos = new Map<string, { pid: string; pts: number }[]>();
+    for (const m of currentMatchups) {
+      for (const [pid, pts] of Object.entries(m.players_points ?? {})) {
+        if (seen.has(pid)) continue;
+        seen.add(pid);
+        const pos = players[pid]?.position;
+        if (!pos) continue;
+        if (!byPos.has(pos)) byPos.set(pos, []);
+        byPos.get(pos)!.push({ pid, pts: pts as number });
+      }
+    }
+    for (const group of byPos.values()) {
+      group.sort((a, b) => b.pts - a.pts);
+      group.forEach(({ pid }, i) => positionRank.set(pid, i + 1));
+    }
+  }
+
+  // Bench players and optimal swap detection
+  const starterSet = new Set(starters);
+  const benchPids = (myRoster.players ?? []).filter(pid => !starterSet.has(pid));
+  const suboptimalStarters = new Set<string>(); // starter pids outscored by a bench player same position
+  for (const starterId of starters) {
+    const starterPos = players?.[starterId]?.position;
+    const starterScore = starterPts[starterId] ?? 0;
+    const beaten = benchPids.some(benchId =>
+      players?.[benchId]?.position === starterPos && (starterPts[benchId] ?? 0) > starterScore
+    );
+    if (beaten) suboptimalStarters.add(starterId);
+  }
+  const starterTotal = starters.reduce((sum, pid) => sum + (starterPts[pid] ?? 0), 0);
+
   // ESPN news for my players — match by espn_id first, fall back to name
   const myPids = new Set(myRoster.players ?? []);
   const espnById = new Map<number, EspnArticle[]>();
@@ -194,12 +229,48 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
               const name = p?.full_name ?? p?.last_name ?? pid;
               const team = p?.team ?? '';
               const pts = starterPts[pid];
+              const rank = positionRank.get(pid);
+              const suboptimal = suboptimalStarters.has(pid);
               return (
-                <li key={pid} className="myteam-starter-row">
+                <li key={pid} className={`myteam-starter-row ${suboptimal ? 'suboptimal' : ''}`}>
                   <span className="myteam-starter-pos" style={{ background: posColor(pos) }}>{pos}</span>
                   <span className="myteam-starter-name">{name}</span>
+                  {rank && <span className="myteam-starter-rank">{pos}{rank}</span>}
                   <span className="myteam-starter-team">{team}</span>
+                  {suboptimal && <span className="myteam-swap-flag" title="A bench player at this position scored more">⚠</span>}
                   {pts !== undefined && <span className="myteam-starter-pts">{pts.toFixed(2)}</span>}
+                </li>
+              );
+            })}
+            {starterTotal > 0 && (
+              <li className="myteam-starter-row myteam-starter-total">
+                <span className="myteam-starter-name">Total</span>
+                <span className="myteam-starter-pts">{starterTotal.toFixed(2)}</span>
+              </li>
+            )}
+          </ul>
+        </div>
+      )}
+
+      {/* Bench */}
+      {benchPids.length > 0 && players && myMatchup && (
+        <div className="myteam-section">
+          <div className="myteam-section-title">Bench</div>
+          <ul className="myteam-starters">
+            {benchPids.map(pid => {
+              const p = players[pid];
+              const pos = p?.position ?? '—';
+              const name = p?.full_name ?? p?.last_name ?? pid;
+              const team = p?.team ?? '';
+              const pts = starterPts[pid];
+              const rank = positionRank.get(pid);
+              return (
+                <li key={pid} className="myteam-starter-row bench-row">
+                  <span className="myteam-starter-pos" style={{ background: posColor(pos), opacity: 0.7 }}>{pos}</span>
+                  <span className="myteam-starter-name">{name}</span>
+                  {rank && <span className="myteam-starter-rank">{pos}{rank}</span>}
+                  <span className="myteam-starter-team">{team}</span>
+                  {pts !== undefined && <span className="myteam-starter-pts bench-pts">{pts.toFixed(2)}</span>}
                 </li>
               );
             })}
