@@ -134,8 +134,9 @@ export default function WeeklyAwards({ seasonMatchups, rosters, userMap, players
     const margin = smallestMargin.winner.points - smallestMargin.loser.points;
     awards.push({ emoji: '😅', title: 'Survived', winner: info.name, avatar: info.avatar, detail: `Won by ${fmt(margin)}`, flavor: 'Narrowest win of the week' });
   }
-  if (mvpPlayer) {
-    awards.push({ emoji: '⭐', title: 'MVP', winner: mvpPlayer.teamName, avatar: null, detail: `${mvpPlayer.name} · ${fmt(mvpPlayer.pts)} pts`, flavor: 'Best individual player performance' });
+  const mvp = mvpPlayer;
+  if (mvp) {
+    awards.push({ emoji: '⭐', title: 'MVP', winner: mvp.teamName, avatar: null, detail: `${mvp.name} · ${fmt(mvp.pts)} pts`, flavor: 'Best individual player performance' });
   }
   if (worstDecision) {
     awards.push({ emoji: '🤦', title: 'Wrong Call', winner: worstDecision.teamName, avatar: worstDecision.avatar, detail: `${worstDecision.benchName} (${fmt(worstDecision.benchPts)}) sat over ${worstDecision.starterName} (${fmt(worstDecision.starterPts)})`, flavor: 'Biggest lineup mistake of the week' });
