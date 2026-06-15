@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getUser } from '../api/sleeper';
+import Landing from './Landing';
+
+const SHOW_LANDING = import.meta.env.VITE_LANDING === 'true';
 
 const FEATURES = [
   { icon: '📊', label: 'Power Rankings' },
@@ -13,6 +16,7 @@ const FEATURES = [
 ];
 
 export default function Home() {
+  if (SHOW_LANDING) return <Landing />;
   const [input, setInput] = useState('');
   const [submitted, setSubmitted] = useState('');
   const navigate = useNavigate();

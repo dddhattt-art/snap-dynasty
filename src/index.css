@@ -2199,3 +2199,158 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   .award-card { padding: 10px 12px; }
   .award-emoji { font-size: 1.25rem; width: 30px; height: 30px; }
 }
+
+/* ───────── Landing page ───────── */
+.lp-wrap {
+  min-height: 100vh;
+  background: var(--bg);
+  font-family: inherit;
+}
+
+.lp-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.1rem 1.75rem;
+  background: #fff; border-bottom: 0.5px solid var(--card-border);
+  position: sticky; top: 0; z-index: 10;
+}
+.lp-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.lp-logo-mark {
+  width: 30px; height: 30px; background: var(--blue); border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 15px;
+}
+.lp-logo-name { font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.1; }
+.lp-logo-sub { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.07em; }
+
+.lp-hero {
+  text-align: center; padding: 4rem 1.5rem 3rem;
+  background: #fff; border-bottom: 0.5px solid var(--card-border);
+}
+.lp-eyebrow {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #eff6ff; color: var(--blue);
+  border-radius: 20px; padding: 5px 14px;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.04em;
+  margin-bottom: 1.25rem;
+}
+.lp-h1 {
+  font-size: 2.4rem; font-weight: 800; color: var(--text);
+  line-height: 1.15; letter-spacing: -0.03em; margin-bottom: 1rem;
+}
+.lp-h1-accent { color: var(--blue); }
+.lp-sub {
+  font-size: 1rem; color: var(--text-dim); max-width: 480px;
+  margin: 0 auto 2rem; line-height: 1.65;
+}
+
+.lp-form {
+  display: flex; gap: 8px; max-width: 400px;
+  margin: 0 auto 0.75rem;
+}
+.lp-input {
+  flex: 1; height: 42px;
+  border: 1.5px solid var(--border); border-radius: 10px;
+  padding: 0 14px; font-size: 0.9rem;
+  background: #fff; color: var(--text);
+}
+.lp-input:focus { outline: none; border-color: var(--blue); }
+.lp-cta {
+  height: 42px; padding: 0 20px;
+  background: var(--blue); color: #fff; border: none;
+  border-radius: 10px; font-size: 0.88rem; font-weight: 700;
+  cursor: pointer; display: flex; align-items: center; gap: 6px;
+  flex-shrink: 0; transition: opacity 0.12s;
+}
+.lp-cta:disabled { opacity: 0.55; cursor: not-allowed; }
+.lp-error { font-size: 0.82rem; color: var(--red); margin-top: 0.25rem; }
+.lp-no-login { font-size: 0.78rem; color: var(--text-dim); }
+
+.lp-stats {
+  display: flex; justify-content: center; gap: 0;
+  background: var(--navy); border-bottom: 0.5px solid rgba(255,255,255,0.06);
+}
+.lp-stat {
+  flex: 1; padding: 1.25rem 1rem; text-align: center;
+  border-right: 0.5px solid rgba(255,255,255,0.07);
+}
+.lp-stat:last-child { border-right: none; }
+.lp-stat-val { font-size: 1.25rem; font-weight: 800; color: var(--navy-text); }
+.lp-stat-lbl { font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--navy-dim); margin-top: 2px; }
+
+.lp-features { padding: 3rem 1.75rem; background: var(--bg); }
+.lp-section-title { font-size: 1.4rem; font-weight: 800; color: var(--text); text-align: center; margin-bottom: 0.35rem; letter-spacing: -0.02em; }
+.lp-section-sub { font-size: 0.9rem; color: var(--text-dim); text-align: center; margin-bottom: 1.75rem; }
+.lp-feature-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px;
+  max-width: 860px; margin: 0 auto;
+}
+.lp-feature-card {
+  background: #fff; border: 0.5px solid var(--card-border); border-radius: 12px;
+  padding: 1.1rem 1.2rem;
+}
+.lp-feature-icon {
+  width: 34px; height: 34px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; margin-bottom: 0.75rem;
+}
+.lp-feature-title { font-size: 0.88rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.lp-feature-desc { font-size: 0.78rem; color: var(--text-dim); line-height: 1.5; }
+
+.lp-history {
+  max-width: 560px; margin: 0 auto 2.5rem;
+  background: #fff; border: 0.5px solid var(--card-border); border-radius: 12px;
+  overflow: hidden;
+}
+.lp-history-label {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--text-dim); padding: 0.7rem 1.1rem;
+  border-bottom: 0.5px solid var(--card-border);
+  background: var(--navy); color: var(--navy-dim);
+}
+.lp-history-row {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.65rem 1.1rem; border-bottom: 0.5px solid var(--card-border);
+}
+.lp-history-row:last-child { border-bottom: none; }
+.lp-history-year { font-size: 0.78rem; font-weight: 700; color: var(--text-dim); min-width: 38px; }
+.lp-history-trophy { font-size: 1rem; }
+.lp-history-name { font-size: 0.88rem; font-weight: 700; color: var(--text); flex: 1; }
+.lp-history-record { font-size: 0.78rem; color: var(--text-dim); }
+
+.lp-cta-band {
+  background: var(--navy); padding: 3rem 1.75rem;
+  text-align: center;
+}
+.lp-cta-title { font-size: 1.4rem; font-weight: 800; color: var(--navy-text); margin-bottom: 0.4rem; letter-spacing: -0.02em; }
+.lp-cta-sub { font-size: 0.88rem; color: var(--navy-dim); margin-bottom: 1.5rem; }
+.lp-form-dark { max-width: 380px; }
+.lp-input-dark {
+  background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.14);
+  color: var(--navy-text);
+}
+.lp-input-dark::placeholder { color: var(--navy-dim); }
+.lp-input-dark:focus { border-color: var(--blue-text); }
+.lp-cta-bright { background: var(--blue); }
+
+.lp-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.1rem 1.75rem; background: #fff;
+  border-top: 0.5px solid var(--card-border);
+  font-size: 0.78rem; color: var(--text-dim);
+}
+.lp-footer-links { display: flex; gap: 1.25rem; }
+.lp-footer-links a { color: var(--text-dim); text-decoration: none; }
+.lp-footer-links a:hover { color: var(--text); }
+
+@media (max-width: 640px) {
+  .lp-h1 { font-size: 1.75rem; }
+  .lp-hero { padding: 2.5rem 1.1rem 2rem; }
+  .lp-form { flex-direction: column; }
+  .lp-cta { justify-content: center; }
+  .lp-stats { flex-wrap: wrap; }
+  .lp-stat { flex: 1 1 45%; border-right: none; border-bottom: 0.5px solid rgba(255,255,255,0.07); }
+  .lp-feature-grid { grid-template-columns: 1fr 1fr; }
+  .lp-history { margin: 0 1rem 2rem; }
+  .lp-footer { flex-direction: column; gap: 0.75rem; text-align: center; }
+}
