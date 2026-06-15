@@ -76,29 +76,28 @@ export default function WeeklyAwards({ seasonMatchups, rosters, userMap, players
     : null;
 
   // Worst starting decision — highest bench player that outscored a starter
-  let worstDecision: { teamName: string; benchName: string; benchPts: number; starterName: string; starterPts: number; avatar: string | null } | null = null;
-  if (players) {
-    for (const entry of played) {
-      if (!entry.starters || !entry.players_points) continue;
+  type WorstDecision = { teamName: string; benchName: string; benchPts: number; starterName: string; starterPts: number; avatar: string | null };
+  const worstDecision: WorstDecision | null = (() => {
+    if (!players) return null;
+    const candidates = played.flatMap(entry => {
+      if (!entry.starters || !entry.players_points) return [];
       const starterSet = new Set(entry.starters);
-      const benchPts = Object.entries(entry.players_points)
+      const benchList = Object.entries(entry.players_points)
         .filter(([id]) => !starterSet.has(id))
-        .map(([id, pts]) => ({ id, pts, name: players[id]?.full_name ?? id }));
-      const starterPtsList = entry.starters.map((id, i) => ({
-        id, pts: entry.starters_points?.[i] ?? 0, name: players[id]?.full_name ?? id,
+        .map(([id, pts]) => ({ id, pts, name: players![id]?.full_name ?? id }));
+      const starterList = entry.starters.map((id, i) => ({
+        id, pts: entry.starters_points?.[i] ?? 0, name: players![id]?.full_name ?? id,
       }));
-      const topBench = benchPts.reduce((a, b) => b.pts > a.pts ? b : a, benchPts[0]);
-      const worstStarter = starterPtsList.reduce((a, b) => b.pts < a.pts ? b : a, starterPtsList[0]);
-      if (topBench && worstStarter && topBench.pts > worstStarter.pts) {
-        const diff = topBench.pts - worstStarter.pts;
-        const existing = worstDecision ? (worstDecision.benchPts - worstDecision.starterPts) : -1;
-        if (diff > existing) {
-          const info = rosterInfo(entry.roster_id, rosters, userMap);
-          worstDecision = { teamName: info.name, avatar: info.avatar, benchName: topBench.name, benchPts: topBench.pts, starterName: worstStarter.name, starterPts: worstStarter.pts };
-        }
-      }
-    }
-  }
+      if (!benchList.length || !starterList.length) return [];
+      const topBench = benchList.reduce((a, b) => b.pts > a.pts ? b : a);
+      const worstStarter = starterList.reduce((a, b) => b.pts < a.pts ? b : a);
+      if (topBench.pts <= worstStarter.pts) return [];
+      const info = rosterInfo(entry.roster_id, rosters, userMap);
+      return [{ teamName: info.name, avatar: info.avatar, benchName: topBench.name, benchPts: topBench.pts, starterName: worstStarter.name, starterPts: worstStarter.pts }];
+    });
+    if (!candidates.length) return null;
+    return candidates.reduce((a, b) => (b.benchPts - b.starterPts) > (a.benchPts - a.starterPts) ? b : a);
+  })();
 
   // Luckiest win — won despite scoring below league median
   const median = sorted[Math.floor(sorted.length / 2)]?.points ?? 0;
@@ -133,9 +132,8 @@ export default function WeeklyAwards({ seasonMatchups, rosters, userMap, players
     const margin = smallestMargin.winner.points - smallestMargin.loser.points;
     awards.push({ emoji: '😅', title: 'Survived', winner: info.name, avatar: info.avatar, detail: `Won by ${fmt(margin)}`, flavor: 'Narrowest win of the week' });
   }
-  const mvp = mvpPlayer;
-  if (mvp) {
-    awards.push({ emoji: '⭐', title: 'MVP', winner: mvp.teamName, avatar: null, detail: `${mvp.name} · ${fmt(mvp.pts)} pts`, flavor: 'Best individual player performance' });
+  if (mvpPlayer) {
+    awards.push({ emoji: '⭐', title: 'MVP', winner: mvpPlayer.teamName, avatar: null, detail: `${mvpPlayer.name} · ${fmt(mvpPlayer.pts)} pts`, flavor: 'Best individual player performance' });
   }
   if (worstDecision) {
     awards.push({ emoji: '🤦', title: 'Wrong Call', winner: worstDecision.teamName, avatar: worstDecision.avatar, detail: `${worstDecision.benchName} (${fmt(worstDecision.benchPts)}) sat over ${worstDecision.starterName} (${fmt(worstDecision.starterPts)})`, flavor: 'Biggest lineup mistake of the week' });
