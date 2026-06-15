@@ -299,16 +299,33 @@ export default function LeagueDashboard() {
         </div>
 
         <nav className="nav-group">
-          {SECTIONS.map(s => (
-            <button
-              key={s.id}
-              className={`nav-item ${activeSection.id === s.id ? 'active' : ''}`}
-              onClick={() => selectSection(s)}
-            >
-              <span className="nav-item-icon">{s.icon}</span>
-              <span>{s.label}</span>
-            </button>
-          ))}
+          {SECTIONS.map(s => {
+            const isActive = activeSection.id === s.id;
+            return (
+              <div key={s.id} className="nav-section-group">
+                <button
+                  className={`nav-item nav-section-btn ${isActive ? 'active' : ''}`}
+                  onClick={() => selectSection(s)}
+                >
+                  <span className="nav-item-icon">{s.icon}</span>
+                  <span>{s.label}</span>
+                </button>
+                {isActive && (
+                  <div className="nav-subtabs">
+                    {s.tabs.map(t => (
+                      <button
+                        key={t.id}
+                        className={`nav-subtab ${tab === t.id ? 'active' : ''}`}
+                        onClick={() => selectTab(t.id)}
+                      >
+                        {t.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </nav>
       </aside>
 
