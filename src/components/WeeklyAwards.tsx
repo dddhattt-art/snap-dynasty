@@ -62,19 +62,18 @@ export default function WeeklyAwards({ seasonMatchups, rosters, userMap, players
   }
 
   // Best single player score across the whole league
-  type MvpPlayer = { name: string; pts: number; teamName: string };
-  let mvpPlayer: MvpPlayer | null = null;
-  for (const entry of played) {
-    if (!entry.starters || !entry.starters_points) continue;
+  const allStarterScores = played.flatMap(entry => {
+    if (!entry.starters || !entry.starters_points) return [];
     const info = rosterInfo(entry.roster_id, rosters, userMap);
-    entry.starters.forEach((id, i) => {
-      const pts = entry.starters_points![i] ?? 0;
-      const current: MvpPlayer | null = mvpPlayer;
-      if (!current || pts > current.pts) {
-        mvpPlayer = { name: players?.[id]?.full_name ?? id, pts, teamName: info.name };
-      }
-    });
-  }
+    return entry.starters.map((id, i) => ({
+      name: players?.[id]?.full_name ?? id,
+      pts: entry.starters_points![i] ?? 0,
+      teamName: info.name,
+    }));
+  });
+  const mvpPlayer = allStarterScores.length
+    ? allStarterScores.reduce((a, b) => b.pts > a.pts ? b : a)
+    : null;
 
   // Worst starting decision — highest bench player that outscored a starter
   let worstDecision: { teamName: string; benchName: string; benchPts: number; starterName: string; starterPts: number; avatar: string | null } | null = null;
