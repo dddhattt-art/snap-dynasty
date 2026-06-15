@@ -62,13 +62,15 @@ export default function WeeklyAwards({ seasonMatchups, rosters, userMap, players
   }
 
   // Best single player score across the whole league
-  let mvpPlayer: { name: string; pts: number; teamName: string } | null = null;
+  type MvpPlayer = { name: string; pts: number; teamName: string };
+  let mvpPlayer: MvpPlayer | null = null;
   for (const entry of played) {
     if (!entry.starters || !entry.starters_points) continue;
     const info = rosterInfo(entry.roster_id, rosters, userMap);
     entry.starters.forEach((id, i) => {
-      const pts = entry.starters_points[i] ?? 0;
-      if (!mvpPlayer || pts > mvpPlayer.pts) {
+      const pts = entry.starters_points![i] ?? 0;
+      const current: MvpPlayer | null = mvpPlayer;
+      if (!current || pts > current.pts) {
         mvpPlayer = { name: players?.[id]?.full_name ?? id, pts, teamName: info.name };
       }
     });
