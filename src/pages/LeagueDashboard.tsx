@@ -44,6 +44,8 @@ import TradeHistory from '../components/TradeHistory';
 import MatchupPredictor from '../components/MatchupPredictor';
 import ReportCard from '../components/ReportCard';
 import MySchedule from '../components/MySchedule';
+import WeeklyDigest from '../components/WeeklyDigest';
+import WeeklyAwards from '../components/WeeklyAwards';
 
 type Tab =
   | 'myteam' | 'my-schedule' | 'standings' | 'matchups' | 'transactions' | 'roster' | 'playoffs' | 'draft' | 'settings'
@@ -51,7 +53,8 @@ type Tab =
   | 'luck' | 'optimal' | 'activity' | 'scatter' | 'schedule'
   | 'playoff-odds' | 'draft-grade' | 'trends' | 'waiver-value'
   | 'blowouts' | 'positional' | 'records' | 'consistency' | 'whatif' | 'history'
-  | 'news' | 'bench' | 'trade-history' | 'predictor' | 'report-card';
+  | 'news' | 'bench' | 'trade-history' | 'predictor' | 'report-card'
+  | 'weekly-digest' | 'weekly-awards';
 
 interface NavItem { id: Tab; label: string; icon: string; }
 interface NavGroup { title: string; items: NavItem[]; }
@@ -61,8 +64,10 @@ const NAV: NavGroup[] = [
   {
     title: 'League',
     items: [
-      { id: 'myteam',       label: 'My Team',          icon: '⚡' },
-      { id: 'my-schedule',  label: 'My Schedule',      icon: '📆' },
+      { id: 'myteam',         label: 'My Team',          icon: '⚡' },
+      { id: 'my-schedule',   label: 'My Schedule',      icon: '📆' },
+      { id: 'weekly-digest', label: 'Weekly Digest',    icon: '📰' },
+      { id: 'weekly-awards', label: 'Weekly Awards',    icon: '🏆' },
       { id: 'standings',    label: 'Standings',        icon: '🏅' },
       { id: 'matchups',     label: 'Matchups',         icon: '🏈' },
       { id: 'roster',       label: 'Rosters',          icon: '📋' },
@@ -121,7 +126,7 @@ const NAV: NavGroup[] = [
 
 const TITLES: Record<Tab, string> = {
   'myteam': 'My Team',
-  'my-schedule': 'My Schedule', 'standings': 'Standings', 'matchups': 'Matchups', 'transactions': 'Weekly Moves',
+  'my-schedule': 'My Schedule', 'weekly-digest': 'Weekly Digest', 'weekly-awards': 'Weekly Awards', 'standings': 'Standings', 'matchups': 'Matchups', 'transactions': 'Weekly Moves',
   'roster': 'Rosters', 'playoffs': 'Playoff Bracket', 'draft': 'Draft Board', 'settings': 'League Settings',
   'power': 'Power Rankings', 'free-agents': 'Free Agents', 'trade': 'Trade Analyzer',
   'h2h': 'Head-to-Head', 'charts': 'Season Scoring', 'luck': 'Luck Index',
@@ -135,12 +140,12 @@ const TITLES: Record<Tab, string> = {
 };
 
 const SEASON_TABS: Tab[] = [
-  'myteam','my-schedule','power','h2h','charts','trade','luck','optimal','scatter','schedule',
+  'myteam','my-schedule','weekly-digest','weekly-awards','power','h2h','charts','trade','luck','optimal','scatter','schedule',
   'playoff-odds','trends','blowouts','positional','records','consistency','whatif',
   'bench','predictor','report-card',
 ];
 const PLAYERS_TABS: Tab[] = ['myteam','roster','free-agents','trade','optimal','activity','waiver-value','positional','draft-grade','transactions','records','news','trade-history'];
-const SEASON_TX_TABS: Tab[] = ['myteam','activity','waiver-value','trade-history'];
+const SEASON_TX_TABS: Tab[] = ['myteam','activity','waiver-value','trade-history','weekly-digest'];
 
 export default function LeagueDashboard() {
   const { leagueId } = useParams<{ leagueId: string }>();
@@ -333,7 +338,9 @@ export default function LeagueDashboard() {
 
         <div key={tab} className="content-body">
         {tab === 'myteam'       && <MyTeam userId={userId} rosters={r} userMap={userMap} players={players} seasonMatchups={sm} seasonTransactions={stx} league={league} isLoading={seasonLoading || playersLoading} />}
-        {tab === 'my-schedule'  && <MySchedule userId={userId} rosters={r} userMap={userMap} seasonMatchups={sm} currentWeek={currentWeek} isLoading={seasonLoading} />}
+        {tab === 'my-schedule'   && <MySchedule userId={userId} rosters={r} userMap={userMap} seasonMatchups={sm} currentWeek={currentWeek} isLoading={seasonLoading} />}
+        {tab === 'weekly-digest' && <WeeklyDigest userId={userId} rosters={r} userMap={userMap} players={players} seasonMatchups={sm} seasonTransactions={stx} currentWeek={currentWeek} isLoading={seasonLoading || playersLoading} />}
+        {tab === 'weekly-awards' && <WeeklyAwards rosters={r} userMap={userMap} players={players} seasonMatchups={sm} week={currentWeek} isLoading={seasonLoading || playersLoading} />}
         {tab === 'standings'    && <Standings rosters={r} userMap={userMap} />}
         {tab === 'matchups'     && <Matchups matchups={matchups ?? []} rosters={r} userMap={userMap} isLoading={matchupsLoading} />}
         {tab === 'transactions' && <Transactions transactions={transactions ?? []} userMap={userMap} rosters={r} players={players} isLoading={txLoading || playersLoading} />}
