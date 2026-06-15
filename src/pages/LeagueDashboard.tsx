@@ -132,6 +132,29 @@ const SECTIONS: Section[] = [
 const TAB_SECTION: Partial<Record<Tab, string>> = {};
 for (const s of SECTIONS) for (const t of s.tabs) TAB_SECTION[t.id] = s.id;
 
+const SECTION_ICONS: Record<string, string> = {
+  myteam: 'bolt',
+  league: 'trophy',
+  analytics: 'chart-bar',
+  charts: 'chart-line',
+  history: 'history',
+  tools: 'tool',
+};
+
+const PAGE_ICONS: Partial<Record<Tab, string>> = {
+  'myteam': 'home', 'my-schedule': 'calendar', 'weekly-digest': 'file-analytics', 'weekly-awards': 'award',
+  'standings': 'list-numbers', 'matchups': 'shield-half', 'roster': 'users', 'playoffs': 'tournament',
+  'draft': 'circle-dot', 'settings': 'settings',
+  'power': 'chart-bar', 'playoff-odds': 'percentage', 'luck': 'clover', 'optimal': 'target',
+  'consistency': 'activity', 'schedule': 'calendar-stats', 'bench': 'armchair',
+  'predictor': 'brain', 'report-card': 'report', 'draft-grade': 'school',
+  'charts': 'chart-line', 'trends': 'trending-up', 'scatter': 'chart-dots', 'positional': 'layout-grid',
+  'transactions': 'arrows-exchange', 'activity': 'pulse', 'waiver-value': 'star',
+  'trade-history': 'repeat', 'records': 'medal', 'blowouts': 'flame', 'history': 'clock',
+  'trade': 'arrows-exchange', 'free-agents': 'user-plus', 'h2h': 'users',
+  'whatif': 'question-mark', 'news': 'news',
+};
+
 const TITLES: Record<Tab, string> = {
   'myteam': 'My Team',
   'my-schedule': 'My Schedule', 'weekly-digest': 'Weekly Digest', 'weekly-awards': 'Weekly Awards', 'standings': 'Standings', 'matchups': 'Matchups', 'transactions': 'Weekly Moves',
@@ -266,6 +289,8 @@ export default function LeagueDashboard() {
     [users]
   );
   const showWeekControls = tab === 'matchups' || tab === 'transactions';
+  const myRoster = rosters && userId ? rosters.find(r => r.owner_id === userId) : undefined;
+  const myUser = myRoster ? userMap.get(myRoster.owner_id) : undefined;
 
   const r = rosters ?? [];
   const sm = seasonMatchups;
@@ -289,13 +314,20 @@ export default function LeagueDashboard() {
 
       <div className="dash">
       <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
-        <button className="side-brand" onClick={() => navigate(-1)}>← Snap</button>
+        <button className="side-logo" onClick={() => navigate(-1)}>
+          <div className="side-logo-mark">S</div>
+          <div>
+            <div className="side-logo-name">Snap</div>
+            <div className="side-logo-sub">fantasy intelligence</div>
+          </div>
+        </button>
+
         <div className="side-league">
           <div className="side-league-name">
             {league?.avatar && <img loading="lazy" src={avatarUrl(league.avatar) ?? undefined} alt="" className="avatar-xs" />}
             <span>{league?.name ?? 'Loading…'}</span>
           </div>
-          <div className="side-league-meta">{league?.season ?? ''} · Week {currentWeek}</div>
+          <div className="side-league-meta">{league?.season ?? ''} · Week {currentWeek} · {league?.settings?.num_teams ?? '—'} teams</div>
         </div>
 
         <nav className="nav-group">
@@ -304,10 +336,10 @@ export default function LeagueDashboard() {
             return (
               <div key={s.id} className="nav-section-group">
                 <button
-                  className={`nav-item nav-section-btn ${isActive ? 'active' : ''}`}
+                  className={`nav-item ${isActive ? 'active' : ''}`}
                   onClick={() => selectSection(s)}
                 >
-                  <span className="nav-item-icon">{s.icon}</span>
+                  <i className={`ti ti-${SECTION_ICONS[s.id]} nav-item-icon`} aria-hidden="true" />
                   <span>{s.label}</span>
                 </button>
                 {isActive && (
@@ -327,30 +359,52 @@ export default function LeagueDashboard() {
             );
           })}
         </nav>
+
+        {myUser && (
+          <div className="side-footer">
+            {myUser.avatar
+              ? <img src={avatarUrl(myUser.avatar)!} alt="" className="side-footer-av" />
+              : <div className="side-footer-av side-footer-av-init">{(myUser.display_name ?? myUser.username ?? '?')[0].toUpperCase()}</div>
+            }
+            <div>
+              <div className="side-footer-name">{myUser.display_name ?? myUser.username}</div>
+              <div className="side-footer-role">Commissioner</div>
+            </div>
+          </div>
+        )}
       </aside>
 
       <main className="content">
-        <header className="content-header">
-          <h2 className="content-title">{TITLES[tab]}</h2>
-          {showWeekControls && (
-            <select
-              className="week-select"
-              value={selectedWeek}
-              onChange={e => setWeek(Number(e.target.value))}
-            >
-              {Array.from({ length: currentWeek }, (_, i) => i + 1).map(w => (
-                <option key={w} value={w}>Week {w}</option>
-              ))}
-            </select>
-          )}
+        <header className="page-header">
+          <div className="page-header-left">
+            <div className="page-header-icon">
+              <i className={`ti ti-${PAGE_ICONS[tab] ?? 'layout-dashboard'}`} aria-hidden="true" />
+            </div>
+            <div>
+              <h2 className="page-title">{TITLES[tab]}</h2>
+              <div className="page-subtitle">{league?.name ?? ''}{league?.season ? ` · ${league.season}` : ''}</div>
+            </div>
+          </div>
+          <div className="page-header-right">
+            {showWeekControls && (
+              <select
+                className="week-select"
+                value={selectedWeek}
+                onChange={e => setWeek(Number(e.target.value))}
+              >
+                {Array.from({ length: currentWeek }, (_, i) => i + 1).map(w => (
+                  <option key={w} value={w}>Week {w}</option>
+                ))}
+              </select>
+            )}
+          </div>
         </header>
 
-        {/* Sub-tab bar */}
-        <div className="subtab-bar">
+        <div className="page-tabs">
           {activeSection.tabs.map(t => (
             <button
               key={t.id}
-              className={`subtab-btn ${tab === t.id ? 'active' : ''}`}
+              className={`page-tab ${tab === t.id ? 'active' : ''}`}
               onClick={() => selectTab(t.id)}
             >
               {t.label}
@@ -358,7 +412,8 @@ export default function LeagueDashboard() {
           ))}
         </div>
 
-        <div key={tab} className="content-body">
+        <div className="content-body">
+        <div key={tab} className="content-fade">
         {tab === 'myteam'       && <MyTeam userId={userId} rosters={r} userMap={userMap} players={players} seasonMatchups={sm} seasonTransactions={stx} league={league} isLoading={seasonLoading || playersLoading} />}
         {tab === 'my-schedule'   && <MySchedule userId={userId} rosters={r} userMap={userMap} seasonMatchups={sm} currentWeek={currentWeek} isLoading={seasonLoading} />}
         {tab === 'weekly-digest' && <WeeklyDigest userId={userId} rosters={r} userMap={userMap} players={players} seasonMatchups={sm} seasonTransactions={stx} currentWeek={currentWeek} isLoading={seasonLoading || playersLoading} />}
@@ -396,6 +451,7 @@ export default function LeagueDashboard() {
         {tab === 'predictor'    && <MatchupPredictor rosters={r} userMap={userMap} seasonMatchups={sm} league={league} isLoading={seasonLoading} />}
         {tab === 'report-card'  && <ReportCard rosters={r} userMap={userMap} seasonMatchups={sm} league={league} isLoading={seasonLoading} />}
         </div>
+        </div>
       </main>
       </div>
 
@@ -407,7 +463,7 @@ export default function LeagueDashboard() {
             className={`bottom-tab ${activeSection.id === s.id ? 'active' : ''}`}
             onClick={() => selectSection(s)}
           >
-            <span className="bottom-tab-icon">{s.icon}</span>
+            <i className={`ti ti-${SECTION_ICONS[s.id]} bottom-tab-icon`} aria-hidden="true" />
             <span className="bottom-tab-label">{s.label}</span>
           </button>
         ))}
