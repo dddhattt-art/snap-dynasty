@@ -638,6 +638,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .content-fade { animation: fadeIn 0.18s ease; }
 
 /* â€”â€”â€”â€”â€” Hamburger (hidden on desktop) â€”â€”â€”â€”â€” */
+.hamburger { display: none; }
 .mobile-topbar {
   display: none;
 }
@@ -706,7 +707,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
     letter-spacing: 0.07em;
     font-weight: 600;
   }
-  .hamburger { display: none; }
+  .hamburger { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: none; border: none; color: var(--navy-text); font-size: 1.3rem; cursor: pointer; border-radius: 8px; flex-shrink: 0; }
 
   .content-body { padding: 1rem 0.9rem calc(5.5rem + env(safe-area-inset-bottom, 0px)); }
   .page-header { padding: 12px 14px; }
@@ -2110,4 +2111,91 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   .ath-tabs { flex-wrap: wrap; }
   .ath-tab { flex: 1 1 45%; }
   .ath-records-grid { grid-template-columns: 1fr; }
+}
+
+/* ───────── Mobile Polish (≤640px) ───────── */
+@media (max-width: 640px) {
+  /* Page sub-tab bar: scrollable, no wrap, don't shrink tabs */
+  .page-tabs {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+    scrollbar-width: none;
+    gap: 0;
+  }
+  .page-tabs::-webkit-scrollbar { display: none; }
+  .page-tab { flex-shrink: 0; font-size: 11px; padding: 9px 12px; white-space: nowrap; }
+
+  /* Page header: tighten up */
+  .page-header { flex-wrap: wrap; gap: 8px; }
+  .page-header-right { width: 100%; }
+  .week-select { width: 100%; font-size: 0.8rem; }
+
+  /* Awards grid → 1 column */
+  .awards-grid { grid-template-columns: 1fr; }
+
+  /* My schedule header stats → wrap */
+  .myschedule-header { flex-wrap: wrap; gap: 0.6rem; }
+  .myschedule-stats { gap: 0.75rem; }
+
+  /* Digest stats → 2 col still fine, but hero score smaller */
+  .digest-hero-score { font-size: 1.15rem; }
+  .digest-hero-matchup { gap: 0.5rem; }
+
+  /* History stats strip: 2 wide on phone */
+  .ath-strip { flex-wrap: wrap; }
+  .ath-strip-stat { flex: 1 1 45%; min-width: 120px; padding: 0.75rem 1rem; }
+  .ath-strip-divider { display: none; }
+
+  /* History internal tabs → 2×2 grid */
+  .ath-tabs { display: grid; grid-template-columns: 1fr 1fr; }
+  .ath-tab { border-right: none; border-bottom: 0.5px solid var(--card-border); }
+  .ath-tab:nth-child(1), .ath-tab:nth-child(2) { border-right: 0.5px solid var(--card-border); }
+  .ath-tab:nth-child(2), .ath-tab:nth-child(4) { border-right: none; }
+  .ath-tab:nth-child(3), .ath-tab:nth-child(4) { border-bottom: none; }
+
+  /* Record book cards → 1 column */
+  .ath-records-grid { grid-template-columns: 1fr; }
+
+  /* Versus summary card: compact */
+  .ath-versus-record { font-size: 1.4rem; }
+  .ath-versus-av, .ath-versus-av-init { width: 42px; height: 42px; }
+
+  /* Power rankings / other auto-fill grids → 1 column */
+  .pr-grid { grid-template-columns: 1fr !important; }
+  .scatter-wrap { flex-direction: column; }
+
+  /* Bracket: allow horizontal scroll */
+  .bracket-wrap { overflow-x: auto; }
+
+  /* My Team starters: hide pos label on very small screens */
+  .myteam-starter-pos { font-size: 0.6rem; min-width: 24px; }
+
+  /* Chart containers: constrain height on mobile */
+  .recharts-responsive-container { max-height: 220px; }
+
+  /* Consistency / luck index cards */
+  .ci-grid, .luck-grid { grid-template-columns: 1fr !important; }
+
+  /* Free agents filter row: wrap */
+  .fa-filters { flex-wrap: wrap; }
+  .fa-search { min-width: 0; width: 100%; }
+
+  /* H2H picker: stack label + select */
+  .h2h-selector, .ath-versus-picker { flex-wrap: wrap; }
+  .h2h-selector label, .ath-versus-label { width: 100%; }
+  .h2h-selector select, .ath-versus-picker .week-select { width: 100%; }
+}
+
+/* ───────── Extra-small (≤380px) ───────── */
+@media (max-width: 380px) {
+  .content-body { padding: 0.75rem 0.65rem calc(5.5rem + env(safe-area-inset-bottom, 0px)); }
+  .page-title { font-size: 13px; }
+  .page-subtitle { display: none; }
+  .bottom-tab-label { display: none; }
+  .bottom-tab-icon { font-size: 1.5rem; }
+  .bottom-tab { padding: 0.7rem 0.2rem; }
+  .award-card { padding: 10px 12px; }
+  .award-emoji { font-size: 1.25rem; width: 30px; height: 30px; }
 }

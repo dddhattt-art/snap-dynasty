@@ -305,7 +305,7 @@ export default function LeagueDashboard() {
           <div className="mobile-topbar-meta">{league?.season ?? ''} · Week {currentWeek}</div>
         </div>
         <button className="hamburger" onClick={() => setSidebarOpen(o => !o)} aria-label="Menu">
-          <span /><span /><span />
+          <i className="ti ti-menu-2" />
         </button>
       </div>
 
