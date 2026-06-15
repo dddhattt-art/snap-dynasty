@@ -280,7 +280,7 @@ export default function LeagueDashboard() {
   const { data: allTimeMatchups, isLoading: allTimeLoading } = useQuery({
     queryKey: ['all-time-matchups', leagueId],
     queryFn: () => getAllTimeMatchups(leagueHistory!),
-    enabled: !!leagueHistory && tab === 'records',
+    enabled: !!leagueHistory && (tab === 'records' || tab === 'history'),
     staleTime: 30 * 60 * 1000,
   });
 
@@ -443,7 +443,7 @@ export default function LeagueDashboard() {
         {tab === 'records'      && <SeasonRecords rosters={r} userMap={userMap} seasonMatchups={sm} players={players} season={league?.season} history={leagueHistory} allTimeMatchups={allTimeMatchups} isLoading={seasonLoading || playersLoading || historyLoading || allTimeLoading} />}
         {tab === 'consistency'  && <ConsistencyScore rosters={r} userMap={userMap} seasonMatchups={sm} isLoading={seasonLoading} />}
         {tab === 'whatif'       && <WhatIfStandings rosters={r} userMap={userMap} seasonMatchups={sm} isLoading={seasonLoading} />}
-        {tab === 'history'      && <LeagueHistory history={leagueHistory} isLoading={historyLoading} />}
+        {tab === 'history'      && <LeagueHistory history={leagueHistory} allTimeMatchups={allTimeMatchups} allTimeLoading={allTimeLoading} userId={userId} isLoading={historyLoading} />}
         {tab === 'settings'     && <LeagueSettings league={league} />}
         {tab === 'news'         && <PlayerNews rosters={r} userMap={userMap} players={players} isLoading={playersLoading} />}
         {tab === 'bench'        && <BenchPoints rosters={r} userMap={userMap} seasonMatchups={sm} isLoading={seasonLoading} />}

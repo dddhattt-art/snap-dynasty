@@ -1971,3 +1971,143 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   .standings-table .team-cell { font-size: 0.78rem; }
   .standings-table th, .standings-table td { padding: 0.45rem 0.4rem; }
 }
+
+/* ───────── League History (All-Time) ───────── */
+.ath-wrap { display: flex; flex-direction: column; gap: 1.25rem; }
+
+/* Stats strip */
+.ath-strip {
+  display: flex; align-items: center; gap: 0;
+  background: var(--navy); border-radius: 12px;
+  overflow: hidden; flex-wrap: nowrap;
+}
+.ath-strip-stat {
+  flex: 1; min-width: 0;
+  padding: 1rem 1.25rem;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.ath-strip-divider { width: 1px; align-self: stretch; background: rgba(255,255,255,0.07); flex-shrink: 0; }
+.ath-strip-val { font-size: 1.3rem; font-weight: 800; color: var(--navy-text); }
+.ath-strip-lbl { font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--navy-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Internal tabs */
+.ath-tabs {
+  display: flex; gap: 0;
+  background: var(--surface); border: 0.5px solid var(--card-border);
+  border-radius: 10px; overflow: hidden;
+}
+.ath-tab {
+  flex: 1; padding: 0.6rem 0.75rem;
+  border: none; background: none; cursor: pointer;
+  font-size: 0.78rem; font-weight: 600; color: var(--text-dim);
+  transition: color 0.12s, background 0.12s;
+  border-right: 0.5px solid var(--card-border);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ath-tab:last-child { border-right: none; }
+.ath-tab.active { background: var(--navy); color: var(--navy-text); }
+.ath-tab:not(.active):hover { color: var(--text); background: var(--bg); }
+
+/* Avatar initials placeholder */
+.ath-av-init {
+  width: 26px; height: 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.65rem; font-weight: 700; flex-shrink: 0;
+}
+
+/* "You" badge */
+.ath-you {
+  font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+  background: var(--blue); color: #fff;
+  border-radius: 4px; padding: 1px 5px; line-height: 1.4; flex-shrink: 0;
+}
+.ath-me-row { background: rgba(59,130,246,0.04); }
+
+/* Muted / bold helpers in table */
+.ath-muted { color: var(--text-dim); }
+.ath-bold { font-weight: 700; color: var(--text); }
+
+/* Trophy pills */
+.ath-trophies { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.ath-trophy-pill {
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 2px 7px; border-radius: 20px;
+  font-size: 0.7rem; font-weight: 700;
+}
+.ath-trophy-pill.gold { background: rgba(245,158,11,0.12); color: #d97706; }
+.ath-trophy-pill.silver { background: rgba(148,163,184,0.14); color: #64748b; }
+.ath-trophy-pill.bronze { background: rgba(180,120,60,0.12); color: #92400e; }
+
+/* Season history */
+.ath-season-badge {
+  display: inline-block; padding: 2px 8px;
+  background: var(--bg); border: 0.5px solid var(--card-border);
+  border-radius: 6px; font-size: 0.78rem; font-weight: 700; color: var(--text);
+}
+.ath-season-champ-icon { font-size: 1rem; line-height: 1; }
+
+/* Versus section */
+.ath-versus { display: flex; flex-direction: column; gap: 1rem; }
+.ath-versus-picker { display: flex; align-items: center; gap: 0.75rem; }
+.ath-versus-label { font-size: 0.78rem; font-weight: 600; color: var(--text-dim); white-space: nowrap; }
+
+.ath-versus-summary {
+  background: var(--navy); border-radius: 12px;
+  padding: 1.5rem 1.25rem; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+}
+.ath-versus-av {
+  width: 54px; height: 54px; border-radius: 50%; object-fit: cover;
+  border: 2px solid rgba(255,255,255,0.15);
+}
+.ath-versus-av-init {
+  width: 54px; height: 54px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; font-weight: 700;
+}
+.ath-versus-av-wrap { margin-bottom: 0.25rem; }
+.ath-versus-name { font-size: 1rem; font-weight: 700; color: var(--navy-text); }
+.ath-versus-record { font-size: 1.75rem; font-weight: 800; color: #fff; line-height: 1.1; }
+.ath-versus-record-lbl { font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--navy-dim); }
+.ath-versus-meta { font-size: 0.75rem; color: var(--navy-dim); margin-top: 0.2rem; }
+
+/* Versus result pills */
+.ath-pill {
+  display: inline-block; padding: 2px 8px; border-radius: 20px;
+  font-size: 0.7rem; font-weight: 700;
+}
+.ath-pill.green { background: rgba(22,163,74,0.1); color: var(--green); }
+.ath-pill.red { background: rgba(220,38,38,0.1); color: var(--red); }
+.ath-pill.neutral { background: var(--bg); color: var(--text-dim); }
+
+/* Record book */
+.ath-records { display: flex; flex-direction: column; gap: 1rem; }
+.ath-records-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 0.75rem;
+}
+.ath-record-card {
+  background: var(--surface); border: 0.5px solid var(--card-border);
+  border-radius: 10px; padding: 1rem 1.1rem;
+  display: flex; align-items: flex-start; gap: 0.85rem;
+}
+.ath-record-icon {
+  width: 36px; height: 36px; border-radius: 9px;
+  background: #eff6ff; color: var(--blue);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; flex-shrink: 0;
+}
+.ath-record-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ath-record-label { font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-dim); }
+.ath-record-val { font-size: 1.4rem; font-weight: 800; color: var(--text); line-height: 1.15; }
+.ath-record-detail { font-size: 0.75rem; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Mobile history */
+@media (max-width: 640px) {
+  .ath-strip { flex-direction: column; }
+  .ath-strip-divider { width: auto; height: 1px; align-self: auto; }
+  .ath-tabs { flex-wrap: wrap; }
+  .ath-tab { flex: 1 1 45%; }
+  .ath-records-grid { grid-template-columns: 1fr; }
+}
