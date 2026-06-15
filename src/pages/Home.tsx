@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getUser } from '../api/sleeper';
 import Landing from './Landing';
 
-const SHOW_LANDING = import.meta.env.VITE_LANDING === 'true';
+const SHOW_LANDING = import.meta.env.VITE_LANDING === 'true' || localStorage.getItem('snap_landing') === 'true';
 
 const FEATURES = [
   { icon: '📊', label: 'Power Rankings' },
