@@ -75,25 +75,46 @@ export default function WeeklyAwards({ seasonMatchups, rosters, userMap, players
     ? allStarterScores.reduce((a, b) => b.pts > a.pts ? b : a)
     : null;
 
-  // Worst starting decision — highest bench player that outscored a starter
+  // Worst starting decision — bench player outscored a starter of a compatible position
+  // FLEX-eligible: RB, WR, TE. Non-fungible: QB, K, DEF — only compare within same position.
+  const FLEX_POS = new Set(['RB', 'WR', 'TE']);
   type WorstDecision = { teamName: string; benchName: string; benchPts: number; starterName: string; starterPts: number; avatar: string | null };
   const worstDecision: WorstDecision | null = (() => {
     if (!players) return null;
     const candidates = played.flatMap(entry => {
       if (!entry.starters || !entry.players_points) return [];
       const starterSet = new Set(entry.starters);
+      const starterList = entry.starters.map((id, i) => ({
+        id, pts: entry.starters_points?.[i] ?? 0,
+        name: players![id]?.full_name ?? id,
+        pos: players![id]?.position ?? '',
+      }));
       const benchList = Object.entries(entry.players_points)
         .filter(([id]) => !starterSet.has(id))
-        .map(([id, pts]) => ({ id, pts, name: players![id]?.full_name ?? id }));
-      const starterList = entry.starters.map((id, i) => ({
-        id, pts: entry.starters_points?.[i] ?? 0, name: players![id]?.full_name ?? id,
-      }));
-      if (!benchList.length || !starterList.length) return [];
-      const topBench = benchList.reduce((a, b) => b.pts > a.pts ? b : a);
-      const worstStarter = starterList.reduce((a, b) => b.pts < a.pts ? b : a);
-      if (topBench.pts <= worstStarter.pts) return [];
-      const info = rosterInfo(entry.roster_id, rosters, userMap);
-      return [{ teamName: info.name, avatar: info.avatar, benchName: topBench.name, benchPts: topBench.pts, starterName: worstStarter.name, starterPts: worstStarter.pts }];
+        .map(([id, pts]) => ({
+          id, pts,
+          name: players![id]?.full_name ?? id,
+          pos: players![id]?.position ?? '',
+        }));
+
+      // For each bench player, find the worst comparable starter
+      type Candidate = WorstDecision;
+      const results: Candidate[] = [];
+      for (const bench of benchList) {
+        // Find starters this bench player could have replaced
+        const comparable = starterList.filter(s => {
+          if (bench.pos === s.pos) return true; // same position always valid
+          if (FLEX_POS.has(bench.pos) && FLEX_POS.has(s.pos)) return true; // flex swap
+          return false;
+        });
+        if (!comparable.length) continue;
+        const worstComparable = comparable.reduce((a, b) => b.pts < a.pts ? b : a);
+        if (bench.pts > worstComparable.pts) {
+          const info = rosterInfo(entry.roster_id, rosters, userMap);
+          results.push({ teamName: info.name, avatar: info.avatar, benchName: bench.name, benchPts: bench.pts, starterName: worstComparable.name, starterPts: worstComparable.pts });
+        }
+      }
+      return results;
     });
     if (!candidates.length) return null;
     return candidates.reduce((a, b) => (b.benchPts - b.starterPts) > (a.benchPts - a.starterPts) ? b : a);
