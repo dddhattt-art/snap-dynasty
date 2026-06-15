@@ -56,73 +56,81 @@ type Tab =
   | 'news' | 'bench' | 'trade-history' | 'predictor' | 'report-card'
   | 'weekly-digest' | 'weekly-awards';
 
-interface NavItem { id: Tab; label: string; icon: string; }
-interface NavGroup { title: string; items: NavItem[]; }
-interface NavGroup { title: string; items: NavItem[]; }
+interface SubTab { id: Tab; label: string; }
+interface Section { id: string; label: string; icon: string; tabs: SubTab[]; }
 
-const NAV: NavGroup[] = [
+const SECTIONS: Section[] = [
   {
-    title: 'League',
-    items: [
-      { id: 'myteam',         label: 'My Team',          icon: '⚡' },
-      { id: 'my-schedule',   label: 'My Schedule',      icon: '📆' },
-      { id: 'weekly-digest', label: 'Weekly Digest',    icon: '📰' },
-      { id: 'weekly-awards', label: 'Weekly Awards',    icon: '🏆' },
-      { id: 'standings',    label: 'Standings',        icon: '🏅' },
-      { id: 'matchups',     label: 'Matchups',         icon: '🏈' },
-      { id: 'roster',       label: 'Rosters',          icon: '📋' },
-      { id: 'playoffs',     label: 'Playoff Bracket',  icon: '🏆' },
-      { id: 'draft',        label: 'Draft Board',      icon: '🎯' },
-      { id: 'settings',     label: 'League Settings',  icon: '⚙️' },
+    id: 'myteam', label: 'My Team', icon: '⚡',
+    tabs: [
+      { id: 'myteam',         label: 'Overview' },
+      { id: 'my-schedule',    label: 'Schedule' },
+      { id: 'weekly-digest',  label: 'Weekly Digest' },
+      { id: 'weekly-awards',  label: 'Awards' },
     ],
   },
   {
-    title: 'Insights',
-    items: [
-      { id: 'news',         label: 'Player News',       icon: '🏥' },
-      { id: 'predictor',    label: 'Matchup Predictor', icon: '🔮' },
-      { id: 'report-card',  label: 'Report Cards',      icon: '📝' },
-      { id: 'bench',        label: 'Bench Points',      icon: '💤' },
-      { id: 'power',        label: 'Power Rankings',    icon: '⚡' },
-      { id: 'playoff-odds', label: 'Playoff Odds',      icon: '📊' },
-      { id: 'luck',         label: 'Luck Index',        icon: '🍀' },
-      { id: 'optimal',      label: 'Lineup Efficiency', icon: '🎯' },
-      { id: 'consistency',  label: 'Consistency',       icon: '📐' },
-      { id: 'schedule',     label: 'Schedule Strength', icon: '📅' },
-      { id: 'draft-grade',  label: 'Draft Grades',      icon: '🎓' },
+    id: 'league', label: 'League', icon: '🏅',
+    tabs: [
+      { id: 'standings',  label: 'Standings' },
+      { id: 'matchups',   label: 'Matchups' },
+      { id: 'roster',     label: 'Rosters' },
+      { id: 'playoffs',   label: 'Bracket' },
+      { id: 'draft',      label: 'Draft' },
+      { id: 'settings',   label: 'Settings' },
     ],
   },
   {
-    title: 'Charts',
-    items: [
-      { id: 'charts',       label: 'Season Scoring',   icon: '📈' },
-      { id: 'trends',       label: 'Team Trends',      icon: '〰️' },
-      { id: 'scatter',      label: 'PF vs PA Map',     icon: '🗺️' },
-      { id: 'positional',   label: 'Position Strength', icon: '🏈' },
+    id: 'analytics', label: 'Analytics', icon: '📊',
+    tabs: [
+      { id: 'power',        label: 'Power Rankings' },
+      { id: 'playoff-odds', label: 'Playoff Odds' },
+      { id: 'luck',         label: 'Luck Index' },
+      { id: 'optimal',      label: 'Efficiency' },
+      { id: 'consistency',  label: 'Consistency' },
+      { id: 'schedule',     label: 'Strength' },
+      { id: 'bench',        label: 'Bench Pts' },
+      { id: 'predictor',    label: 'Predictor' },
+      { id: 'report-card',  label: 'Report Cards' },
+      { id: 'draft-grade',  label: 'Draft Grades' },
     ],
   },
   {
-    title: 'Tools',
-    items: [
-      { id: 'trade',        label: 'Trade Analyzer',   icon: '🔄' },
-      { id: 'free-agents',  label: 'Free Agents',      icon: '🔍' },
-      { id: 'h2h',          label: 'Head-to-Head',     icon: '🥊' },
-      { id: 'whatif',       label: 'What-If Machine',  icon: '🤔' },
+    id: 'charts', label: 'Charts', icon: '📈',
+    tabs: [
+      { id: 'charts',     label: 'Scoring' },
+      { id: 'trends',     label: 'Trends' },
+      { id: 'scatter',    label: 'PF vs PA' },
+      { id: 'positional', label: 'Positions' },
     ],
   },
   {
-    title: 'The Ledger',
-    items: [
-      { id: 'transactions',  label: 'Weekly Moves',         icon: '📦' },
-      { id: 'activity',      label: 'Season Activity',      icon: '🔔' },
-      { id: 'waiver-value',  label: 'Waiver Wins',          icon: '💎' },
-      { id: 'trade-history', label: 'Trade History',        icon: '🤝' },
-      { id: 'records',       label: 'Record Book',          icon: '📖' },
-      { id: 'blowouts',      label: 'Blowouts & Squeakers', icon: '💥' },
-      { id: 'history',       label: 'League History',       icon: '🗂️' },
+    id: 'history', label: 'History', icon: '📖',
+    tabs: [
+      { id: 'transactions',  label: 'Weekly Moves' },
+      { id: 'activity',      label: 'Activity' },
+      { id: 'waiver-value',  label: 'Waiver Wins' },
+      { id: 'trade-history', label: 'Trades' },
+      { id: 'records',       label: 'Records' },
+      { id: 'blowouts',      label: 'Blowouts' },
+      { id: 'history',       label: 'All-Time' },
+    ],
+  },
+  {
+    id: 'tools', label: 'Tools', icon: '🔧',
+    tabs: [
+      { id: 'trade',       label: 'Trade Analyzer' },
+      { id: 'free-agents', label: 'Free Agents' },
+      { id: 'h2h',         label: 'Head-to-Head' },
+      { id: 'whatif',      label: 'What-If' },
+      { id: 'news',        label: 'Player News' },
     ],
   },
 ];
+
+// Map each tab to its section
+const TAB_SECTION: Partial<Record<Tab, string>> = {};
+for (const s of SECTIONS) for (const t of s.tabs) TAB_SECTION[t.id] = s.id;
 
 const TITLES: Record<Tab, string> = {
   'myteam': 'My Team',
@@ -155,17 +163,10 @@ export default function LeagueDashboard() {
   const [tab, setTab] = useState<Tab>(userId ? 'myteam' : 'standings');
   const [week, setWeek] = useState<number | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(
-    new Set(['Charts', 'Tools', 'The Ledger'])
-  );
 
+  const activeSection = SECTIONS.find(s => s.id === TAB_SECTION[tab]) ?? SECTIONS[0];
   const selectTab = (id: Tab) => { setTab(id); setSidebarOpen(false); };
-  const toggleGroup = (title: string) =>
-    setCollapsedGroups(prev => {
-      const next = new Set(prev);
-      next.has(title) ? next.delete(title) : next.add(title);
-      return next;
-    });
+  const selectSection = (s: Section) => { setTab(s.tabs[0].id); setSidebarOpen(false); };
 
   const { data: league } = useQuery({
     queryKey: ['league', leagueId],
@@ -297,27 +298,18 @@ export default function LeagueDashboard() {
           <div className="side-league-meta">{league?.season ?? ''} · Week {currentWeek}</div>
         </div>
 
-        {NAV.map(group => {
-          const collapsed = collapsedGroups.has(group.title);
-          return (
-          <nav key={group.title} className="nav-group">
-            <button className="nav-group-title" onClick={() => toggleGroup(group.title)}>
-              <span>{group.title}</span>
-              <span className={`nav-group-chevron ${collapsed ? '' : 'open'}`}>›</span>
+        <nav className="nav-group">
+          {SECTIONS.map(s => (
+            <button
+              key={s.id}
+              className={`nav-item ${activeSection.id === s.id ? 'active' : ''}`}
+              onClick={() => selectSection(s)}
+            >
+              <span className="nav-item-icon">{s.icon}</span>
+              <span>{s.label}</span>
             </button>
-            {!collapsed && group.items.map(item => (
-              <button
-                key={item.id}
-                className={`nav-item ${tab === item.id ? 'active' : ''}`}
-                onClick={() => selectTab(item.id)}
-              >
-                <span className="nav-item-icon">{item.icon}</span>
-                <span>{item.label}</span>
-              </button>
-            ))}
-          </nav>
-          );
-        })}
+          ))}
+        </nav>
       </aside>
 
       <main className="content">
@@ -335,6 +327,19 @@ export default function LeagueDashboard() {
             </select>
           )}
         </header>
+
+        {/* Sub-tab bar */}
+        <div className="subtab-bar">
+          {activeSection.tabs.map(t => (
+            <button
+              key={t.id}
+              className={`subtab-btn ${tab === t.id ? 'active' : ''}`}
+              onClick={() => selectTab(t.id)}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
 
         <div key={tab} className="content-body">
         {tab === 'myteam'       && <MyTeam userId={userId} rosters={r} userMap={userMap} players={players} seasonMatchups={sm} seasonTransactions={stx} league={league} isLoading={seasonLoading || playersLoading} />}
@@ -377,22 +382,16 @@ export default function LeagueDashboard() {
       </main>
       </div>
 
-      {/* Mobile bottom tab bar */}
+      {/* Mobile bottom tab bar — sections only */}
       <nav className="bottom-tab-bar">
-        {[
-          { id: 'myteam'    as Tab, icon: '⚡', label: 'My Team' },
-          { id: 'standings' as Tab, icon: '🏅', label: 'Standings' },
-          { id: 'matchups'  as Tab, icon: '🏈', label: 'Matchups' },
-          { id: 'news'      as Tab, icon: '🏥', label: 'News' },
-          { id: 'roster'    as Tab, icon: '📋', label: 'Roster' },
-        ].map(item => (
+        {SECTIONS.map(s => (
           <button
-            key={item.id}
-            className={`bottom-tab ${tab === item.id ? 'active' : ''}`}
-            onClick={() => selectTab(item.id)}
+            key={s.id}
+            className={`bottom-tab ${activeSection.id === s.id ? 'active' : ''}`}
+            onClick={() => selectSection(s)}
           >
-            <span className="bottom-tab-icon">{item.icon}</span>
-            <span className="bottom-tab-label">{item.label}</span>
+            <span className="bottom-tab-icon">{s.icon}</span>
+            <span className="bottom-tab-label">{s.label}</span>
           </button>
         ))}
       </nav>
