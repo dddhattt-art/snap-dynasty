@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { getPlayerStats, playerFullImg, teamLogoUrl, getEspnNflNews } from '../api/sleeper';
+import type { EspnArticle } from '../api/sleeper';
 import type { PlayersMap } from '../types/sleeper';
 import { useState } from 'react';
 
