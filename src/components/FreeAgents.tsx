@@ -56,7 +56,7 @@ export default function FreeAgents({ rosters, players, isLoading, season = '2024
 
   return (
     <div className="fa-wrap">
-      <PlayerPanel playerId={selectedPlayerId} players={players} season={season} onClose={() => setSelectedPlayerId(null)} />
+      <PlayerPanel playerId={selectedPlayerId} players={players} onClose={() => setSelectedPlayerId(null)} />
       <div className="fa-controls">
         <input
           type="text"

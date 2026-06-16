@@ -179,7 +179,7 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
 
   return (
     <div className="myteam-wrap">
-      <PlayerPanel playerId={selectedPlayerId} players={players} season={season} onClose={() => setSelectedPlayerId(null)} />
+      <PlayerPanel playerId={selectedPlayerId} players={players} onClose={() => setSelectedPlayerId(null)} />
 
       {/* Header card */}
       <div className="myteam-header">

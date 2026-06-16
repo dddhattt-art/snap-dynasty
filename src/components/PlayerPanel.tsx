@@ -7,7 +7,6 @@ import { useState } from 'react';
 interface Props {
   playerId: string | null;
   players: PlayersMap | undefined;
-  season: string;
   onClose: () => void;
 }
 
@@ -46,14 +45,22 @@ function timeAgo(iso: string): string {
   return `${Math.floor(h / 24)}d ago`;
 }
 
-export default function PlayerPanel({ playerId, players, season, onClose }: Props) {
+function lastCompletedSeason(): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  // NFL season runs Sept–Jan; before September the current year's season hasn't started
+  return (now.getMonth() < 8 ? year - 1 : year).toString();
+}
+
+export default function PlayerPanel({ playerId, players, onClose }: Props) {
   const [imgFailed, setImgFailed] = useState(false);
   const player = playerId ? players?.[playerId] : null;
+  const statsSeason = lastCompletedSeason();
 
   const { data: stats, isLoading: statsLoading, isError: statsError } = useQuery({
-    queryKey: ['player-stats', playerId, season],
-    queryFn: () => getPlayerStats(playerId!, season),
-    enabled: !!playerId && !!season,
+    queryKey: ['player-stats', playerId, statsSeason],
+    queryFn: () => getPlayerStats(playerId!, statsSeason),
+    enabled: !!playerId,
     staleTime: 30 * 60 * 1000,
     retry: 1,
   });
@@ -134,7 +141,7 @@ export default function PlayerPanel({ playerId, players, season, onClose }: Prop
 
         {/* Season stats */}
         <div className="pp-section">
-          <div className="pp-section-title">{season} Season Stats</div>
+          <div className="pp-section-title">{statsSeason} Season Stats</div>
           {statsLoading ? (
             <div className="pp-loading">Loading stats…</div>
           ) : statsError ? (

@@ -55,7 +55,7 @@ export default function Roster({ rosters, userMap, players, userId, isLoading, s
 
   return (
     <div className="roster-wrap">
-      <PlayerPanel playerId={selectedPlayerId} players={players} season={season} onClose={() => setSelectedPlayerId(null)} />
+      <PlayerPanel playerId={selectedPlayerId} players={players} onClose={() => setSelectedPlayerId(null)} />
       <div className="roster-selector">
         {rosters.map(r => {
           const u = userMap.get(r.owner_id);
