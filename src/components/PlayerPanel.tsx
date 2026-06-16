@@ -17,22 +17,26 @@ const POS_COLOR: Record<string, string> = {
 };
 
 const STAT_LABELS: Record<string, string> = {
-  pass_yd: 'Pass Yds', pass_td: 'Pass TDs', pass_int: 'INTs', pass_att: 'Attempts', pass_cmp: 'Completions',
+  pass_yd: 'Pass Yds', pass_td: 'Pass TDs', pass_int: 'INTs', pass_att: 'Att', pass_cmp: 'Comp',
   rush_yd: 'Rush Yds', rush_td: 'Rush TDs', rush_att: 'Carries',
   rec: 'Receptions', rec_yd: 'Rec Yds', rec_td: 'Rec TDs', rec_tgt: 'Targets',
   fgm: 'FG Made', fga: 'FG Att', xpm: 'XP Made',
-  pts_allow: 'Pts Allowed', sack: 'Sacks', def_int: 'INTs', def_td: 'Def TDs', safe: 'Safeties',
-  pts_ppr: 'PPR Pts', pts_std: 'Std Pts',
+  pts_allow: 'Pts Allowed', sack: 'Sacks', def_int: 'DEF INTs', def_td: 'Def TDs', safe: 'Safeties',
+  pts_ppr: 'PPR Pts', pts_std: 'Std Pts', pts_half_ppr: 'Half PPR',
+  gp: 'Games', bonus_rec_te: 'TE Bonus',
 };
 
 const POS_STATS: Record<string, string[]> = {
-  QB:  ['pass_yd', 'pass_td', 'pass_int', 'pass_att', 'pass_cmp', 'rush_yd', 'rush_td'],
-  RB:  ['rush_yd', 'rush_td', 'rush_att', 'rec', 'rec_yd', 'rec_td', 'rec_tgt'],
-  WR:  ['rec', 'rec_yd', 'rec_td', 'rec_tgt', 'rush_yd', 'rush_td'],
-  TE:  ['rec', 'rec_yd', 'rec_td', 'rec_tgt'],
-  K:   ['fgm', 'fga', 'xpm'],
-  DEF: ['pts_allow', 'sack', 'def_int', 'def_td', 'safe'],
+  QB:  ['pts_ppr', 'pass_yd', 'pass_td', 'pass_int', 'pass_att', 'pass_cmp', 'rush_yd', 'rush_td'],
+  RB:  ['pts_ppr', 'rush_yd', 'rush_td', 'rush_att', 'rec', 'rec_yd', 'rec_td', 'rec_tgt'],
+  WR:  ['pts_ppr', 'rec', 'rec_yd', 'rec_td', 'rec_tgt', 'rush_yd'],
+  TE:  ['pts_ppr', 'rec', 'rec_yd', 'rec_td', 'rec_tgt'],
+  K:   ['pts_ppr', 'fgm', 'fga', 'xpm'],
+  DEF: ['pts_ppr', 'pts_allow', 'sack', 'def_int', 'def_td', 'safe'],
 };
+
+// Keys we never want to show (noise / internal)
+const STAT_BLACKLIST = new Set(['player_id', 'week', 'season', 'team', 'company']);
 
 function timeAgo(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
@@ -68,8 +72,17 @@ export default function PlayerPanel({ playerId, players, season, onClose }: Prop
 
   const pos = player.position ?? '?';
   const color = POS_COLOR[pos] ?? '#64748b';
-  const relevantStats = POS_STATS[pos] ?? ['pts_ppr'];
   const hasStats = stats && Object.keys(stats).length > 0;
+
+  // Build display stat list: preferred keys first, then fall back to all non-zero numeric stats
+  const preferredKeys = POS_STATS[pos] ?? ['pts_ppr'];
+  const matchedKeys = preferredKeys.filter(k => stats?.[k] != null && stats[k] !== 0);
+  const displayStats = matchedKeys.length > 0
+    ? matchedKeys
+    : Object.keys(stats ?? {})
+        .filter(k => !STAT_BLACKLIST.has(k) && typeof stats![k] === 'number' && stats![k] !== 0)
+        .sort((a, b) => (stats![b] as number) - (stats![a] as number))
+        .slice(0, 9);
 
   const injuryColor: Record<string, string> = {
     Out: '#dc2626', Doubtful: '#ea580c', Questionable: '#d97706', IR: '#7c3aed',
@@ -127,10 +140,10 @@ export default function PlayerPanel({ playerId, players, season, onClose }: Prop
             <div className="pp-empty">No stats available yet.</div>
           ) : (
             <div className="pp-stats-grid">
-              {relevantStats.filter(key => stats[key] != null && stats[key] !== 0).map(key => (
+              {displayStats.map(key => (
                 <div key={key} className="pp-stat-card">
                   <div className="pp-stat-val">
-                    {Number.isInteger(stats[key]) ? stats[key] : stats[key].toFixed(1)}
+                    {Number.isInteger(stats![key]) ? stats![key] : (stats![key] as number).toFixed(1)}
                   </div>
                   <div className="pp-stat-lbl">{STAT_LABELS[key] ?? key}</div>
                 </div>
