@@ -133,6 +133,12 @@ export const avatarUrl = (avatarId: string | null, full = false) =>
     ? `${CDN}/avatars/${full ? 'original/' : 'thumbs/'}${avatarId}`
     : null;
 
+export const playerThumb = (playerId: string) =>
+  `${CDN}/content/nfl/players/thumb/${playerId}.jpg`;
+
+export const teamLogoUrl = (team: string) =>
+  `${CDN}/images/team_logos/nfl/${team}.jpg`;
+
 export interface EspnArticle {
   id: number;
   headline: string;

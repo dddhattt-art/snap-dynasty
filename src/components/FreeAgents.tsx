@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import type { SleeperRoster, SleeperPlayer, PlayersMap } from '../types/sleeper';
+import PlayerAvatar from './PlayerAvatar';
 
 interface Props {
   rosters: SleeperRoster[];
@@ -79,6 +80,7 @@ export default function FreeAgents({ rosters, players, isLoading }: Props) {
         <ul className="player-list">
           {filtered.map(p => (
             <li key={p.player_id} className="player-row">
+              <PlayerAvatar playerId={p.player_id} position={p.position} team={p.team} size={28} />
               <span className="player-pos" style={{ color: POS_COLOR[p.position] ?? 'var(--text-dim)' }}>
                 {p.position}
               </span>

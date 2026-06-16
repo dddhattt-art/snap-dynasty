@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { SleeperRoster, SleeperUser, PlayersMap } from '../types/sleeper';
 import { avatarUrl } from '../api/sleeper';
+import PlayerAvatar from './PlayerAvatar';
 
 interface Props {
   rosters: SleeperRoster[];
@@ -81,6 +82,7 @@ export default function Roster({ rosters, userMap, players, userId, isLoading }:
         <ul className="player-list">
           {starterList.map(({ id, player }) => (
             <li key={id} className="player-row">
+              <PlayerAvatar playerId={id} position={player?.position} team={player?.team} size={28} />
               <span className="player-pos" style={{ color: posColor(player?.position ?? '') }}>
                 {player?.position ?? '—'}
               </span>
@@ -99,6 +101,7 @@ export default function Roster({ rosters, userMap, players, userId, isLoading }:
         <ul className="player-list">
           {benchList.map(({ id, player }) => (
             <li key={id} className="player-row bench">
+              <PlayerAvatar playerId={id} position={player?.position} team={player?.team} size={28} />
               <span className="player-pos" style={{ color: posColor(player?.position ?? '') }}>
                 {player?.position ?? '—'}
               </span>

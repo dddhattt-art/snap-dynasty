@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import type { SleeperRoster, SleeperUser, SleeperMatchup, SleeperTransaction, SleeperLeague, PlayersMap } from '../types/sleeper';
 import { avatarUrl, getEspnNflNews } from '../api/sleeper';
+import PlayerAvatar from './PlayerAvatar';
 import type { EspnArticle } from '../api/sleeper';
 
 interface Props {
@@ -238,6 +239,7 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
               const suboptimal = suboptimalStarters.has(pid);
               return (
                 <li key={pid} className={`myteam-starter-row ${suboptimal ? 'suboptimal' : ''}`}>
+                  <PlayerAvatar playerId={pid} position={pos} team={p?.team} size={32} />
                   <span className="myteam-starter-pos" style={{ background: posColor(pos) }}>{pos}</span>
                   <div className="myteam-starter-info">
                     <span className="myteam-starter-name">{name}</span>
@@ -277,6 +279,7 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
               const rank = positionRank.get(pid);
               return (
                 <li key={pid} className="myteam-starter-row bench-row">
+                  <PlayerAvatar playerId={pid} position={pos} team={p?.team} size={32} />
                   <span className="myteam-starter-pos" style={{ background: posColor(pos), opacity: 0.7 }}>{pos}</span>
                   <div className="myteam-starter-info">
                     <span className="myteam-starter-name">{name}</span>

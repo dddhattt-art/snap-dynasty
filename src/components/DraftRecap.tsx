@@ -1,5 +1,6 @@
 import type { SleeperDraftPick, SleeperRoster, SleeperUser } from '../types/sleeper';
 import { avatarUrl } from '../api/sleeper';
+import PlayerAvatar from './PlayerAvatar';
 
 interface Props {
   picks: SleeperDraftPick[];
@@ -49,6 +50,7 @@ export default function DraftRecap({ picks, rosters, userMap, isLoading }: Props
                       <span className="draft-pick-no">#{pick.pick_no}</span>
                       <span className="draft-pos" style={{ color: POS_COLOR[pos] ?? 'var(--text-dim)' }}>{pos}</span>
                     </div>
+                    <PlayerAvatar playerId={pick.player_id} position={pos} team={pick.metadata?.team} size={38} />
                     <div className="draft-player-name">{pick.metadata?.player_name ?? pick.player_id}</div>
                     <div className="draft-pick-owner">
                       {av && <img loading="lazy" src={av} alt="" className="avatar-xs" />}

@@ -2354,3 +2354,22 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   .lp-history { margin: 0 1rem 2rem; }
   .lp-footer { flex-direction: column; gap: 0.75rem; text-align: center; }
 }
+
+/* ───────── Player avatar (headshot) ───────── */
+.player-av {
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: top;
+  flex-shrink: 0;
+  background: var(--bg);
+}
+.player-av-fallback {
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.6rem; font-weight: 700;
+  flex-shrink: 0; letter-spacing: -0.02em;
+}
+
+/* Give player rows a bit more room for the avatar */
+.player-row { gap: 8px; }
+.myteam-starter-row { gap: 8px; }
