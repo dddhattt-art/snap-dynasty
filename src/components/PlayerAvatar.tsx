@@ -8,8 +8,8 @@ const POS_COLOR: Record<string, string> = {
 
 interface Props {
   playerId: string;
-  position?: string;
-  team?: string;
+  position?: string | null;
+  team?: string | null;
   size?: number;
 }
 
