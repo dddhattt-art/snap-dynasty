@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getPlayerStats, playerFullImg, teamLogoUrl, getEspnNflNews } from '../api/sleeper';
+import { getPlayerWeeklyStats, playerFullImg, teamLogoUrl, getEspnNflNews } from '../api/sleeper';
 import type { EspnArticle } from '../api/sleeper';
 import type { PlayersMap } from '../types/sleeper';
 import { useState } from 'react';
@@ -18,24 +18,41 @@ const POS_COLOR: Record<string, string> = {
 const STAT_LABELS: Record<string, string> = {
   pass_yd: 'Pass Yds', pass_td: 'Pass TDs', pass_int: 'INTs', pass_att: 'Att', pass_cmp: 'Comp',
   rush_yd: 'Rush Yds', rush_td: 'Rush TDs', rush_att: 'Carries',
-  rec: 'Receptions', rec_yd: 'Rec Yds', rec_td: 'Rec TDs', rec_tgt: 'Targets',
+  rec: 'Rec', rec_yd: 'Rec Yds', rec_td: 'Rec TDs', rec_tgt: 'Tgts',
   fgm: 'FG Made', fga: 'FG Att', xpm: 'XP Made',
-  pts_allow: 'Pts Allowed', sack: 'Sacks', def_int: 'DEF INTs', def_td: 'Def TDs', safe: 'Safeties',
+  pts_allow: 'Pts Allow', sack: 'Sacks', def_int: 'INTs', def_td: 'Def TDs', safe: 'Safeties',
   pts_ppr: 'PPR Pts', pts_std: 'Std Pts', pts_half_ppr: 'Half PPR',
-  gp: 'Games', bonus_rec_te: 'TE Bonus',
 };
 
+// Which stats to show in the season totals grid per position
 const POS_STATS: Record<string, string[]> = {
-  QB:  ['pts_ppr', 'pass_yd', 'pass_td', 'pass_int', 'pass_att', 'pass_cmp', 'rush_yd', 'rush_td'],
+  QB:  ['pts_ppr', 'pass_yd', 'pass_td', 'pass_int', 'pass_cmp', 'pass_att', 'rush_yd', 'rush_td'],
   RB:  ['pts_ppr', 'rush_yd', 'rush_td', 'rush_att', 'rec', 'rec_yd', 'rec_td', 'rec_tgt'],
-  WR:  ['pts_ppr', 'rec', 'rec_yd', 'rec_td', 'rec_tgt', 'rush_yd'],
+  WR:  ['pts_ppr', 'rec', 'rec_yd', 'rec_td', 'rec_tgt'],
   TE:  ['pts_ppr', 'rec', 'rec_yd', 'rec_td', 'rec_tgt'],
   K:   ['pts_ppr', 'fgm', 'fga', 'xpm'],
   DEF: ['pts_ppr', 'pts_allow', 'sack', 'def_int', 'def_td', 'safe'],
 };
 
-// Keys we never want to show (noise / internal)
-const STAT_BLACKLIST = new Set(['player_id', 'week', 'season', 'team', 'company']);
+// Which stats to show in the weekly row per position
+const POS_WEEKLY: Record<string, string[]> = {
+  QB:  ['pts_ppr', 'pass_yd', 'pass_td', 'rush_yd'],
+  RB:  ['pts_ppr', 'rush_yd', 'rush_td', 'rec', 'rec_yd'],
+  WR:  ['pts_ppr', 'rec', 'rec_yd', 'rec_td'],
+  TE:  ['pts_ppr', 'rec', 'rec_yd', 'rec_td'],
+  K:   ['pts_ppr', 'fgm', 'xpm'],
+  DEF: ['pts_ppr', 'sack', 'def_int'],
+};
+
+function lastCompletedSeason(): number {
+  const now = new Date();
+  const year = now.getFullYear();
+  return now.getMonth() < 8 ? year - 1 : year;
+}
+
+function fmt(v: number): string {
+  return Number.isInteger(v) ? String(v) : v.toFixed(1);
+}
 
 function timeAgo(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
@@ -45,40 +62,41 @@ function timeAgo(iso: string): string {
   return `${Math.floor(h / 24)}d ago`;
 }
 
-function lastCompletedSeason(): number {
-  const now = new Date();
-  const year = now.getFullYear();
-  return now.getMonth() < 8 ? year - 1 : year;
-}
-
 export default function PlayerPanel({ playerId, players, onClose }: Props) {
   const [imgFailed, setImgFailed] = useState(false);
   const player = playerId ? players?.[playerId] : null;
-  const primarySeason = lastCompletedSeason();   // e.g. 2025
-  const fallbackSeason = primarySeason - 1;       // e.g. 2024
+  const primarySeason = lastCompletedSeason();
+  const fallbackSeason = primarySeason - 1;
 
-  const { data: primaryStats, isLoading: primaryLoading } = useQuery({
-    queryKey: ['player-stats', playerId, primarySeason],
-    queryFn: () => getPlayerStats(playerId!, String(primarySeason)),
+  const { data: primaryWeeks, isLoading: primaryLoading } = useQuery({
+    queryKey: ['player-weekly', playerId, primarySeason],
+    queryFn: () => getPlayerWeeklyStats(playerId!, String(primarySeason)),
     enabled: !!playerId,
-    staleTime: 30 * 60 * 1000,
+    staleTime: 60 * 60 * 1000,
     retry: 1,
   });
 
-  const primaryEmpty = !primaryLoading && (!primaryStats || Object.keys(primaryStats).length === 0);
+  const primaryEmpty = !primaryLoading && (!primaryWeeks || primaryWeeks.length === 0);
 
-  const { data: fallbackStats, isLoading: fallbackLoading } = useQuery({
-    queryKey: ['player-stats', playerId, fallbackSeason],
-    queryFn: () => getPlayerStats(playerId!, String(fallbackSeason)),
+  const { data: fallbackWeeks, isLoading: fallbackLoading } = useQuery({
+    queryKey: ['player-weekly', playerId, fallbackSeason],
+    queryFn: () => getPlayerWeeklyStats(playerId!, String(fallbackSeason)),
     enabled: !!playerId && primaryEmpty,
-    staleTime: 30 * 60 * 1000,
+    staleTime: 60 * 60 * 1000,
     retry: 1,
   });
 
-  const stats = primaryEmpty ? fallbackStats : primaryStats;
+  const weeks = primaryEmpty ? (fallbackWeeks ?? []) : (primaryWeeks ?? []);
   const statsSeason = primaryEmpty ? fallbackSeason : primarySeason;
   const statsLoading = primaryLoading || (primaryEmpty && fallbackLoading);
-  const statsError = false;
+
+  // Aggregate weekly data into season totals
+  const seasonTotals: Record<string, number> = {};
+  for (const { stats } of weeks) {
+    for (const [k, v] of Object.entries(stats)) {
+      if (typeof v === 'number') seasonTotals[k] = (seasonTotals[k] ?? 0) + v;
+    }
+  }
 
   const { data: espnNews } = useQuery<EspnArticle[]>({
     queryKey: ['espn-nfl-news'],
@@ -95,17 +113,9 @@ export default function PlayerPanel({ playerId, players, onClose }: Props) {
 
   const pos = player.position ?? '?';
   const color = POS_COLOR[pos] ?? '#64748b';
-  const hasStats = stats && Object.keys(stats).length > 0;
-
-  // Build display stat list: preferred keys first, then fall back to all non-zero numeric stats
-  const preferredKeys = POS_STATS[pos] ?? ['pts_ppr'];
-  const matchedKeys = preferredKeys.filter(k => stats?.[k] != null && stats[k] !== 0);
-  const displayStats = matchedKeys.length > 0
-    ? matchedKeys
-    : Object.keys(stats ?? {})
-        .filter(k => !STAT_BLACKLIST.has(k) && typeof stats![k] === 'number' && stats![k] !== 0)
-        .sort((a, b) => (stats![b] as number) - (stats![a] as number))
-        .slice(0, 9);
+  const hasStats = weeks.length > 0;
+  const displayKeys = (POS_STATS[pos] ?? ['pts_ppr']).filter(k => seasonTotals[k] != null && seasonTotals[k] !== 0);
+  const weeklyKeys = POS_WEEKLY[pos] ?? ['pts_ppr'];
 
   const injuryColor: Record<string, string> = {
     Out: '#dc2626', Doubtful: '#ea580c', Questionable: '#d97706', IR: '#7c3aed',
@@ -130,9 +140,7 @@ export default function PlayerPanel({ playerId, players, onClose }: Props) {
                 onError={() => setImgFailed(true)}
               />
             ) : (
-              <div className="pp-img-fallback" style={{ background: color + '18', color }}>
-                {pos}
-              </div>
+              <div className="pp-img-fallback" style={{ background: color + '18', color }}>{pos}</div>
             )}
           </div>
           <div className="pp-identity">
@@ -154,30 +162,47 @@ export default function PlayerPanel({ playerId, players, onClose }: Props) {
           </div>
         </div>
 
-        {/* Season stats */}
+        {/* Season totals */}
         <div className="pp-section">
-          <div className="pp-section-title">{statsSeason} Season Stats</div>
+          <div className="pp-section-title">{statsSeason} Season Totals</div>
           {statsLoading ? (
             <div className="pp-loading">Loading stats…</div>
-          ) : statsError ? (
-            <div className="pp-empty">Stats unavailable for this player.</div>
           ) : !hasStats ? (
-            <div className="pp-empty">No {statsSeason} stats found.</div>
-          ) : displayStats.length === 0 ? (
-            <div className="pp-empty">No scoring stats recorded.</div>
+            <div className="pp-empty">No {statsSeason} stats available.</div>
           ) : (
             <div className="pp-stats-grid">
-              {displayStats.map(key => (
+              {displayKeys.map(key => (
                 <div key={key} className="pp-stat-card">
-                  <div className="pp-stat-val">
-                    {Number.isInteger(stats![key]) ? stats![key] : (stats![key] as number).toFixed(1)}
-                  </div>
+                  <div className="pp-stat-val">{fmt(seasonTotals[key])}</div>
                   <div className="pp-stat-lbl">{STAT_LABELS[key] ?? key}</div>
                 </div>
               ))}
             </div>
           )}
         </div>
+
+        {/* Weekly breakdown */}
+        {hasStats && (
+          <div className="pp-section">
+            <div className="pp-section-title">Week by Week</div>
+            <div className="pp-week-table">
+              <div className="pp-week-header">
+                <span>Wk</span>
+                {weeklyKeys.map(k => <span key={k}>{STAT_LABELS[k] ?? k}</span>)}
+              </div>
+              {weeks.map(({ week, stats }) => (
+                <div key={week} className={`pp-week-row ${(stats.pts_ppr ?? 0) >= 20 ? 'pp-week-hot' : ''}`}>
+                  <span className="pp-week-num">{week}</span>
+                  {weeklyKeys.map(k => (
+                    <span key={k} className="pp-week-cell">
+                      {stats[k] != null ? fmt(stats[k]) : '—'}
+                    </span>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Injury notes */}
         {player.injury_notes && (

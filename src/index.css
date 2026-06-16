@@ -2467,3 +2467,27 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   padding: 8px 10px; background: var(--bg); border-radius: 8px;
 }
 .pp-loading, .pp-empty { font-size: 0.82rem; color: var(--text-dim); padding: 8px 0; }
+
+/* ───────── Player Panel — weekly breakdown table ───────── */
+.pp-week-table { display: flex; flex-direction: column; gap: 2px; font-size: 0.78rem; }
+.pp-week-header {
+  display: flex; gap: 4px;
+  padding: 4px 6px;
+  font-size: 0.65rem; font-weight: 700; color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--border);
+}
+.pp-week-header span, .pp-week-row span { flex: 1; text-align: right; }
+.pp-week-header span:first-child, .pp-week-row span:first-child { flex: 0 0 28px; text-align: left; }
+.pp-week-row {
+  display: flex; gap: 4px;
+  padding: 5px 6px;
+  border-radius: 5px;
+  color: var(--text);
+}
+.pp-week-row:hover { background: var(--bg); }
+.pp-week-num { font-weight: 600; color: var(--text-dim); }
+.pp-week-cell { color: var(--text); }
+.pp-week-hot { background: #fefce8; }
+.pp-week-hot:hover { background: #fef9c3; }
+.pp-week-hot .pp-week-cell:first-child { color: #b45309; font-weight: 700; }
