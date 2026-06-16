@@ -2433,10 +2433,10 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .pp-pos-badge {
   font-size: 0.68rem; font-weight: 700; padding: 2px 7px; border-radius: 100px;
 }
-.pp-team { font-size: 0.78rem; color: rgba(255,255,255,0.7); font-weight: 600; }
+.pp-team { font-size: 0.78rem; color: #c8d6f0; font-weight: 600; }
 .pp-injury { font-size: 0.75rem; font-weight: 600; display: flex; align-items: center; gap: 3px; }
 .pp-bio { display: flex; gap: 10px; flex-wrap: wrap; }
-.pp-bio span { font-size: 0.72rem; color: rgba(255,255,255,0.55); }
+.pp-bio span { font-size: 0.72rem; color: #8a9bbf; }
 
 .pp-section { padding: 14px 16px; border-bottom: 1px solid var(--card-border); }
 .pp-section:last-child { border-bottom: none; }
