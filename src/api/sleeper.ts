@@ -142,8 +142,14 @@ export const playerFullImg = (playerId: string) =>
 export const teamLogoUrl = (team: string) =>
   `${CDN}/images/team_logos/nfl/${team}.jpg`;
 
-export const getPlayerStats = (playerId: string, season: string): Promise<Record<string, number>> =>
-  get<Record<string, number>>(`${BASE}/stats/nfl/player/${playerId}`, { season_type: 'regular', season, grouping: 'season' });
+export const getPlayerStats = async (playerId: string, season: string): Promise<Record<string, number>> => {
+  const raw = await get<Record<string, unknown>>(`${BASE}/stats/nfl/player/${playerId}`, { season_type: 'regular', season, grouping: 'season' });
+  // Sleeper may return { stats: { pass_yd: ... } } or a flat object
+  const flat = (raw && typeof raw.stats === 'object' && raw.stats !== null)
+    ? raw.stats as Record<string, number>
+    : raw as Record<string, number>;
+  return flat;
+};
 
 export interface EspnArticle {
   id: number;

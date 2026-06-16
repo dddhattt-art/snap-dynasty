@@ -50,11 +50,12 @@ export default function PlayerPanel({ playerId, players, season, onClose }: Prop
   const [imgFailed, setImgFailed] = useState(false);
   const player = playerId ? players?.[playerId] : null;
 
-  const { data: stats, isLoading: statsLoading } = useQuery({
+  const { data: stats, isLoading: statsLoading, isError: statsError } = useQuery({
     queryKey: ['player-stats', playerId, season],
     queryFn: () => getPlayerStats(playerId!, season),
     enabled: !!playerId && !!season,
     staleTime: 30 * 60 * 1000,
+    retry: 1,
   });
 
   const { data: espnNews } = useQuery<EspnArticle[]>({
@@ -136,8 +137,12 @@ export default function PlayerPanel({ playerId, players, season, onClose }: Prop
           <div className="pp-section-title">{season} Season Stats</div>
           {statsLoading ? (
             <div className="pp-loading">Loading stats…</div>
+          ) : statsError ? (
+            <div className="pp-empty">Stats unavailable for this player.</div>
           ) : !hasStats ? (
-            <div className="pp-empty">No stats available yet.</div>
+            <div className="pp-empty">No {season} stats found.</div>
+          ) : displayStats.length === 0 ? (
+            <div className="pp-empty">No scoring stats recorded.</div>
           ) : (
             <div className="pp-stats-grid">
               {displayStats.map(key => (
