@@ -249,7 +249,7 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
                   {/* My player */}
                   <div className={`mu-player mu-player-left player-row-clickable ${myWins ? 'mu-player-win' : ''}`}
                     onClick={() => setSelectedPlayerId(myPid)}>
-                    <PlayerAvatar playerId={myPid} position={myP?.position} team={myP?.team} size={28} />
+                    <PlayerAvatar playerId={myPid} position={myP?.position} team={myP?.team} size={36} />
                     <div className="mu-player-info">
                       <span className="mu-player-name">{myP?.last_name ?? myPid}{suboptimal ? ' ⚠' : ''}</span>
                       <span className="mu-player-team">{myP?.team ?? 'FA'}</span>
@@ -273,7 +273,7 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
                         <span className="mu-player-name">{oppP.last_name ?? oppPid}</span>
                         <span className="mu-player-team">{oppP.team ?? 'FA'}</span>
                       </div>
-                      <PlayerAvatar playerId={oppPid} position={oppP.position} team={oppP.team} size={28} />
+                      <PlayerAvatar playerId={oppPid} position={oppP.position} team={oppP.team} size={36} />
                     </div>
                   ) : (
                     <div className="mu-player mu-player-right mu-empty-slot">
@@ -313,7 +313,7 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
               const pos = p?.position ?? '—';
               return (
                 <li key={pid} className="myteam-starter-row player-row-clickable" onClick={() => setSelectedPlayerId(pid)}>
-                  <PlayerAvatar playerId={pid} position={pos} team={p?.team} size={32} />
+                  <PlayerAvatar playerId={pid} position={pos} team={p?.team} size={40} />
                   <span className="myteam-starter-pos" style={{ background: posColor(pos) }}>{pos}</span>
                   <div className="myteam-starter-info">
                     <span className="myteam-starter-name">{p?.full_name ?? pid}</span>
@@ -340,7 +340,7 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
               const rank = positionRank.get(pid);
               return (
                 <li key={pid} className="myteam-starter-row bench-row player-row-clickable" onClick={() => setSelectedPlayerId(pid)}>
-                  <PlayerAvatar playerId={pid} position={pos} team={p?.team} size={32} />
+                  <PlayerAvatar playerId={pid} position={pos} team={p?.team} size={40} />
                   <span className="myteam-starter-pos" style={{ background: posColor(pos), opacity: 0.7 }}>{pos}</span>
                   <div className="myteam-starter-info">
                     <span className="myteam-starter-name">{name}</span>

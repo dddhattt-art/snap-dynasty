@@ -84,7 +84,7 @@ export default function FreeAgents({ rosters, players, isLoading }: Props) {
         <ul className="player-list">
           {filtered.map(p => (
             <li key={p.player_id} className="player-row player-row-clickable" onClick={() => setSelectedPlayerId(p.player_id)}>
-              <PlayerAvatar playerId={p.player_id} position={p.position} team={p.team} size={28} />
+              <PlayerAvatar playerId={p.player_id} position={p.position} team={p.team} size={36} />
               <span className="player-pos" style={{ color: POS_COLOR[p.position] ?? 'var(--text-dim)' }}>
                 {p.position}
               </span>

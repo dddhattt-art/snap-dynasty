@@ -2362,12 +2362,16 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   object-position: top;
   flex-shrink: 0;
   background: var(--bg);
+  border: 2.5px solid #e5e7eb;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
 }
 .player-av-fallback {
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   font-size: 0.6rem; font-weight: 700;
   flex-shrink: 0; letter-spacing: -0.02em;
+  border: 2.5px solid #e5e7eb;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
 }
 
 /* Give player rows a bit more room for the avatar */

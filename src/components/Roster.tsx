@@ -86,7 +86,7 @@ export default function Roster({ rosters, userMap, players, userId, isLoading }:
         <ul className="player-list">
           {starterList.map(({ id, player }) => (
             <li key={id} className="player-row player-row-clickable" onClick={() => setSelectedPlayerId(id)}>
-              <PlayerAvatar playerId={id} position={player?.position} team={player?.team} size={28} />
+              <PlayerAvatar playerId={id} position={player?.position} team={player?.team} size={36} />
               <span className="player-pos" style={{ color: posColor(player?.position ?? '') }}>
                 {player?.position ?? '—'}
               </span>
@@ -105,7 +105,7 @@ export default function Roster({ rosters, userMap, players, userId, isLoading }:
         <ul className="player-list">
           {benchList.map(({ id, player }) => (
             <li key={id} className="player-row bench">
-              <PlayerAvatar playerId={id} position={player?.position} team={player?.team} size={28} />
+              <PlayerAvatar playerId={id} position={player?.position} team={player?.team} size={36} />
               <span className="player-pos" style={{ color: posColor(player?.position ?? '') }}>
                 {player?.position ?? '—'}
               </span>
