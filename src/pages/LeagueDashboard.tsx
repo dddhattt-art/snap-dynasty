@@ -46,6 +46,7 @@ import ReportCard from '../components/ReportCard';
 import MySchedule from '../components/MySchedule';
 import WeeklyDigest from '../components/WeeklyDigest';
 import WeeklyAwards from '../components/WeeklyAwards';
+import DraftBoard from '../components/DraftBoard';
 
 type Tab =
   | 'myteam' | 'my-schedule' | 'standings' | 'matchups' | 'transactions' | 'roster' | 'playoffs' | 'draft' | 'settings'
@@ -54,7 +55,7 @@ type Tab =
   | 'playoff-odds' | 'draft-grade' | 'trends' | 'waiver-value'
   | 'blowouts' | 'positional' | 'records' | 'consistency' | 'whatif' | 'history'
   | 'news' | 'bench' | 'trade-history' | 'predictor' | 'report-card'
-  | 'weekly-digest' | 'weekly-awards';
+  | 'weekly-digest' | 'weekly-awards' | 'draft-board';
 
 interface SubTab { id: Tab; label: string; }
 interface Section { id: string; label: string; icon: string; tabs: SubTab[]; }
@@ -76,7 +77,8 @@ const SECTIONS: Section[] = [
       { id: 'matchups',   label: 'Matchups' },
       { id: 'roster',     label: 'Rosters' },
       { id: 'playoffs',   label: 'Bracket' },
-      { id: 'draft',      label: 'Draft' },
+      { id: 'draft',       label: 'Draft Recap' },
+      { id: 'draft-board', label: 'Draft Board' },
       { id: 'settings',   label: 'Settings' },
     ],
   },
@@ -144,7 +146,7 @@ const SECTION_ICONS: Record<string, string> = {
 const PAGE_ICONS: Partial<Record<Tab, string>> = {
   'myteam': 'home', 'my-schedule': 'calendar', 'weekly-digest': 'file-analytics', 'weekly-awards': 'award',
   'standings': 'list-numbers', 'matchups': 'shield-half', 'roster': 'users', 'playoffs': 'tournament',
-  'draft': 'circle-dot', 'settings': 'settings',
+  'draft': 'circle-dot', 'draft-board': 'clipboard-list', 'settings': 'settings',
   'power': 'chart-bar', 'playoff-odds': 'percentage', 'luck': 'clover', 'optimal': 'target',
   'consistency': 'activity', 'schedule': 'calendar-stats', 'bench': 'armchair',
   'predictor': 'brain', 'report-card': 'report', 'draft-grade': 'school',
@@ -158,7 +160,7 @@ const PAGE_ICONS: Partial<Record<Tab, string>> = {
 const TITLES: Record<Tab, string> = {
   'myteam': 'My Team',
   'my-schedule': 'My Schedule', 'weekly-digest': 'Weekly Digest', 'weekly-awards': 'Weekly Awards', 'standings': 'Standings', 'matchups': 'Matchups', 'transactions': 'Weekly Moves',
-  'roster': 'Rosters', 'playoffs': 'Playoff Bracket', 'draft': 'Draft Board', 'settings': 'League Settings',
+  'roster': 'Rosters', 'playoffs': 'Playoff Bracket', 'draft': 'Draft Recap', 'draft-board': 'Draft Board', 'settings': 'League Settings',
   'power': 'Power Rankings', 'free-agents': 'Free Agents', 'trade': 'Trade Analyzer',
   'h2h': 'Head-to-Head', 'charts': 'Season Scoring', 'luck': 'Luck Index',
   'optimal': 'Lineup Efficiency', 'activity': 'Season Activity', 'scatter': 'PF vs PA Map',
@@ -175,7 +177,7 @@ const SEASON_TABS: Tab[] = [
   'playoff-odds','trends','blowouts','positional','records','consistency','whatif',
   'bench','predictor','report-card',
 ];
-const PLAYERS_TABS: Tab[] = ['myteam','roster','free-agents','trade','optimal','activity','waiver-value','positional','draft-grade','transactions','records','news','trade-history'];
+const PLAYERS_TABS: Tab[] = ['myteam','roster','free-agents','trade','optimal','activity','waiver-value','positional','draft-grade','transactions','records','news','trade-history','draft-board'];
 const SEASON_TX_TABS: Tab[] = ['myteam','activity','waiver-value','trade-history','weekly-digest'];
 
 export default function LeagueDashboard() {
@@ -457,6 +459,7 @@ export default function LeagueDashboard() {
         {tab === 'trade-history' && <TradeHistory seasonTransactions={stx} rosters={r} userMap={userMap} players={players} isLoading={seasonTxLoading || playersLoading} />}
         {tab === 'predictor'    && <MatchupPredictor rosters={r} userMap={userMap} seasonMatchups={sm} league={league} isLoading={seasonLoading} />}
         {tab === 'report-card'  && <ReportCard rosters={r} userMap={userMap} seasonMatchups={sm} league={league} isLoading={seasonLoading} />}
+        {tab === 'draft-board'  && <DraftBoard players={players} leagueId={leagueId!} teamCount={league?.settings?.num_teams ?? 12} isLoading={playersLoading} />}
         </div>
         </div>
       </main>
