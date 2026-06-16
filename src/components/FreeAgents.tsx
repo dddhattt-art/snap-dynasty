@@ -7,7 +7,7 @@ interface Props {
   rosters: SleeperRoster[];
   players: PlayersMap | undefined;
   isLoading: boolean;
-  season?: string;
+
 }
 
 const POSITIONS = ['ALL', 'QB', 'RB', 'WR', 'TE', 'K', 'DEF'];
@@ -21,7 +21,7 @@ const POS_COLOR: Record<string, string> = {
   DEF: '#5cade0',
 };
 
-export default function FreeAgents({ rosters, players, isLoading, season = '2024' }: Props) {
+export default function FreeAgents({ rosters, players, isLoading }: Props) {
   const [search, setSearch] = useState('');
   const [pos, setPos] = useState('ALL');
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);

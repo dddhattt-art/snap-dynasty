@@ -15,7 +15,7 @@ interface Props {
   seasonTransactions?: Record<number, SleeperTransaction[]>;
   league?: SleeperLeague;
   isLoading: boolean;
-  season?: string;
+
 }
 
 const POS_COLOR: Record<string, string> = {
@@ -42,7 +42,7 @@ function timeAgo(iso: string): string {
   return `${Math.floor(h / 24)}d ago`;
 }
 
-export default function MyTeam({ userId, rosters, userMap, players, seasonMatchups, seasonTransactions, league, isLoading, season = '2024' }: Props) {
+export default function MyTeam({ userId, rosters, userMap, players, seasonMatchups, seasonTransactions, league, isLoading }: Props) {
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
   const { data: espnNews } = useQuery({
     queryKey: ['espn-nfl-news'],

@@ -147,7 +147,7 @@ export default function PlayerPanel({ playerId, players, onClose }: Props) {
           ) : statsError ? (
             <div className="pp-empty">Stats unavailable for this player.</div>
           ) : !hasStats ? (
-            <div className="pp-empty">No {season} stats found.</div>
+            <div className="pp-empty">No {statsSeason} stats found.</div>
           ) : displayStats.length === 0 ? (
             <div className="pp-empty">No scoring stats recorded.</div>
           ) : (

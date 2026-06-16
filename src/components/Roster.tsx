@@ -10,7 +10,7 @@ interface Props {
   players: PlayersMap | undefined;
   userId?: string;
   isLoading: boolean;
-  season?: string;
+
 }
 
 const POS_ORDER = ['QB', 'RB', 'WR', 'TE', 'K', 'DEF', 'DL', 'LB', 'DB'];
@@ -27,7 +27,7 @@ function posColor(pos: string) {
   return POS_COLOR[pos] ?? 'var(--text-dim)';
 }
 
-export default function Roster({ rosters, userMap, players, userId, isLoading, season = '2024' }: Props) {
+export default function Roster({ rosters, userMap, players, userId, isLoading }: Props) {
   const myRoster = userId ? rosters.find(r => r.owner_id === userId) : undefined;
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
   const [selectedRosterId, setSelectedRosterId] = useState<number | null>(
