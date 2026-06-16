@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { SleeperRoster, SleeperUser, PlayersMap } from '../types/sleeper';
 import { avatarUrl } from '../api/sleeper';
 import PlayerAvatar from './PlayerAvatar';
+import PlayerPanel from './PlayerPanel';
 
 interface Props {
   rosters: SleeperRoster[];
@@ -9,6 +10,7 @@ interface Props {
   players: PlayersMap | undefined;
   userId?: string;
   isLoading: boolean;
+  season?: string;
 }
 
 const POS_ORDER = ['QB', 'RB', 'WR', 'TE', 'K', 'DEF', 'DL', 'LB', 'DB'];
@@ -25,8 +27,9 @@ function posColor(pos: string) {
   return POS_COLOR[pos] ?? 'var(--text-dim)';
 }
 
-export default function Roster({ rosters, userMap, players, userId, isLoading }: Props) {
+export default function Roster({ rosters, userMap, players, userId, isLoading, season = '2024' }: Props) {
   const myRoster = userId ? rosters.find(r => r.owner_id === userId) : undefined;
+  const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
   const [selectedRosterId, setSelectedRosterId] = useState<number | null>(
     myRoster?.roster_id ?? rosters[0]?.roster_id ?? null
   );
@@ -52,6 +55,7 @@ export default function Roster({ rosters, userMap, players, userId, isLoading }:
 
   return (
     <div className="roster-wrap">
+      <PlayerPanel playerId={selectedPlayerId} players={players} season={season} onClose={() => setSelectedPlayerId(null)} />
       <div className="roster-selector">
         {rosters.map(r => {
           const u = userMap.get(r.owner_id);
@@ -81,7 +85,7 @@ export default function Roster({ rosters, userMap, players, userId, isLoading }:
         <h4 className="roster-section-title">Starters</h4>
         <ul className="player-list">
           {starterList.map(({ id, player }) => (
-            <li key={id} className="player-row">
+            <li key={id} className="player-row player-row-clickable" onClick={() => setSelectedPlayerId(id)}>
               <PlayerAvatar playerId={id} position={player?.position} team={player?.team} size={28} />
               <span className="player-pos" style={{ color: posColor(player?.position ?? '') }}>
                 {player?.position ?? '—'}

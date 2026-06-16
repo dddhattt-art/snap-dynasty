@@ -136,8 +136,14 @@ export const avatarUrl = (avatarId: string | null, full = false) =>
 export const playerThumb = (playerId: string) =>
   `${CDN}/content/nfl/players/thumb/${playerId}.jpg`;
 
+export const playerFullImg = (playerId: string) =>
+  `${CDN}/content/nfl/players/${playerId}.jpg`;
+
 export const teamLogoUrl = (team: string) =>
   `${CDN}/images/team_logos/nfl/${team}.jpg`;
+
+export const getPlayerStats = (playerId: string, season: string): Promise<Record<string, number>> =>
+  get<Record<string, number>>(`${BASE}/stats/nfl/player/${playerId}`, { season_type: 'regular', season, grouping: 'season' });
 
 export interface EspnArticle {
   id: number;
