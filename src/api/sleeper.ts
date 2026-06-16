@@ -156,7 +156,7 @@ export const getPlayerWeeklyStats = async (playerId: string, season: string): Pr
         .catch(() => ({ week: w, stats: {} }))
     )
   );
-  return results.filter(r => r.stats.gp > 0);
+  return results.filter(r => (r.stats as Record<string, number>).gp > 0);
 };
 
 export interface EspnArticle {
