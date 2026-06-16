@@ -45,25 +45,40 @@ function timeAgo(iso: string): string {
   return `${Math.floor(h / 24)}d ago`;
 }
 
-function lastCompletedSeason(): string {
+function lastCompletedSeason(): number {
   const now = new Date();
   const year = now.getFullYear();
-  // NFL season runs Sept–Jan; before September the current year's season hasn't started
-  return (now.getMonth() < 8 ? year - 1 : year).toString();
+  return now.getMonth() < 8 ? year - 1 : year;
 }
 
 export default function PlayerPanel({ playerId, players, onClose }: Props) {
   const [imgFailed, setImgFailed] = useState(false);
   const player = playerId ? players?.[playerId] : null;
-  const statsSeason = lastCompletedSeason();
+  const primarySeason = lastCompletedSeason();   // e.g. 2025
+  const fallbackSeason = primarySeason - 1;       // e.g. 2024
 
-  const { data: stats, isLoading: statsLoading, isError: statsError } = useQuery({
-    queryKey: ['player-stats', playerId, statsSeason],
-    queryFn: () => getPlayerStats(playerId!, statsSeason),
+  const { data: primaryStats, isLoading: primaryLoading } = useQuery({
+    queryKey: ['player-stats', playerId, primarySeason],
+    queryFn: () => getPlayerStats(playerId!, String(primarySeason)),
     enabled: !!playerId,
     staleTime: 30 * 60 * 1000,
     retry: 1,
   });
+
+  const primaryEmpty = !primaryLoading && (!primaryStats || Object.keys(primaryStats).length === 0);
+
+  const { data: fallbackStats, isLoading: fallbackLoading } = useQuery({
+    queryKey: ['player-stats', playerId, fallbackSeason],
+    queryFn: () => getPlayerStats(playerId!, String(fallbackSeason)),
+    enabled: !!playerId && primaryEmpty,
+    staleTime: 30 * 60 * 1000,
+    retry: 1,
+  });
+
+  const stats = primaryEmpty ? fallbackStats : primaryStats;
+  const statsSeason = primaryEmpty ? fallbackSeason : primarySeason;
+  const statsLoading = primaryLoading || (primaryEmpty && fallbackLoading);
+  const statsError = false;
 
   const { data: espnNews } = useQuery<EspnArticle[]>({
     queryKey: ['espn-nfl-news'],
