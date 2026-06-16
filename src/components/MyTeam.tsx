@@ -207,65 +207,121 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
         <StatPill label="Standing" value={`${standing} / ${rosters.length}`} />
       </div>
 
-      {/* Current matchup */}
-      {myMatchup && oppMatchup && (
+      {/* Matchup — full lineup breakdown */}
+      {myMatchup && players && (
         <div className="myteam-section">
-          <div className="myteam-section-title">Week {currentWeek} Matchup</div>
-          <div className="myteam-matchup-card">
-            <div className={`myteam-matchup-side ${myMatchup.points >= oppMatchup.points ? 'winning' : ''}`}>
+          {/* Score header */}
+          <div className="mu-header">
+            <div className={`mu-team ${myMatchup.points >= (oppMatchup?.points ?? 0) ? 'mu-winning' : ''}`}>
               {av && <img loading="lazy" src={av} alt="" className="avatar-sm" />}
-              <span className="myteam-matchup-team">{me?.display_name ?? 'You'}</span>
-              <span className="myteam-matchup-score">{myMatchup.points.toFixed(2)}</span>
+              <div>
+                <div className="mu-team-name">{me?.display_name ?? 'You'}</div>
+                <div className="mu-score">{myMatchup.points.toFixed(2)}</div>
+              </div>
             </div>
-            <div className="myteam-matchup-vs">vs</div>
-            <div className={`myteam-matchup-side right ${oppMatchup.points > myMatchup.points ? 'winning' : ''}`}>
-              <span className="myteam-matchup-score">{oppMatchup.points.toFixed(2)}</span>
-              <span className="myteam-matchup-team">{oppUser?.display_name ?? oppUser?.username ?? `Team ${oppMatchup.roster_id}`}</span>
+            <div className="mu-vs-col">
+              <span className="mu-wk">Wk {currentWeek}</span>
+              <span className="mu-vs">vs</span>
+            </div>
+            <div className={`mu-team mu-team-right ${(oppMatchup?.points ?? 0) > myMatchup.points ? 'mu-winning' : ''}`}>
+              <div>
+                <div className="mu-team-name">{oppUser?.display_name ?? oppUser?.username ?? `Team ${oppMatchup?.roster_id}`}</div>
+                <div className="mu-score">{oppMatchup?.points.toFixed(2) ?? '—'}</div>
+              </div>
               {oppAv && <img loading="lazy" src={oppAv} alt="" className="avatar-sm" />}
+            </div>
+          </div>
+
+          {/* Player-by-player rows */}
+          <div className="mu-lineup">
+            {starters.map((myPid, i) => {
+              const oppPid = oppMatchup?.starters?.[i];
+              const slot = (league?.roster_positions?.[i] ?? '').replace('DEF', 'DST');
+              const myP = players[myPid];
+              const oppP = oppPid ? players[oppPid] : undefined;
+              const myPts = starterPts[myPid];
+              const oppPts = oppPid ? (oppMatchup?.players_points?.[oppPid]) : undefined;
+              const myWins = myPts !== undefined && oppPts !== undefined && myPts >= oppPts;
+              const oppWins = myPts !== undefined && oppPts !== undefined && oppPts > myPts;
+              const suboptimal = suboptimalStarters.has(myPid);
+              return (
+                <div key={myPid} className="mu-row">
+                  {/* My player */}
+                  <div className={`mu-player mu-player-left player-row-clickable ${myWins ? 'mu-player-win' : ''}`}
+                    onClick={() => setSelectedPlayerId(myPid)}>
+                    <PlayerAvatar playerId={myPid} position={myP?.position} team={myP?.team} size={28} />
+                    <div className="mu-player-info">
+                      <span className="mu-player-name">{myP?.last_name ?? myPid}{suboptimal ? ' ⚠' : ''}</span>
+                      <span className="mu-player-team">{myP?.team ?? 'FA'}</span>
+                    </div>
+                    <span className={`mu-pts ${myWins ? 'mu-pts-win' : ''}`}>
+                      {myPts !== undefined ? myPts.toFixed(1) : '—'}
+                    </span>
+                  </div>
+
+                  {/* Slot label */}
+                  <div className="mu-slot">{slot}</div>
+
+                  {/* Opp player */}
+                  {oppPid && oppP ? (
+                    <div className={`mu-player mu-player-right player-row-clickable ${oppWins ? 'mu-player-win' : ''}`}
+                      onClick={() => setSelectedPlayerId(oppPid)}>
+                      <span className={`mu-pts ${oppWins ? 'mu-pts-win' : ''}`}>
+                        {oppPts !== undefined ? oppPts.toFixed(1) : '—'}
+                      </span>
+                      <div className="mu-player-info mu-player-info-right">
+                        <span className="mu-player-name">{oppP.last_name ?? oppPid}</span>
+                        <span className="mu-player-team">{oppP.team ?? 'FA'}</span>
+                      </div>
+                      <PlayerAvatar playerId={oppPid} position={oppP.position} team={oppP.team} size={28} />
+                    </div>
+                  ) : (
+                    <div className="mu-player mu-player-right mu-empty-slot">
+                      <span className="mu-player-name">Empty</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+
+            {/* Total row */}
+            <div className="mu-row mu-total-row">
+              <div className="mu-player mu-player-left">
+                <span className="mu-total-label">Total</span>
+                <span className="mu-pts mu-pts-total">{starterTotal.toFixed(2)}</span>
+              </div>
+              <div className="mu-slot" />
+              <div className="mu-player mu-player-right">
+                <span className="mu-pts mu-pts-total">
+                  {oppMatchup ? (oppMatchup.starters ?? [])
+                    .reduce((s, pid) => s + (oppMatchup.players_points?.[pid] ?? 0), 0).toFixed(2) : '—'}
+                </span>
+                <span className="mu-total-label">Total</span>
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Starters */}
-      {starters.length > 0 && players && (
+      {/* Starters (no active matchup) */}
+      {!myMatchup && starters.length > 0 && players && (
         <div className="myteam-section">
-          <div className="myteam-section-title">
-            {myMatchup ? `Week ${currentWeek} Starters` : 'Current Starters'}
-          </div>
+          <div className="myteam-section-title">Current Starters</div>
           <ul className="myteam-starters">
             {starters.map(pid => {
               const p = players[pid];
               const pos = p?.position ?? '—';
-              const name = p?.full_name ?? p?.last_name ?? pid;
-              const team = p?.team ?? '';
-              const pts = starterPts[pid];
-              const rank = positionRank.get(pid);
-              const suboptimal = suboptimalStarters.has(pid);
               return (
-                <li key={pid} className={`myteam-starter-row player-row-clickable ${suboptimal ? 'suboptimal' : ''}`} onClick={() => setSelectedPlayerId(pid)}>
+                <li key={pid} className="myteam-starter-row player-row-clickable" onClick={() => setSelectedPlayerId(pid)}>
                   <PlayerAvatar playerId={pid} position={pos} team={p?.team} size={32} />
                   <span className="myteam-starter-pos" style={{ background: posColor(pos) }}>{pos}</span>
                   <div className="myteam-starter-info">
-                    <span className="myteam-starter-name">{name}</span>
-                    <div className="myteam-starter-meta">
-                      <span className="myteam-starter-team">{team}</span>
-                      {rank && <span className="myteam-starter-rank">#{rank} {pos}</span>}
-                    </div>
-                  </div>
-                  <div className="myteam-starter-right">
-                    {suboptimal && <span className="myteam-swap-flag" title="A bench player outscored this starter">⚠</span>}
-                    {pts !== undefined && <span className="myteam-starter-pts">{pts.toFixed(2)}</span>}
+                    <span className="myteam-starter-name">{p?.full_name ?? pid}</span>
+                    <span className="myteam-starter-team">{p?.team ?? 'FA'}</span>
                   </div>
                 </li>
               );
             })}
-            {starterTotal > 0 && (
-              <li className="myteam-starter-row myteam-starter-total">
-                <span className="myteam-starter-info" style={{ flex: 1 }}>Total</span>
-                <span className="myteam-starter-pts">{starterTotal.toFixed(2)}</span>
-              </li>
-            )}
           </ul>
         </div>
       )}

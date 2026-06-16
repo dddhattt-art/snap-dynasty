@@ -2491,3 +2491,63 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .pp-week-hot { background: #fefce8; }
 .pp-week-hot:hover { background: #fef9c3; }
 .pp-week-hot .pp-week-cell:first-child { color: #b45309; font-weight: 700; }
+
+/* ───────── MyTeam matchup lineup grid ───────── */
+.mu-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 14px 16px 12px;
+  background: var(--navy);
+  border-radius: 10px;
+  margin-bottom: 2px;
+}
+.mu-team { display: flex; align-items: center; gap: 8px; flex: 1; }
+.mu-team-right { justify-content: flex-end; }
+.mu-team-name { font-size: 0.72rem; color: rgba(255,255,255,0.55); font-weight: 500; }
+.mu-score { font-size: 1.4rem; font-weight: 800; color: #fff; line-height: 1; }
+.mu-winning .mu-score { color: #4ade80; }
+.mu-vs-col { display: flex; flex-direction: column; align-items: center; gap: 2px; flex-shrink: 0; }
+.mu-wk { font-size: 0.65rem; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 0.06em; }
+.mu-vs { font-size: 0.75rem; font-weight: 700; color: rgba(255,255,255,0.4); }
+
+.mu-lineup { display: flex; flex-direction: column; }
+.mu-row {
+  display: grid;
+  grid-template-columns: 1fr 36px 1fr;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+.mu-row:last-child { border-bottom: none; }
+.mu-total-row { background: var(--bg); border-radius: 0 0 8px 8px; }
+
+.mu-slot {
+  text-align: center;
+  font-size: 0.6rem; font-weight: 700;
+  color: var(--text-dim);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.mu-player {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 8px;
+  cursor: pointer;
+  transition: background 0.12s;
+  border-radius: 6px;
+}
+.mu-player:hover { background: var(--bg); }
+.mu-player-right { justify-content: flex-end; }
+.mu-player-win { background: #f0fdf4; }
+.mu-player-win:hover { background: #dcfce7; }
+.mu-empty-slot { cursor: default; opacity: 0.4; }
+
+.mu-player-info { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.mu-player-info-right { text-align: right; }
+.mu-player-name { font-size: 0.78rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mu-player-team { font-size: 0.65rem; color: var(--text-dim); }
+
+.mu-pts { font-size: 0.9rem; font-weight: 700; color: var(--text-dim); flex-shrink: 0; min-width: 32px; text-align: right; }
+.mu-player-left .mu-pts { text-align: left; }
+.mu-pts-win { color: #16a34a; }
+.mu-pts-total { font-size: 1rem; color: var(--text); }
+.mu-total-label { font-size: 0.75rem; font-weight: 600; color: var(--text-dim); flex: 1; }
+.mu-player-right .mu-total-label { text-align: right; }

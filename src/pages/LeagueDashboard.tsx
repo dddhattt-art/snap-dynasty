@@ -261,6 +261,13 @@ export default function LeagueDashboard() {
     queryFn: () => getSeasonMatchups(leagueId!, currentWeek),
     enabled: !!leagueId && currentWeek > 0 && SEASON_TABS.includes(tab),
     staleTime: 5 * 60 * 1000,
+    refetchInterval: (() => {
+      const d = new Date();
+      const day = d.getDay(); // 0=Sun 1=Mon 4=Thu
+      const mo = d.getMonth();
+      const inSeason = mo >= 8 || mo <= 1; // Sept–Feb
+      return inSeason && (day === 0 || day === 1 || day === 4) ? 60_000 : false;
+    })(),
   });
 
   const { data: seasonTransactions, isLoading: seasonTxLoading } = useQuery<Record<number, SleeperTransaction[]>>({
