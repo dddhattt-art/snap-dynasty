@@ -143,12 +143,28 @@ export const teamLogoUrl = (team: string) =>
   `${CDN}/images/team_logos/nfl/${team}.jpg`;
 
 export const getPlayerStats = async (playerId: string, season: string): Promise<Record<string, number>> => {
-  const raw = await get<Record<string, unknown>>(`${BASE}/stats/nfl/player/${playerId}`, { season_type: 'regular', season, grouping: 'season' });
-  // Sleeper may return { stats: { pass_yd: ... } } or a flat object
-  const flat = (raw && typeof raw.stats === 'object' && raw.stats !== null)
-    ? raw.stats as Record<string, number>
-    : raw as Record<string, number>;
-  return flat;
+  const raw = await get<unknown>(`${BASE}/stats/nfl/player/${playerId}`, { season_type: 'regular', season, grouping: 'season' });
+
+  // Sleeper returns an array of weekly stat objects — aggregate them
+  if (Array.isArray(raw)) {
+    const totals: Record<string, number> = {};
+    for (const week of raw as Record<string, unknown>[]) {
+      const stats = (week && typeof week.stats === 'object' && week.stats !== null)
+        ? week.stats as Record<string, number>
+        : week as Record<string, number>;
+      for (const [k, v] of Object.entries(stats)) {
+        if (typeof v === 'number') totals[k] = (totals[k] ?? 0) + v;
+      }
+    }
+    return totals;
+  }
+
+  // Flat season object (or nested under .stats key)
+  const obj = raw as Record<string, unknown>;
+  if (obj && typeof obj.stats === 'object' && obj.stats !== null) {
+    return obj.stats as Record<string, number>;
+  }
+  return obj as Record<string, number>;
 };
 
 export interface EspnArticle {
