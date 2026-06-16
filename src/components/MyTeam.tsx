@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import type { SleeperRoster, SleeperUser, SleeperMatchup, SleeperTransaction, SleeperLeague, PlayersMap } from '../types/sleeper';
 import { avatarUrl, getEspnNflNews } from '../api/sleeper';
 import PlayerAvatar from './PlayerAvatar';
+import PlayerPanel from './PlayerPanel';
 import type { EspnArticle } from '../api/sleeper';
 
 interface Props {
@@ -13,6 +15,7 @@ interface Props {
   seasonTransactions?: Record<number, SleeperTransaction[]>;
   league?: SleeperLeague;
   isLoading: boolean;
+  season?: string;
 }
 
 const POS_COLOR: Record<string, string> = {
@@ -39,7 +42,8 @@ function timeAgo(iso: string): string {
   return `${Math.floor(h / 24)}d ago`;
 }
 
-export default function MyTeam({ userId, rosters, userMap, players, seasonMatchups, seasonTransactions, league, isLoading }: Props) {
+export default function MyTeam({ userId, rosters, userMap, players, seasonMatchups, seasonTransactions, league, isLoading, season = '2024' }: Props) {
+  const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
   const { data: espnNews } = useQuery({
     queryKey: ['espn-nfl-news'],
     queryFn: () => getEspnNflNews(),
@@ -175,6 +179,7 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
 
   return (
     <div className="myteam-wrap">
+      <PlayerPanel playerId={selectedPlayerId} players={players} season={season} onClose={() => setSelectedPlayerId(null)} />
 
       {/* Header card */}
       <div className="myteam-header">
@@ -238,7 +243,7 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
               const rank = positionRank.get(pid);
               const suboptimal = suboptimalStarters.has(pid);
               return (
-                <li key={pid} className={`myteam-starter-row ${suboptimal ? 'suboptimal' : ''}`}>
+                <li key={pid} className={`myteam-starter-row player-row-clickable ${suboptimal ? 'suboptimal' : ''}`} onClick={() => setSelectedPlayerId(pid)}>
                   <PlayerAvatar playerId={pid} position={pos} team={p?.team} size={32} />
                   <span className="myteam-starter-pos" style={{ background: posColor(pos) }}>{pos}</span>
                   <div className="myteam-starter-info">
@@ -278,7 +283,7 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
               const pts = starterPts[pid];
               const rank = positionRank.get(pid);
               return (
-                <li key={pid} className="myteam-starter-row bench-row">
+                <li key={pid} className="myteam-starter-row bench-row player-row-clickable" onClick={() => setSelectedPlayerId(pid)}>
                   <PlayerAvatar playerId={pid} position={pos} team={p?.team} size={32} />
                   <span className="myteam-starter-pos" style={{ background: posColor(pos), opacity: 0.7 }}>{pos}</span>
                   <div className="myteam-starter-info">

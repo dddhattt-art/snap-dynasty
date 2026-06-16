@@ -2373,3 +2373,97 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 /* Give player rows a bit more room for the avatar */
 .player-row { gap: 8px; }
 .myteam-starter-row { gap: 8px; }
+
+/* ───────── Player Panel ───────── */
+.player-row-clickable { cursor: pointer; }
+.player-row-clickable:hover { background: var(--bg); }
+
+.pp-overlay {
+  position: fixed; inset: 0; z-index: 400;
+  background: rgba(11,17,32,0.55);
+  backdrop-filter: blur(2px);
+}
+.pp-panel {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 401;
+  width: min(420px, 100vw);
+  background: var(--card);
+  border-left: 1px solid var(--card-border);
+  overflow-y: auto;
+  display: flex; flex-direction: column;
+  box-shadow: -8px 0 32px rgba(0,0,0,.25);
+  animation: pp-slide-in 0.22s cubic-bezier(0.16,1,0.3,1);
+}
+@keyframes pp-slide-in {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+.pp-close {
+  position: absolute; top: 12px; right: 14px; z-index: 1;
+  background: var(--bg); border: 1px solid var(--card-border);
+  border-radius: 50%; width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--text-dim); font-size: 1rem;
+  transition: background 0.15s;
+}
+.pp-close:hover { background: var(--card-border); color: var(--text); }
+
+.pp-header {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 24px 16px 16px;
+  background: linear-gradient(135deg, var(--navy) 0%, #1e293b 100%);
+}
+.pp-img-wrap { flex-shrink: 0; }
+.pp-img {
+  width: 80px; height: 80px;
+  border-radius: 12px; object-fit: cover; object-position: top;
+  background: #1e293b;
+}
+.pp-img-fallback {
+  width: 80px; height: 80px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; font-weight: 800;
+}
+.pp-identity { flex: 1; min-width: 0; padding-top: 4px; }
+.pp-name {
+  font-size: 1.15rem; font-weight: 700; color: #fff;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin-bottom: 6px;
+}
+.pp-meta-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; }
+.pp-pos-badge {
+  font-size: 0.68rem; font-weight: 700; padding: 2px 7px; border-radius: 100px;
+}
+.pp-team { font-size: 0.78rem; color: rgba(255,255,255,0.7); font-weight: 600; }
+.pp-injury { font-size: 0.75rem; font-weight: 600; display: flex; align-items: center; gap: 3px; }
+.pp-bio { display: flex; gap: 10px; flex-wrap: wrap; }
+.pp-bio span { font-size: 0.72rem; color: rgba(255,255,255,0.55); }
+
+.pp-section { padding: 14px 16px; border-bottom: 1px solid var(--card-border); }
+.pp-section:last-child { border-bottom: none; }
+.pp-section-title { font-size: 0.7rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
+
+.pp-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.pp-stat-card {
+  background: var(--bg); border-radius: 8px; padding: 10px 8px;
+  text-align: center;
+}
+.pp-stat-val { font-size: 1.1rem; font-weight: 700; color: var(--text); }
+.pp-stat-lbl { font-size: 0.65rem; color: var(--text-dim); margin-top: 2px; }
+
+.pp-news-list { display: flex; flex-direction: column; gap: 8px; }
+.pp-news-item {
+  display: block; padding: 10px 12px; border-radius: 8px;
+  background: var(--bg); text-decoration: none;
+  border: 1px solid var(--card-border);
+  transition: background 0.15s;
+}
+.pp-news-item:hover { background: var(--card-border); }
+.pp-news-headline { font-size: 0.82rem; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.pp-news-desc { font-size: 0.75rem; color: var(--text-dim); margin-bottom: 6px; line-height: 1.4; }
+.pp-news-time { font-size: 0.68rem; color: var(--text-dim); }
+
+.pp-injury-notes {
+  font-size: 0.8rem; color: var(--text-dim); line-height: 1.5;
+  padding: 8px 10px; background: var(--bg); border-radius: 8px;
+}
+.pp-loading, .pp-empty { font-size: 0.82rem; color: var(--text-dim); padding: 8px 0; }

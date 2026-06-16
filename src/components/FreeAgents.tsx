@@ -1,11 +1,13 @@
 import { useState, useMemo } from 'react';
 import type { SleeperRoster, SleeperPlayer, PlayersMap } from '../types/sleeper';
 import PlayerAvatar from './PlayerAvatar';
+import PlayerPanel from './PlayerPanel';
 
 interface Props {
   rosters: SleeperRoster[];
   players: PlayersMap | undefined;
   isLoading: boolean;
+  season?: string;
 }
 
 const POSITIONS = ['ALL', 'QB', 'RB', 'WR', 'TE', 'K', 'DEF'];
@@ -19,9 +21,10 @@ const POS_COLOR: Record<string, string> = {
   DEF: '#5cade0',
 };
 
-export default function FreeAgents({ rosters, players, isLoading }: Props) {
+export default function FreeAgents({ rosters, players, isLoading, season = '2024' }: Props) {
   const [search, setSearch] = useState('');
   const [pos, setPos] = useState('ALL');
+  const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
 
   const ownedIds = useMemo(() => {
     const ids = new Set<string>();
@@ -53,6 +56,7 @@ export default function FreeAgents({ rosters, players, isLoading }: Props) {
 
   return (
     <div className="fa-wrap">
+      <PlayerPanel playerId={selectedPlayerId} players={players} season={season} onClose={() => setSelectedPlayerId(null)} />
       <div className="fa-controls">
         <input
           type="text"
@@ -79,7 +83,7 @@ export default function FreeAgents({ rosters, players, isLoading }: Props) {
       ) : (
         <ul className="player-list">
           {filtered.map(p => (
-            <li key={p.player_id} className="player-row">
+            <li key={p.player_id} className="player-row player-row-clickable" onClick={() => setSelectedPlayerId(p.player_id)}>
               <PlayerAvatar playerId={p.player_id} position={p.position} team={p.team} size={28} />
               <span className="player-pos" style={{ color: POS_COLOR[p.position] ?? 'var(--text-dim)' }}>
                 {p.position}

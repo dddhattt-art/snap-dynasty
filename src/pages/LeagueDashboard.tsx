@@ -414,18 +414,18 @@ export default function LeagueDashboard() {
 
         <div className="content-body">
         <div key={tab} className="content-fade">
-        {tab === 'myteam'       && <MyTeam userId={userId} rosters={r} userMap={userMap} players={players} seasonMatchups={sm} seasonTransactions={stx} league={league} isLoading={seasonLoading || playersLoading} />}
+        {tab === 'myteam'       && <MyTeam userId={userId} rosters={r} userMap={userMap} players={players} seasonMatchups={sm} seasonTransactions={stx} league={league} isLoading={seasonLoading || playersLoading} season={league?.season} />}
         {tab === 'my-schedule'   && <MySchedule userId={userId} rosters={r} userMap={userMap} seasonMatchups={sm} currentWeek={currentWeek} isLoading={seasonLoading} />}
         {tab === 'weekly-digest' && <WeeklyDigest userId={userId} rosters={r} userMap={userMap} players={players} seasonMatchups={sm} seasonTransactions={stx} currentWeek={currentWeek} isLoading={seasonLoading || playersLoading} />}
         {tab === 'weekly-awards' && <WeeklyAwards rosters={r} userMap={userMap} players={players} seasonMatchups={sm} week={currentWeek} isLoading={seasonLoading || playersLoading} />}
         {tab === 'standings'    && <Standings rosters={r} userMap={userMap} />}
         {tab === 'matchups'     && <Matchups matchups={matchups ?? []} rosters={r} userMap={userMap} isLoading={matchupsLoading} />}
         {tab === 'transactions' && <Transactions transactions={transactions ?? []} userMap={userMap} rosters={r} players={players} isLoading={txLoading || playersLoading} />}
-        {tab === 'roster'       && <Roster rosters={r} userMap={userMap} players={players} userId={userId} isLoading={playersLoading} />}
+        {tab === 'roster'       && <Roster rosters={r} userMap={userMap} players={players} userId={userId} isLoading={playersLoading} season={league?.season} />}
         {tab === 'playoffs'     && <Bracket winners={winners ?? []} losers={losers ?? []} rosters={r} userMap={userMap} isLoading={winnersLoading || losersLoading} />}
         {tab === 'draft'        && <DraftRecap picks={draftPicks ?? []} rosters={r} userMap={userMap} isLoading={draftLoading} />}
         {tab === 'power'        && <PowerRankings rosters={r} userMap={userMap} seasonMatchups={sm} isLoading={seasonLoading} />}
-        {tab === 'free-agents'  && <FreeAgents rosters={r} players={players} isLoading={playersLoading} />}
+        {tab === 'free-agents'  && <FreeAgents rosters={r} players={players} isLoading={playersLoading} season={league?.season} />}
         {tab === 'trade'        && <TradeAnalyzer rosters={r} userMap={userMap} players={players} seasonMatchups={sm} isLoading={playersLoading || seasonLoading} />}
         {tab === 'h2h'          && <HeadToHead rosters={r} userMap={userMap} seasonMatchups={sm} isLoading={seasonLoading} />}
         {tab === 'charts'       && <SeasonCharts rosters={r} userMap={userMap} seasonMatchups={sm} isLoading={seasonLoading} />}
