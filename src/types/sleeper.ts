@@ -122,6 +122,8 @@ export interface SleeperPlayer {
   practice_description: string | null;
   espn_id: number | null;
   search_rank: number;
+  years_exp: number | null;
+  college: string | null;
 }
 
 export type PlayersMap = Record<string, SleeperPlayer>;

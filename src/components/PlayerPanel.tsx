@@ -52,16 +52,16 @@ export default function PlayerPanel({ playerId, players, season, onClose }: Prop
     staleTime: 30 * 60 * 1000,
   });
 
-  const { data: espnNews } = useQuery({
+  const { data: espnNews } = useQuery<EspnArticle[]>({
     queryKey: ['espn-nfl-news'],
-    queryFn: getEspnNflNews,
+    queryFn: () => getEspnNflNews(),
     staleTime: 15 * 60 * 1000,
   });
 
-  const playerNews = espnNews?.filter(a =>
+  const playerNews = (espnNews ?? []).filter((a: EspnArticle) =>
     (player?.espn_id && a.athleteIds.includes(player.espn_id)) ||
     (player?.full_name && a.athleteNames.includes(player.full_name.toLowerCase()))
-  ).slice(0, 4) ?? [];
+  ).slice(0, 4);
 
   if (!playerId || !player) return null;
 
@@ -153,7 +153,7 @@ export default function PlayerPanel({ playerId, players, season, onClose }: Prop
             <div className="pp-empty">No recent news.</div>
           ) : (
             <div className="pp-news-list">
-              {playerNews.map(a => (
+              {playerNews.map((a: EspnArticle) => (
                 <a key={a.link} href={a.link} target="_blank" rel="noopener noreferrer" className="pp-news-item">
                   <div className="pp-news-headline">{a.headline}</div>
                   <div className="pp-news-desc">{a.description}</div>
