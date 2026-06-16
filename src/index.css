@@ -418,7 +418,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   flex: 0 0 220px;
   width: 220px;
   background: var(--navy);
-  border-right: 1px solid rgba(255,255,255,0.06);
+  border-right: 1px solid #1e2a42;
   display: flex;
   flex-direction: column;
   position: sticky;
@@ -440,7 +440,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   align-items: center;
   gap: 10px;
   padding: 18px 16px 14px;
-  border-bottom: 0.5px solid rgba(255,255,255,0.07);
+  border-bottom: 0.5px solid #1e2a42;
   cursor: pointer;
   background: none;
   border-top: none;
@@ -470,7 +470,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 
 .side-league {
   padding: 11px 16px;
-  border-bottom: 0.5px solid rgba(255,255,255,0.07);
+  border-bottom: 0.5px solid #1e2a42;
   flex-shrink: 0;
 }
 .side-league-name {
@@ -485,7 +485,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   text-overflow: ellipsis;
 }
 .side-league-meta {
-  color: rgba(255,255,255,0.3);
+  color: #4b5680;
   font-size: 10px;
   margin-top: 3px;
 }
@@ -516,12 +516,12 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   font-size: 11px;
   font-weight: 600;
 }
-.side-footer-name { color: rgba(255,255,255,0.75); font-size: 11px; font-weight: 500; }
-.side-footer-role { color: rgba(255,255,255,0.3); font-size: 10px; margin-top: 1px; }
+.side-footer-name { color: #c8d6f0; font-size: 11px; font-weight: 500; }
+.side-footer-role { color: #4b5680; font-size: 10px; margin-top: 1px; }
 
 .nav-group { padding: 8px 8px; flex: 1; overflow-y: auto; scrollbar-width: none; }
 .nav-group::-webkit-scrollbar { display: none; }
-.nav-cat { color: rgba(255,255,255,0.25); font-size: 9px; font-weight: 600; letter-spacing: 0.9px; text-transform: uppercase; padding: 12px 8px 4px; }
+.nav-cat { color: #4b5680; font-size: 9px; font-weight: 600; letter-spacing: 0.9px; text-transform: uppercase; padding: 12px 8px 4px; }
 
 /* subtab-bar kept for legacy components that may still use it */
 .subtab-bar { display: none; }
@@ -535,7 +535,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   background: none;
   border: none;
   border-radius: 7px;
-  color: rgba(255,255,255,0.45);
+  color: #8a9bbf;
   font-size: 12px;
   font-weight: 500;
   padding: 7px 10px;
@@ -545,7 +545,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   margin-bottom: 1px;
 }
 .nav-item-icon { font-size: 15px; width: 16px; text-align: center; flex-shrink: 0; }
-.nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.75); }
+.nav-item:hover { background: #1a2540; color: #c8d6f0; }
 .nav-item.active {
   background: var(--blue-hover);
   color: var(--blue-text);
@@ -2349,7 +2349,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   .lp-form { flex-direction: column; }
   .lp-cta { justify-content: center; }
   .lp-stats { flex-wrap: wrap; }
-  .lp-stat { flex: 1 1 45%; border-right: none; border-bottom: 0.5px solid rgba(255,255,255,0.07); }
+  .lp-stat { flex: 1 1 45%; border-right: none; border-bottom: 0.5px solid #1e2a42; }
   .lp-feature-grid { grid-template-columns: 1fr 1fr; }
   .lp-history { margin: 0 1rem 2rem; }
   .lp-footer { flex-direction: column; gap: 0.75rem; text-align: center; }
