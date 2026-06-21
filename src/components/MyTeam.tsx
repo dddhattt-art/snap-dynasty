@@ -95,7 +95,7 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
   const oppAv = oppUser ? avatarUrl(oppUser.avatar) : null;
 
   // Starters this week
-  const starters = myMatchup?.starters ?? myRoster.starters ?? [];
+  const starters = (myMatchup?.starters ?? myRoster.starters ?? []).filter(pid => pid !== '0');
   const starterPts = myMatchup?.players_points ?? {};
 
   // Recent transactions (last 5 involving my roster)
