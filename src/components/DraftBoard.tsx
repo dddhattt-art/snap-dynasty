@@ -81,12 +81,18 @@ export default function DraftBoard({ players, leagueId, teamCount = 12, isLoadin
   const ranked = useMemo((): SleeperPlayer[] => {
     if (!players) return [];
     return Object.values(players)
-      .filter(p =>
-        p.full_name &&
-        ['QB', 'RB', 'WR', 'TE', 'K', 'DEF'].includes(p.position) &&
-        p.search_rank > 0 && p.search_rank < 9999
-      )
-      .sort((a, b) => a.search_rank - b.search_rank);
+      .filter(p => {
+        if (!['QB', 'RB', 'WR', 'TE', 'K', 'DEF'].includes(p.position)) return false;
+        // DEF entries use last_name (e.g. "Cardinals") and have search_rank 0
+        if (p.position === 'DEF') return !!(p.last_name ?? p.full_name);
+        return p.full_name && p.search_rank > 0 && p.search_rank < 9999;
+      })
+      .sort((a, b) => {
+        // DEF at the end, everything else by search_rank
+        if (a.position === 'DEF' && b.position !== 'DEF') return 1;
+        if (b.position === 'DEF' && a.position !== 'DEF') return -1;
+        return a.search_rank - b.search_rank;
+      });
   }, [players]);
 
   const filtered = useMemo(() => {
