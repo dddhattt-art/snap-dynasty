@@ -3,6 +3,7 @@ import type { SleeperRoster, SleeperUser, PlayersMap } from '../types/sleeper';
 import { avatarUrl } from '../api/sleeper';
 import PlayerAvatar from './PlayerAvatar';
 import PlayerPanel from './PlayerPanel';
+import type { SalaryMap } from '../hooks/useSalaries';
 
 interface Props {
   rosters: SleeperRoster[];
@@ -10,7 +11,8 @@ interface Props {
   players: PlayersMap | undefined;
   userId?: string;
   isLoading: boolean;
-
+  salaries?: SalaryMap;
+  setSalary?: (playerId: string, amount: number) => void;
 }
 
 const POS_ORDER = ['QB', 'RB', 'WR', 'TE', 'K', 'DEF', 'DL', 'LB', 'DB'];
@@ -27,7 +29,7 @@ function posColor(pos: string) {
   return POS_COLOR[pos] ?? 'var(--text-dim)';
 }
 
-export default function Roster({ rosters, userMap, players, userId, isLoading }: Props) {
+export default function Roster({ rosters, userMap, players, userId, isLoading, salaries, setSalary }: Props) {
   const myRoster = userId ? rosters.find(r => r.owner_id === userId) : undefined;
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
   const [selectedRosterId, setSelectedRosterId] = useState<number | null>(
@@ -55,7 +57,7 @@ export default function Roster({ rosters, userMap, players, userId, isLoading }:
 
   return (
     <div className="roster-wrap">
-      <PlayerPanel playerId={selectedPlayerId} players={players} onClose={() => setSelectedPlayerId(null)} />
+      <PlayerPanel playerId={selectedPlayerId} players={players} onClose={() => setSelectedPlayerId(null)} salaries={salaries} setSalary={setSalary} />
       <div className="roster-selector">
         {rosters.map(r => {
           const u = userMap.get(r.owner_id);
@@ -95,6 +97,9 @@ export default function Roster({ rosters, userMap, players, userId, isLoading }:
               {player?.injury_status && (
                 <span className="player-injury">{player.injury_status}</span>
               )}
+              {salaries?.[id] != null && (
+                <span className="salary-badge">${salaries[id].toLocaleString()}</span>
+              )}
             </li>
           ))}
         </ul>
@@ -113,6 +118,9 @@ export default function Roster({ rosters, userMap, players, userId, isLoading }:
               <span className="player-team">{player?.team ?? 'FA'}</span>
               {player?.injury_status && (
                 <span className="player-injury">{player.injury_status}</span>
+              )}
+              {salaries?.[id] != null && (
+                <span className="salary-badge">${salaries[id].toLocaleString()}</span>
               )}
             </li>
           ))}

@@ -3,11 +3,14 @@ import { getPlayerWeeklyStats, playerFullImg, teamLogoUrl, getEspnNflNews } from
 import type { EspnArticle } from '../api/sleeper';
 import type { PlayersMap } from '../types/sleeper';
 import { useState } from 'react';
+import type { SalaryMap } from '../hooks/useSalaries';
 
 interface Props {
   playerId: string | null;
   players: PlayersMap | undefined;
   onClose: () => void;
+  salaries?: SalaryMap;
+  setSalary?: (playerId: string, amount: number) => void;
 }
 
 const POS_COLOR: Record<string, string> = {
@@ -62,8 +65,10 @@ function timeAgo(iso: string): string {
   return `${Math.floor(h / 24)}d ago`;
 }
 
-export default function PlayerPanel({ playerId, players, onClose }: Props) {
+export default function PlayerPanel({ playerId, players, onClose, salaries, setSalary }: Props) {
   const [imgFailed, setImgFailed] = useState(false);
+  const [editingSalary, setEditingSalary] = useState(false);
+  const [salaryInput, setSalaryInput] = useState('');
   const player = playerId ? players?.[playerId] : null;
   const primarySeason = lastCompletedSeason();
   const fallbackSeason = primarySeason - 1;
@@ -159,6 +164,43 @@ export default function PlayerPanel({ playerId, players, onClose }: Props) {
               {player.years_exp != null && <span>{player.years_exp === 0 ? 'Rookie' : `Yr ${player.years_exp + 1}`}</span>}
               {player.college && <span>{player.college}</span>}
             </div>
+            {setSalary && (
+              <div className="pp-salary-row">
+                {editingSalary ? (
+                  <form
+                    className="pp-salary-edit"
+                    onSubmit={e => {
+                      e.preventDefault();
+                      const val = parseFloat(salaryInput);
+                      if (!isNaN(val) && val >= 0) setSalary(playerId, val);
+                      setEditingSalary(false);
+                    }}
+                  >
+                    <span className="pp-salary-dollar">$</span>
+                    <input
+                      className="pp-salary-input"
+                      type="number"
+                      min="0"
+                      step="0.1"
+                      autoFocus
+                      value={salaryInput}
+                      onChange={e => setSalaryInput(e.target.value)}
+                      onBlur={() => setEditingSalary(false)}
+                    />
+                    <button type="submit" className="pp-salary-save">Save</button>
+                  </form>
+                ) : (
+                  <button
+                    className="pp-salary-badge"
+                    onClick={() => { setSalaryInput(String(salaries?.[playerId] ?? '')); setEditingSalary(true); }}
+                  >
+                    {salaries?.[playerId] != null
+                      ? `$${salaries[playerId].toLocaleString()}`
+                      : '+ Set Salary'}
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </div>
 

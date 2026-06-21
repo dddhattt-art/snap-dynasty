@@ -38,6 +38,8 @@ import WhatIfStandings from '../components/WhatIfStandings';
 import LeagueHistory from '../components/LeagueHistory';
 import LeagueSettings from '../components/LeagueSettings';
 import MyTeam from '../components/MyTeam';
+import { useSalaries } from '../hooks/useSalaries';
+import { fetchSalaryData } from '../api/salaries';
 import PlayerNews from '../components/PlayerNews';
 import BenchPoints from '../components/BenchPoints';
 import TradeHistory from '../components/TradeHistory';
@@ -297,6 +299,12 @@ export default function LeagueDashboard() {
     () => new Map<string, SleeperUser>((users ?? []).map(u => [u.user_id, u])),
     [users]
   );
+  const { data: autoSalaries } = useQuery<Record<string, number>>({
+    queryKey: ['salary-data'],
+    queryFn: fetchSalaryData,
+    staleTime: 24 * 60 * 60 * 1000,
+  });
+  const { salaries, setSalary } = useSalaries(leagueId, players, autoSalaries);
   const showWeekControls = tab === 'matchups' || tab === 'transactions';
   const myRoster = rosters && userId ? rosters.find(r => r.owner_id === userId) : undefined;
   const myUser = myRoster ? userMap.get(myRoster.owner_id) : undefined;
@@ -423,14 +431,14 @@ export default function LeagueDashboard() {
 
         <div className="content-body">
         <div key={tab} className="content-fade">
-        {tab === 'myteam'       && <MyTeam userId={userId} rosters={r} userMap={userMap} players={players} seasonMatchups={sm} seasonTransactions={stx} league={league} isLoading={seasonLoading || playersLoading} />}
+        {tab === 'myteam'       && <MyTeam userId={userId} rosters={r} userMap={userMap} players={players} seasonMatchups={sm} seasonTransactions={stx} league={league} isLoading={seasonLoading || playersLoading} salaries={salaries} setSalary={setSalary} />}
         {tab === 'my-schedule'   && <MySchedule userId={userId} rosters={r} userMap={userMap} seasonMatchups={sm} currentWeek={currentWeek} isLoading={seasonLoading} />}
         {tab === 'weekly-digest' && <WeeklyDigest userId={userId} rosters={r} userMap={userMap} players={players} seasonMatchups={sm} seasonTransactions={stx} currentWeek={currentWeek} isLoading={seasonLoading || playersLoading} />}
         {tab === 'weekly-awards' && <WeeklyAwards rosters={r} userMap={userMap} players={players} seasonMatchups={sm} week={currentWeek} isLoading={seasonLoading || playersLoading} />}
         {tab === 'standings'    && <Standings rosters={r} userMap={userMap} />}
         {tab === 'matchups'     && <Matchups matchups={matchups ?? []} rosters={r} userMap={userMap} isLoading={matchupsLoading} />}
         {tab === 'transactions' && <Transactions transactions={transactions ?? []} userMap={userMap} rosters={r} players={players} isLoading={txLoading || playersLoading} />}
-        {tab === 'roster'       && <Roster rosters={r} userMap={userMap} players={players} userId={userId} isLoading={playersLoading} />}
+        {tab === 'roster'       && <Roster rosters={r} userMap={userMap} players={players} userId={userId} isLoading={playersLoading} salaries={salaries} setSalary={setSalary} />}
         {tab === 'playoffs'     && <Bracket winners={winners ?? []} losers={losers ?? []} rosters={r} userMap={userMap} isLoading={winnersLoading || losersLoading} />}
         {tab === 'draft'        && <DraftRecap picks={draftPicks ?? []} rosters={r} userMap={userMap} isLoading={draftLoading} />}
         {tab === 'power'        && <PowerRankings rosters={r} userMap={userMap} seasonMatchups={sm} isLoading={seasonLoading} />}

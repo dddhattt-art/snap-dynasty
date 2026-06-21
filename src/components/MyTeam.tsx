@@ -5,6 +5,7 @@ import { avatarUrl, getEspnNflNews } from '../api/sleeper';
 import PlayerAvatar from './PlayerAvatar';
 import PlayerPanel from './PlayerPanel';
 import type { EspnArticle } from '../api/sleeper';
+import type { SalaryMap } from '../hooks/useSalaries';
 
 interface Props {
   userId?: string;
@@ -15,7 +16,8 @@ interface Props {
   seasonTransactions?: Record<number, SleeperTransaction[]>;
   league?: SleeperLeague;
   isLoading: boolean;
-
+  salaries?: SalaryMap;
+  setSalary?: (playerId: string, amount: number) => void;
 }
 
 const POS_COLOR: Record<string, string> = {
@@ -42,7 +44,7 @@ function timeAgo(iso: string): string {
   return `${Math.floor(h / 24)}d ago`;
 }
 
-export default function MyTeam({ userId, rosters, userMap, players, seasonMatchups, seasonTransactions, league, isLoading }: Props) {
+export default function MyTeam({ userId, rosters, userMap, players, seasonMatchups, seasonTransactions, league, isLoading, salaries, setSalary }: Props) {
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
   const { data: espnNews } = useQuery({
     queryKey: ['espn-nfl-news'],
@@ -179,7 +181,7 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
 
   return (
     <div className="myteam-wrap">
-      <PlayerPanel playerId={selectedPlayerId} players={players} onClose={() => setSelectedPlayerId(null)} />
+      <PlayerPanel playerId={selectedPlayerId} players={players} onClose={() => setSelectedPlayerId(null)} salaries={salaries} setSalary={setSalary} />
 
       {/* Header card */}
       <div className="myteam-header">
@@ -319,6 +321,9 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
                     <span className="myteam-starter-name">{p?.full_name ?? pid}</span>
                     <span className="myteam-starter-team">{p?.team ?? 'FA'}</span>
                   </div>
+                  {salaries?.[pid] != null && (
+                    <span className="salary-badge">${salaries[pid].toLocaleString()}</span>
+                  )}
                 </li>
               );
             })}
@@ -350,6 +355,9 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
                     </div>
                   </div>
                   <div className="myteam-starter-right">
+                    {salaries?.[pid] != null && (
+                      <span className="salary-badge">${salaries[pid].toLocaleString()}</span>
+                    )}
                     {pts !== undefined && <span className="myteam-starter-pts bench-pts">{pts.toFixed(2)}</span>}
                   </div>
                 </li>
