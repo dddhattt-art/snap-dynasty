@@ -17,8 +17,9 @@ export default function PlayerAvatar({ playerId, position, team, size = 30 }: Pr
   const [failed, setFailed] = useState(false);
   const color = POS_COLOR[position ?? ''] ?? '#64748b';
 
-  const src = position === 'DEF' && team
-    ? teamLogoUrl(team)
+  // For DEF: use team if available, otherwise playerId is the team code (e.g. "ARI")
+  const src = position === 'DEF'
+    ? teamLogoUrl(team ?? playerId)
     : playerThumb(playerId);
 
   if (failed) {
