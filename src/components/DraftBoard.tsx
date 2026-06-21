@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
-import type { SleeperPlayer, PlayersMap } from '../types/sleeper';
+import type { SleeperPlayer, PlayersMap, SleeperRoster, SleeperUser } from '../types/sleeper';
+import { avatarUrl } from '../api/sleeper';
 import PlayerAvatar from './PlayerAvatar';
 import PlayerPanel from './PlayerPanel';
 import type { SalaryMap } from '../hooks/useSalaries';
@@ -11,6 +12,8 @@ interface Props {
   isLoading: boolean;
   salaries?: SalaryMap;
   cap?: number;
+  rosters?: SleeperRoster[];
+  userMap?: Map<string, SleeperUser>;
 }
 
 function fmtM(n: number): string {
@@ -41,9 +44,10 @@ function saveState(leagueId: string, state: { drafted: string[]; queue: string[]
   localStorage.setItem(storageKey(leagueId), JSON.stringify(state));
 }
 
-export default function DraftBoard({ players, leagueId, teamCount = 12, isLoading, salaries, cap }: Props) {
+export default function DraftBoard({ players, leagueId, teamCount = 12, isLoading, salaries, cap, rosters, userMap }: Props) {
   const [pos, setPos] = useState<string>('ALL');
   const [hideDrafted, setHideDrafted] = useState(false);
+  const [hideRostered, setHideRostered] = useState(true);
   const [search, setSearch] = useState('');
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
   const [drafted, setDrafted] = useState<Set<string>>(() => new Set(loadState(leagueId).drafted));
@@ -58,6 +62,20 @@ export default function DraftBoard({ players, leagueId, teamCount = 12, isLoadin
       myPicks,
     });
   }, [drafted, queue, myPicks, leagueId]);
+
+  // Map from player_id -> owner display name for rostered players
+  const rosteredMap = useMemo(() => {
+    const map = new Map<string, string>();
+    if (!rosters) return map;
+    for (const roster of rosters) {
+      const user = userMap?.get(roster.owner_id);
+      const label = user?.display_name ?? user?.username ?? `Team ${roster.roster_id}`;
+      for (const pid of roster.players ?? []) {
+        map.set(pid, label);
+      }
+    }
+    return map;
+  }, [rosters, userMap]);
 
   const ranked = useMemo((): SleeperPlayer[] => {
     if (!players) return [];
@@ -75,9 +93,10 @@ export default function DraftBoard({ players, leagueId, teamCount = 12, isLoadin
     return ranked.filter(p =>
       (pos === 'ALL' || p.position === pos) &&
       (!q || p.full_name.toLowerCase().includes(q)) &&
-      (!hideDrafted || !drafted.has(p.player_id))
+      (!hideDrafted || !drafted.has(p.player_id)) &&
+      (!hideRostered || !rosteredMap.has(p.player_id))
     );
-  }, [ranked, pos, search, hideDrafted, drafted]);
+  }, [ranked, pos, search, hideDrafted, drafted, hideRostered, rosteredMap]);
 
   // Tier = every teamCount picks
   function tierLabel(overallRank: number): number {
@@ -154,6 +173,11 @@ export default function DraftBoard({ players, leagueId, teamCount = 12, isLoadin
               <button className={`db-toggle ${hideDrafted ? 'active' : ''}`} onClick={() => setHideDrafted(v => !v)}>
                 <i className="ti ti-eye-off" /> Hide Drafted
               </button>
+              {rosteredMap.size > 0 && (
+                <button className={`db-toggle ${hideRostered ? 'active' : ''}`} onClick={() => setHideRostered(v => !v)}>
+                  <i className="ti ti-users-minus" /> Hide Rostered
+                </button>
+              )}
               <button className="db-reset" onClick={reset}>
                 <i className="ti ti-refresh" /> Reset
               </button>
@@ -189,6 +213,7 @@ export default function DraftBoard({ players, leagueId, teamCount = 12, isLoadin
               const tier = tierLabel(rank);
               const isDrafted = drafted.has(p.player_id);
               const inQueue = queue.has(p.player_id);
+              const rosterOwner = rosteredMap.get(p.player_id);
               const showTierBand = tier !== lastTier;
               lastTier = tier;
 
@@ -200,7 +225,7 @@ export default function DraftBoard({ players, leagueId, teamCount = 12, isLoadin
                       <span className="db-tier-range">Picks {(tier - 1) * teamCount + 1}–{tier * teamCount}</span>
                     </div>
                   )}
-                  <div className={`db-row ${isDrafted ? 'db-row-drafted' : ''} ${inQueue ? 'db-row-queued' : ''}`}>
+                  <div className={`db-row ${isDrafted ? 'db-row-drafted' : ''} ${inQueue ? 'db-row-queued' : ''} ${rosterOwner ? 'db-row-rostered' : ''}`}>
                     <span className="db-rank">{rank}</span>
                     <div className="db-av" onClick={() => setSelectedPlayerId(p.player_id)}>
                       <PlayerAvatar playerId={p.player_id} position={p.position} team={p.team} size={36} />
@@ -211,6 +236,7 @@ export default function DraftBoard({ players, leagueId, teamCount = 12, isLoadin
                         <span className="db-pos-badge" style={{ color: POS_COLOR[p.position] ?? '#888' }}>{p.position}</span>
                         {p.team && <span className="db-team">{p.team}</span>}
                         {p.age && <span className="db-age">{p.age}y</span>}
+                        {rosterOwner && <span className="db-rostered-tag">on {rosterOwner}</span>}
                       </div>
                     </div>
                     {(() => {
@@ -233,11 +259,13 @@ export default function DraftBoard({ players, leagueId, teamCount = 12, isLoadin
                         className={`db-queue-btn ${inQueue ? 'active' : ''}`}
                         onClick={() => toggleQueue(p.player_id)}
                         title={inQueue ? 'Remove from queue' : 'Add to queue'}
-                        disabled={isDrafted}
+                        disabled={isDrafted || !!rosterOwner}
                       >
                         <i className={`ti ${inQueue ? 'ti-star-filled' : 'ti-star'}`} />
                       </button>
-                      {isDrafted ? (
+                      {rosterOwner ? (
+                        <span className="db-rostered-pill">Rostered</span>
+                      ) : isDrafted ? (
                         <button className="db-undraft-btn" onClick={() => undraft(p.player_id)} title="Undo draft">
                           <i className="ti ti-arrow-back-up" />
                         </button>

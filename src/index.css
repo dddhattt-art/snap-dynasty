@@ -3177,3 +3177,29 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   border-color: var(--red) !important;
   color: var(--red) !important;
 }
+
+/* Draft board — rostered player styles */
+.db-row-rostered { opacity: 0.55; }
+.db-rostered-tag {
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 90px;
+}
+.db-rostered-pill {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 2px 7px;
+  background: var(--surface2);
+  white-space: nowrap;
+}
