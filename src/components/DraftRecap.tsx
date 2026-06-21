@@ -1,4 +1,4 @@
-import type { SleeperDraftPick, SleeperRoster, SleeperUser } from '../types/sleeper';
+import type { SleeperDraftPick, SleeperRoster, SleeperUser, PlayersMap } from '../types/sleeper';
 import { avatarUrl } from '../api/sleeper';
 import PlayerAvatar from './PlayerAvatar';
 
@@ -7,6 +7,7 @@ interface Props {
   rosters: SleeperRoster[];
   userMap: Map<string, SleeperUser>;
   isLoading: boolean;
+  players?: PlayersMap;
 }
 
 const POS_COLOR: Record<string, string> = {
@@ -18,7 +19,7 @@ const POS_COLOR: Record<string, string> = {
   DEF: '#5cade0',
 };
 
-export default function DraftRecap({ picks, rosters, userMap, isLoading }: Props) {
+export default function DraftRecap({ picks, rosters, userMap, isLoading, players }: Props) {
   if (isLoading) return <div className="loading">Loading draft…</div>;
   if (!picks.length) return <div className="empty">Draft data not available.</div>;
 
@@ -51,7 +52,7 @@ export default function DraftRecap({ picks, rosters, userMap, isLoading }: Props
                       <span className="draft-pos" style={{ color: POS_COLOR[pos] ?? 'var(--text-dim)' }}>{pos}</span>
                     </div>
                     <PlayerAvatar playerId={pick.player_id} position={pos} team={pick.metadata?.team} size={46} />
-                    <div className="draft-player-name">{pick.metadata?.player_name ?? pick.player_id}</div>
+                    <div className="draft-player-name">{pick.metadata?.player_name || players?.[pick.player_id]?.full_name || pick.player_id}</div>
                     <div className="draft-pick-owner">
                       {av && <img loading="lazy" src={av} alt="" className="avatar-xs" />}
                       <span>{user?.display_name ?? user?.username ?? `Team ${pick.roster_id}`}</span>
