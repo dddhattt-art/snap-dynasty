@@ -18,6 +18,8 @@ interface Props {
   isLoading: boolean;
   salaries?: SalaryMap;
   setSalary?: (playerId: string, amount: number) => void;
+  cap?: number;
+  setCap?: (amount: number) => void;
 }
 
 const POS_COLOR: Record<string, string> = {
@@ -44,8 +46,10 @@ function timeAgo(iso: string): string {
   return `${Math.floor(h / 24)}d ago`;
 }
 
-export default function MyTeam({ userId, rosters, userMap, players, seasonMatchups, seasonTransactions, league, isLoading, salaries, setSalary }: Props) {
+export default function MyTeam({ userId, rosters, userMap, players, seasonMatchups, seasonTransactions, league, isLoading, salaries, setSalary, cap, setCap }: Props) {
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
+  const [editingCap, setEditingCap] = useState(false);
+  const [capInput, setCapInput] = useState('');
   const { data: espnNews } = useQuery({
     queryKey: ['espn-nfl-news'],
     queryFn: () => getEspnNflNews(),
@@ -208,6 +212,71 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
         <StatPill label="Streak" value={streakLabel} highlight={streak !== 0} />
         <StatPill label="Standing" value={`${standing} / ${rosters.length}`} />
       </div>
+
+      {/* Salary cap bar */}
+      {salaries && (() => {
+        const allPids = myRoster.players ?? [];
+        const totalSalary = allPids.reduce((sum, pid) => sum + (salaries[pid] ?? 0), 0);
+        const hasCap = cap && cap > 0;
+        const pct = hasCap ? Math.min(totalSalary / cap, 1) : 0;
+        const overCap = hasCap && totalSalary > cap;
+        const fmtM = (n: number) => `$${(n / 1_000_000).toFixed(1)}M`;
+
+        return (
+          <div className="cap-bar-wrap">
+            <div className="cap-bar-header">
+              <span className="cap-bar-label">Salary</span>
+              <span className={`cap-bar-total ${overCap ? 'cap-over' : ''}`}>{fmtM(totalSalary)}</span>
+              {hasCap && (
+                <span className="cap-bar-of">of</span>
+              )}
+              {editingCap ? (
+                <form className="cap-edit-form" onSubmit={e => {
+                  e.preventDefault();
+                  const val = parseFloat(capInput.replace(/[^0-9.]/g, '')) * 1_000_000;
+                  if (!isNaN(val) && val > 0) setCap?.(val);
+                  setEditingCap(false);
+                }}>
+                  <span className="cap-edit-dollar">$</span>
+                  <input
+                    className="cap-edit-input"
+                    type="number"
+                    min="1"
+                    step="0.1"
+                    autoFocus
+                    placeholder="e.g. 279.2"
+                    value={capInput}
+                    onChange={e => setCapInput(e.target.value)}
+                    onBlur={() => setEditingCap(false)}
+                  />
+                  <span className="cap-edit-unit">M</span>
+                  <button type="submit" className="cap-edit-save">Set</button>
+                </form>
+              ) : (
+                <button
+                  className={`cap-set-btn ${hasCap ? 'cap-set-btn--active' : ''}`}
+                  onClick={() => { setCapInput(hasCap ? String(cap / 1_000_000) : ''); setEditingCap(true); }}
+                >
+                  {hasCap ? fmtM(cap) : '+ Set Cap'}
+                </button>
+              )}
+              {hasCap && (
+                <span className={`cap-remaining ${overCap ? 'cap-over' : 'cap-under'}`}>
+                  {overCap ? `${fmtM(totalSalary - cap)} over` : `${fmtM(cap - totalSalary)} remaining`}
+                </span>
+              )}
+            </div>
+            {hasCap && (
+              <div className="cap-bar-track">
+                <div
+                  className={`cap-bar-fill ${overCap ? 'cap-bar-fill--over' : ''}`}
+                  style={{ width: `${pct * 100}%` }}
+                />
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       {/* Matchup — full lineup breakdown */}
       {myMatchup && players && (

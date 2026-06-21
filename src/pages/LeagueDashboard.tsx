@@ -39,6 +39,7 @@ import LeagueHistory from '../components/LeagueHistory';
 import LeagueSettings from '../components/LeagueSettings';
 import MyTeam from '../components/MyTeam';
 import { useSalaries } from '../hooks/useSalaries';
+import { useSalaryCap } from '../hooks/useSalaryCap';
 import { fetchSalaryData } from '../api/salaries';
 import PlayerNews from '../components/PlayerNews';
 import BenchPoints from '../components/BenchPoints';
@@ -305,6 +306,7 @@ export default function LeagueDashboard() {
     staleTime: 24 * 60 * 60 * 1000,
   });
   const { salaries, setSalary } = useSalaries(leagueId, players, autoSalaries);
+  const { cap, setCap } = useSalaryCap(leagueId);
   const showWeekControls = tab === 'matchups' || tab === 'transactions';
   const myRoster = rosters && userId ? rosters.find(r => r.owner_id === userId) : undefined;
   const myUser = myRoster ? userMap.get(myRoster.owner_id) : undefined;
@@ -431,7 +433,7 @@ export default function LeagueDashboard() {
 
         <div className="content-body">
         <div key={tab} className="content-fade">
-        {tab === 'myteam'       && <MyTeam userId={userId} rosters={r} userMap={userMap} players={players} seasonMatchups={sm} seasonTransactions={stx} league={league} isLoading={seasonLoading || playersLoading} salaries={salaries} setSalary={setSalary} />}
+        {tab === 'myteam'       && <MyTeam userId={userId} rosters={r} userMap={userMap} players={players} seasonMatchups={sm} seasonTransactions={stx} league={league} isLoading={seasonLoading || playersLoading} salaries={salaries} setSalary={setSalary} cap={cap} setCap={setCap} />}
         {tab === 'my-schedule'   && <MySchedule userId={userId} rosters={r} userMap={userMap} seasonMatchups={sm} currentWeek={currentWeek} isLoading={seasonLoading} />}
         {tab === 'weekly-digest' && <WeeklyDigest userId={userId} rosters={r} userMap={userMap} players={players} seasonMatchups={sm} seasonTransactions={stx} currentWeek={currentWeek} isLoading={seasonLoading || playersLoading} />}
         {tab === 'weekly-awards' && <WeeklyAwards rosters={r} userMap={userMap} players={players} seasonMatchups={sm} week={currentWeek} isLoading={seasonLoading || playersLoading} />}
@@ -461,7 +463,7 @@ export default function LeagueDashboard() {
         {tab === 'consistency'  && <ConsistencyScore rosters={r} userMap={userMap} seasonMatchups={sm} isLoading={seasonLoading} />}
         {tab === 'whatif'       && <WhatIfStandings rosters={r} userMap={userMap} seasonMatchups={sm} isLoading={seasonLoading} />}
         {tab === 'history'      && <LeagueHistory history={leagueHistory} allTimeMatchups={allTimeMatchups} allTimeLoading={allTimeLoading} userId={userId} isLoading={historyLoading} />}
-        {tab === 'settings'     && <LeagueSettings league={league} />}
+        {tab === 'settings'     && <LeagueSettings league={league} cap={cap} setCap={setCap} />}
         {tab === 'news'         && <PlayerNews rosters={r} userMap={userMap} players={players} isLoading={playersLoading} />}
         {tab === 'bench'        && <BenchPoints rosters={r} userMap={userMap} seasonMatchups={sm} isLoading={seasonLoading} />}
         {tab === 'trade-history' && <TradeHistory seasonTransactions={stx} rosters={r} userMap={userMap} players={players} isLoading={seasonTxLoading || playersLoading} />}

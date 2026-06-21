@@ -1,7 +1,10 @@
+import { useState } from 'react';
 import type { SleeperLeague } from '../types/sleeper';
 
 interface Props {
   league: SleeperLeague | undefined;
+  cap?: number;
+  setCap?: (amount: number) => void;
 }
 
 const WAIVER_TYPES: Record<number, string> = {
@@ -137,7 +140,10 @@ function Row({ label, value }: { label: string; value: string | number | undefin
   );
 }
 
-export default function LeagueSettings({ league }: Props) {
+export default function LeagueSettings({ league, cap, setCap }: Props) {
+  const [capInput, setCapInput] = useState(cap ? String(cap / 1_000_000) : '');
+  const [saved, setSaved] = useState(false);
+
   if (!league) return <div className="loading">Loading settings…</div>;
 
   const s = league.settings;
@@ -163,6 +169,43 @@ export default function LeagueSettings({ league }: Props) {
 
   return (
     <div className="settings-wrap">
+      <div className="settings-section">
+        <div className="settings-section-title">Salary Cap</div>
+        <div className="settings-cap-row">
+          <span className="settings-label">League Salary Cap</span>
+          <form
+            className="settings-cap-form"
+            onSubmit={e => {
+              e.preventDefault();
+              const val = parseFloat(capInput.replace(/[^0-9.]/g, '')) * 1_000_000;
+              if (!isNaN(val) && val > 0 && setCap) {
+                setCap(val);
+                setSaved(true);
+                setTimeout(() => setSaved(false), 2000);
+              }
+            }}
+          >
+            <span className="settings-cap-dollar">$</span>
+            <input
+              className="settings-cap-input"
+              type="number"
+              min="1"
+              step="0.1"
+              placeholder="e.g. 279.2"
+              value={capInput}
+              onChange={e => { setCapInput(e.target.value); setSaved(false); }}
+            />
+            <span className="settings-cap-unit">M</span>
+            <button type="submit" className="settings-cap-save">
+              {saved ? 'Saved!' : 'Save'}
+            </button>
+          </form>
+          {cap && cap > 0 && (
+            <span className="settings-cap-current">Current: ${(cap / 1_000_000).toFixed(1)}M</span>
+          )}
+        </div>
+      </div>
+
       <Section title="League">
         <Row label="League Type"       value={LEAGUE_TYPES[s.type ?? 0]} />
         <Row label="Scoring Format"    value={scoringFormat(sc)} />

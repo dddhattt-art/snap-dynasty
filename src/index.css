@@ -1064,6 +1064,36 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .myteam-playoff-badge { font-size: 0.68rem; font-weight: 700; color: #fff; padding: 0.18rem 0.55rem; border-radius: 99px; letter-spacing: 0.04em; }
 
 .myteam-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.7rem; }
+
+/* Salary cap bar */
+.cap-bar-wrap { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
+.cap-bar-header { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; font-size: 0.82rem; }
+.cap-bar-label { font-weight: 700; color: var(--text-dim); text-transform: uppercase; font-size: 0.68rem; letter-spacing: 0.05em; }
+.cap-bar-total { font-weight: 700; color: var(--text); }
+.cap-bar-of { color: var(--text-dim); font-size: 0.75rem; }
+.cap-over { color: var(--red, #dc2626) !important; }
+.cap-under { color: var(--green, #1c6b46); }
+.cap-remaining { font-size: 0.75rem; font-weight: 600; margin-left: auto; }
+.cap-set-btn { background: none; border: 1px dashed var(--border); border-radius: 5px; color: var(--text-dim); font-size: 0.75rem; padding: 0.15rem 0.5rem; cursor: pointer; }
+.cap-set-btn:hover { border-color: var(--accent); color: var(--accent); }
+.cap-set-btn--active { border-style: solid; color: var(--text); border-color: var(--border); }
+.cap-edit-form { display: flex; align-items: center; gap: 4px; }
+.cap-edit-dollar { font-size: 0.82rem; color: var(--text-dim); }
+.cap-edit-input { width: 70px; padding: 0.15rem 0.3rem; border-radius: 5px; border: 1px solid var(--accent); background: var(--surface2); color: var(--text); font-size: 0.82rem; font-weight: 600; }
+.cap-edit-unit { font-size: 0.78rem; color: var(--text-dim); }
+.cap-edit-save { padding: 0.15rem 0.5rem; border-radius: 5px; border: none; background: var(--accent); color: #fff; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
+.cap-bar-track { margin-top: 0.5rem; height: 6px; background: var(--surface2); border-radius: 99px; overflow: hidden; }
+.cap-bar-fill { height: 100%; background: var(--green, #1c6b46); border-radius: 99px; transition: width 0.3s ease; }
+.cap-bar-fill--over { background: var(--red, #dc2626); }
+
+/* League settings cap row */
+.settings-cap-row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; padding: 0.5rem 0; }
+.settings-cap-form { display: flex; align-items: center; gap: 5px; }
+.settings-cap-dollar { font-size: 0.88rem; color: var(--text-dim); }
+.settings-cap-input { width: 90px; padding: 0.3rem 0.4rem; border-radius: 6px; border: 1px solid var(--border); background: var(--surface2); color: var(--text); font-size: 0.88rem; font-weight: 600; }
+.settings-cap-unit { font-size: 0.82rem; color: var(--text-dim); }
+.settings-cap-save { padding: 0.3rem 0.7rem; border-radius: 6px; border: none; background: var(--accent); color: #fff; font-size: 0.82rem; font-weight: 700; cursor: pointer; }
+.settings-cap-current { font-size: 0.78rem; color: var(--text-dim); }
 .myteam-stat {
   background: var(--surface);
   border: 0.5px solid var(--border);
