@@ -2755,3 +2755,329 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   .db-sidebar { flex-direction: row; overflow-x: auto; }
   .db-panel { min-width: 240px; }
 }
+
+/* ==========================================
+   MY TEAM — LEAGUE TYCOON REDESIGN
+   ========================================== */
+
+/* Hero header */
+.mt-hero {
+  position: relative;
+  background: linear-gradient(135deg, var(--accent) 0%, #1e3a5f 100%);
+  border-radius: var(--radius);
+  padding: 28px 24px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+  overflow: hidden;
+}
+.mt-hero-bg {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 60% -10%, rgba(59,130,246,0.25) 0%, transparent 60%);
+  pointer-events: none;
+}
+.mt-avatar-ring {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  padding: 3px;
+  background: linear-gradient(135deg, #60a5fa, #34d399, #60a5fa);
+  box-shadow: 0 0 28px rgba(96,165,250,0.45), 0 0 8px rgba(0,0,0,0.5);
+  flex-shrink: 0;
+}
+.mt-avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  border: 2px solid var(--accent);
+}
+.mt-avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #fff;
+  border: 2px solid var(--accent);
+}
+.mt-hero-info {
+  text-align: center;
+  position: relative;
+}
+.mt-hero-name {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+.mt-hero-meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+.mt-hero-record {
+  font-size: 1rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.9);
+}
+.mt-hero-dot { color: rgba(255,255,255,0.4); }
+.mt-hero-salary {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #34d399;
+}
+.mt-hero-badges {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin-top: 8px;
+}
+.mt-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.85);
+  border: 1px solid rgba(255,255,255,0.2);
+  letter-spacing: 0.03em;
+}
+.mt-badge--green { background: rgba(22,163,74,0.3); color: #4ade80; border-color: rgba(74,222,128,0.3); }
+.mt-badge--red   { background: rgba(220,38,38,0.3); color: #f87171; border-color: rgba(248,113,113,0.3); }
+
+/* Inner tab bar */
+.mt-inner-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
+}
+.mt-inner-tab {
+  flex: 1;
+  padding: 11px 0;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.mt-inner-tab.active {
+  color: var(--text);
+  border-bottom-color: var(--blue);
+}
+.mt-inner-tab:hover:not(.active) { color: var(--text); }
+
+/* Contracts tab */
+.mt-contracts { display: flex; flex-direction: column; gap: 12px; }
+
+.mt-cap-header {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.mt-cap-numbers {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.mt-cap-val {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.1;
+}
+.mt-cap-sub {
+  font-size: 0.67rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+.mt-cap-center { text-align: center; }
+.mt-cap-remaining {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--green);
+}
+.mt-cap-remaining.over { color: var(--red); }
+
+/* Cap bar */
+.mt-cap-bar-track {
+  height: 18px;
+  background: var(--surface2);
+  border-radius: 9px;
+  overflow: hidden;
+  position: relative;
+}
+.mt-cap-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+  border-radius: 9px;
+  transition: width 0.4s ease;
+}
+.mt-cap-bar-fill.over { background: linear-gradient(90deg, #dc2626, #f87171); }
+.mt-cap-bar-pct {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-dim);
+}
+.mt-cap-bar-legend {
+  display: flex;
+  gap: 16px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-dim);
+}
+.mt-cap-legend-used { color: #60a5fa; }
+.mt-cap-legend-avail { color: var(--text-dim); }
+
+/* Cap edit form inline */
+.mt-cap-edit-form {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.mt-cap-edit-dollar, .mt-cap-edit-unit {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-dim);
+}
+.mt-cap-edit-input {
+  width: 65px;
+  padding: 3px 6px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--surface2);
+  outline: none;
+}
+.mt-cap-edit-input:focus { border-color: var(--blue); }
+.mt-cap-edit-save {
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: none;
+  background: var(--blue);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.mt-cap-set-btn {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--blue-text);
+  background: none;
+  border: 1px solid rgba(96,165,250,0.3);
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.mt-cap-set-btn:hover { background: var(--blue-hover); }
+
+/* Contracts player list */
+.mt-contracts-list {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.mt-contracts-head {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-dim);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+  gap: 8px;
+}
+.mt-contracts-head span:first-child { flex: 1; }
+.mt-contracts-head span:nth-child(2) { min-width: 56px; text-align: right; }
+.mt-contracts-head span:nth-child(3) { min-width: 48px; text-align: right; }
+
+.mt-contract-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s;
+}
+.mt-contract-row:last-child { border-bottom: none; }
+.mt-contract-row:hover { background: var(--surface2); }
+
+.mt-contract-pos {
+  font-size: 0.68rem;
+  font-weight: 800;
+  min-width: 28px;
+  text-align: center;
+}
+.mt-contract-name-wrap { flex: 1; min-width: 0; }
+.mt-contract-name {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mt-contract-team {
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  font-weight: 500;
+}
+.mt-contract-salary {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--green);
+  min-width: 56px;
+  text-align: right;
+  flex-shrink: 0;
+}
+.mt-contract-pct {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  min-width: 44px;
+  text-align: right;
+  flex-shrink: 0;
+}
+.mt-contracts-empty {
+  padding: 28px 16px;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 0.82rem;
+  line-height: 1.6;
+}

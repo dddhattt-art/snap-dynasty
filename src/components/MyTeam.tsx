@@ -48,6 +48,7 @@ function timeAgo(iso: string): string {
 
 export default function MyTeam({ userId, rosters, userMap, players, seasonMatchups, seasonTransactions, league, isLoading, salaries, setSalary, cap, setCap }: Props) {
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
+  const [innerTab, setInnerTab] = useState<'overview' | 'contracts'>('overview');
   const [editingCap, setEditingCap] = useState(false);
   const [capInput, setCapInput] = useState('');
   const { data: espnNews } = useQuery({
@@ -183,27 +184,164 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
   myNews.sort((a, b) => new Date(b.published).getTime() - new Date(a.published).getTime());
 
 
+  const allPids = myRoster.players ?? [];
+  const totalSalary = salaries ? allPids.reduce((sum, pid) => sum + (salaries[pid] ?? 0), 0) : 0;
+  const hasCap = !!(cap && cap > 0);
+  const capPct = hasCap ? Math.min(totalSalary / cap!, 1) : 0;
+  const overCap = hasCap && totalSalary > cap!;
+  const fmtM = (n: number) => `$${(n / 1_000_000).toFixed(1)}M`;
+
+  // Sorted player salary list for Contracts tab
+  const contractRows = allPids
+    .filter(pid => salaries?.[pid])
+    .map(pid => ({ pid, salary: salaries![pid] ?? 0, player: players?.[pid] }))
+    .sort((a, b) => b.salary - a.salary);
+
   return (
     <div className="myteam-wrap">
       <PlayerPanel playerId={selectedPlayerId} players={players} onClose={() => setSelectedPlayerId(null)} salaries={salaries} setSalary={setSalary} />
 
-      {/* Header card */}
-      <div className="myteam-header">
-        <div className="myteam-identity">
-          {av && <img loading="lazy" src={av} alt="" className="myteam-avatar" />}
-          <div>
-            <div className="myteam-name">{me?.display_name ?? me?.username ?? 'Your Team'}</div>
-            <div className="myteam-league">{league?.name} · {league?.season}</div>
+      {/* Hero header */}
+      <div className="mt-hero">
+        <div className="mt-hero-bg" />
+        <div className="mt-avatar-ring">
+          {av
+            ? <img loading="lazy" src={av} alt="" className="mt-avatar-img" />
+            : <div className="mt-avatar-placeholder">{(me?.display_name ?? '?')[0].toUpperCase()}</div>
+          }
+        </div>
+        <div className="mt-hero-info">
+          <div className="mt-hero-name">{me?.display_name ?? me?.username ?? 'Your Team'}</div>
+          <div className="mt-hero-meta">
+            <span className="mt-hero-record">{wins}–{losses}</span>
+            <span className="mt-hero-dot">·</span>
+            {totalSalary > 0 && <span className="mt-hero-salary">{fmtM(totalSalary)}</span>}
+          </div>
+          <div className="mt-hero-badges">
+            <span className="mt-badge">{standing}{ordinal(standing)}</span>
+            <span className={`mt-badge ${inPlayoffs ? 'mt-badge--green' : 'mt-badge--red'}`}>
+              {inPlayoffs ? '✓ Playoffs' : '✗ Eliminated'}
+            </span>
           </div>
         </div>
-        <div className="myteam-record-block">
-          <span className="myteam-record">{wins}–{losses}</span>
-          <span className="myteam-standing">{standing}{ordinal(standing)} place</span>
-          <span className="myteam-playoff-badge" style={{ background: inPlayoffs ? 'var(--green)' : 'var(--red)' }}>
-            {inPlayoffs ? '✓ Playoff' : '✗ Out'}
-          </span>
-        </div>
       </div>
+
+      {/* Inner tab bar */}
+      <div className="mt-inner-tabs">
+        <button className={`mt-inner-tab ${innerTab === 'overview' ? 'active' : ''}`} onClick={() => setInnerTab('overview')}>Overview</button>
+        <button className={`mt-inner-tab ${innerTab === 'contracts' ? 'active' : ''}`} onClick={() => setInnerTab('contracts')}>Contracts</button>
+      </div>
+
+      {/* CONTRACTS TAB */}
+      {innerTab === 'contracts' && (
+        <div className="mt-contracts">
+          {/* Cap usage header */}
+          <div className="mt-cap-header">
+            <div className="mt-cap-numbers">
+              <div>
+                <div className="mt-cap-val">{totalSalary > 0 ? fmtM(totalSalary) : '—'}</div>
+                <div className="mt-cap-sub">Committed</div>
+              </div>
+              {hasCap && (
+                <div className="mt-cap-center">
+                  <div className={`mt-cap-remaining ${overCap ? 'over' : ''}`}>
+                    {overCap ? `${fmtM(totalSalary - cap!)} over` : `${fmtM(cap! - totalSalary)} left`}
+                  </div>
+                </div>
+              )}
+              <div style={{ textAlign: 'right' }}>
+                {editingCap ? (
+                  <form className="mt-cap-edit-form" onSubmit={e => {
+                    e.preventDefault();
+                    const val = parseFloat(capInput.replace(/[^0-9.]/g, '')) * 1_000_000;
+                    if (!isNaN(val) && val > 0) setCap?.(val);
+                    setEditingCap(false);
+                  }}>
+                    <span className="mt-cap-edit-dollar">$</span>
+                    <input
+                      className="mt-cap-edit-input"
+                      type="number"
+                      min="1"
+                      step="0.1"
+                      autoFocus
+                      placeholder="279.2"
+                      value={capInput}
+                      onChange={e => setCapInput(e.target.value)}
+                      onBlur={() => setEditingCap(false)}
+                    />
+                    <span className="mt-cap-edit-unit">M</span>
+                    <button type="submit" className="mt-cap-edit-save">Set</button>
+                  </form>
+                ) : (
+                  <button
+                    className="mt-cap-set-btn"
+                    onClick={() => { setCapInput(hasCap ? String(cap! / 1_000_000) : ''); setEditingCap(true); }}
+                  >
+                    {hasCap ? fmtM(cap!) : '+ Set Cap'}
+                  </button>
+                )}
+                <div className="mt-cap-sub">Cap</div>
+              </div>
+            </div>
+
+            {/* Visual cap bar */}
+            <div className="mt-cap-bar-track">
+              <div
+                className={`mt-cap-bar-fill ${overCap ? 'over' : ''}`}
+                style={{ width: `${(hasCap ? capPct : 0) * 100}%` }}
+              />
+              {hasCap && (
+                <div className="mt-cap-bar-pct">{Math.round(capPct * 100)}%</div>
+              )}
+            </div>
+            {hasCap && (
+              <div className="mt-cap-bar-legend">
+                <span className="mt-cap-legend-used">■ Used {fmtM(totalSalary)}</span>
+                <span className="mt-cap-legend-avail">■ Available {overCap ? '$0' : fmtM(cap! - totalSalary)}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Player salary list */}
+          {contractRows.length > 0 ? (
+            <div className="mt-contracts-list">
+              <div className="mt-contracts-head">
+                <span>Player</span>
+                <span>APY</span>
+                {hasCap && <span>Cap %</span>}
+              </div>
+              {contractRows.map(({ pid, salary, player }) => {
+                const pos = player?.position ?? '—';
+                const capShare = hasCap ? salary / cap! : 0;
+                return (
+                  <div key={pid} className="mt-contract-row player-row-clickable" onClick={() => setSelectedPlayerId(pid)}>
+                    <PlayerAvatar playerId={pid} position={pos} team={player?.team} size={36} />
+                    <span className="mt-contract-pos" style={{ color: posColor(pos) }}>{pos}</span>
+                    <div className="mt-contract-name-wrap">
+                      <span className="mt-contract-name">{player?.full_name ?? pid}</span>
+                      <span className="mt-contract-team">{player?.team ?? 'FA'}</span>
+                    </div>
+                    <span className="mt-contract-salary">{fmtM(salary)}</span>
+                    {hasCap && (
+                      <span className="mt-contract-pct">{(capShare * 100).toFixed(1)}%</span>
+                    )}
+                  </div>
+                );
+              })}
+              {contractRows.length === 0 && (
+                <div className="mt-contracts-empty">No salary data loaded yet.</div>
+              )}
+            </div>
+          ) : (
+            <div className="mt-contracts-empty">
+              No salary data for your players yet.<br />Salaries are loaded from salaries.json.
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* OVERVIEW TAB */}
+      {innerTab === 'overview' && <>
 
       {/* Stats row */}
       <div className="myteam-stats">
@@ -212,71 +350,6 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
         <StatPill label="Streak" value={streakLabel} highlight={streak !== 0} />
         <StatPill label="Standing" value={`${standing} / ${rosters.length}`} />
       </div>
-
-      {/* Salary cap bar */}
-      {salaries && (() => {
-        const allPids = myRoster.players ?? [];
-        const totalSalary = allPids.reduce((sum, pid) => sum + (salaries[pid] ?? 0), 0);
-        const hasCap = cap && cap > 0;
-        const pct = hasCap ? Math.min(totalSalary / cap, 1) : 0;
-        const overCap = hasCap && totalSalary > cap;
-        const fmtM = (n: number) => `$${(n / 1_000_000).toFixed(1)}M`;
-
-        return (
-          <div className="cap-bar-wrap">
-            <div className="cap-bar-header">
-              <span className="cap-bar-label">Salary</span>
-              <span className={`cap-bar-total ${overCap ? 'cap-over' : ''}`}>{fmtM(totalSalary)}</span>
-              {hasCap && (
-                <span className="cap-bar-of">of</span>
-              )}
-              {editingCap ? (
-                <form className="cap-edit-form" onSubmit={e => {
-                  e.preventDefault();
-                  const val = parseFloat(capInput.replace(/[^0-9.]/g, '')) * 1_000_000;
-                  if (!isNaN(val) && val > 0) setCap?.(val);
-                  setEditingCap(false);
-                }}>
-                  <span className="cap-edit-dollar">$</span>
-                  <input
-                    className="cap-edit-input"
-                    type="number"
-                    min="1"
-                    step="0.1"
-                    autoFocus
-                    placeholder="e.g. 279.2"
-                    value={capInput}
-                    onChange={e => setCapInput(e.target.value)}
-                    onBlur={() => setEditingCap(false)}
-                  />
-                  <span className="cap-edit-unit">M</span>
-                  <button type="submit" className="cap-edit-save">Set</button>
-                </form>
-              ) : (
-                <button
-                  className={`cap-set-btn ${hasCap ? 'cap-set-btn--active' : ''}`}
-                  onClick={() => { setCapInput(hasCap ? String(cap / 1_000_000) : ''); setEditingCap(true); }}
-                >
-                  {hasCap ? fmtM(cap) : '+ Set Cap'}
-                </button>
-              )}
-              {hasCap && (
-                <span className={`cap-remaining ${overCap ? 'cap-over' : 'cap-under'}`}>
-                  {overCap ? `${fmtM(totalSalary - cap)} over` : `${fmtM(cap - totalSalary)} remaining`}
-                </span>
-              )}
-            </div>
-            {hasCap && (
-              <div className="cap-bar-track">
-                <div
-                  className={`cap-bar-fill ${overCap ? 'cap-bar-fill--over' : ''}`}
-                  style={{ width: `${pct * 100}%` }}
-                />
-              </div>
-            )}
-          </div>
-        );
-      })()}
 
       {/* Matchup — full lineup breakdown */}
       {myMatchup && players && (
@@ -490,6 +563,8 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
           </ul>
         </div>
       )}
+
+      </>}
     </div>
   );
 }
