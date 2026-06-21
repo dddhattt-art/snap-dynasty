@@ -55,7 +55,7 @@ export default function Roster({ rosters, userMap, players, userId, isLoading, s
   const starters = new Set((roster.starters ?? []).filter(pid => pid !== '0'));
   const allPlayers = (roster.players ?? []).filter(pid => pid !== '0');
 
-  const starterList = (roster.starters ?? []).map(id => ({ id, player: players[id], isStarter: true }));
+  const starterList = (roster.starters ?? []).filter(id => id !== '0').map(id => ({ id, player: players[id], isStarter: true }));
   const benchList = allPlayers
     .filter(id => !starters.has(id))
     .map(id => ({ id, player: players[id], isStarter: false }))
