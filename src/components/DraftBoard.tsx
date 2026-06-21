@@ -48,6 +48,7 @@ export default function DraftBoard({ players, leagueId, teamCount = 12, isLoadin
   const [pos, setPos] = useState<string>('ALL');
   const [hideDrafted, setHideDrafted] = useState(false);
   const [hideRostered, setHideRostered] = useState(true);
+  const [hideFreeAgents, setHideFreeAgents] = useState(false);
   const [search, setSearch] = useState('');
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
   const [drafted, setDrafted] = useState<Set<string>>(() => new Set(loadState(leagueId).drafted));
@@ -94,9 +95,10 @@ export default function DraftBoard({ players, leagueId, teamCount = 12, isLoadin
       (pos === 'ALL' || p.position === pos) &&
       (!q || p.full_name.toLowerCase().includes(q)) &&
       (!hideDrafted || !drafted.has(p.player_id)) &&
-      (!hideRostered || !rosteredMap.has(p.player_id))
+      (!hideRostered || !rosteredMap.has(p.player_id)) &&
+      (!hideFreeAgents || !!p.team)
     );
-  }, [ranked, pos, search, hideDrafted, drafted, hideRostered, rosteredMap]);
+  }, [ranked, pos, search, hideDrafted, drafted, hideRostered, rosteredMap, hideFreeAgents]);
 
   // Tier = every teamCount picks
   function tierLabel(overallRank: number): number {
@@ -182,6 +184,9 @@ export default function DraftBoard({ players, leagueId, teamCount = 12, isLoadin
                   <i className="ti ti-users-minus" /> Hide Rostered
                 </button>
               )}
+              <button className={`db-toggle ${hideFreeAgents ? 'active' : ''}`} onClick={() => setHideFreeAgents(v => !v)}>
+                <i className="ti ti-user-x" /> Hide F/A
+              </button>
               <button className="db-reset" onClick={reset}>
                 <i className="ti ti-refresh" /> Reset
               </button>
@@ -244,7 +249,7 @@ export default function DraftBoard({ players, leagueId, teamCount = 12, isLoadin
                       <span className="db-name">{p.full_name}</span>
                       <div className="db-meta">
                         <span className="db-pos-badge" style={{ color: POS_COLOR[p.position] ?? '#888' }}>{p.position}</span>
-                        {p.team && <span className="db-team">{p.team}</span>}
+                        <span className={`db-team ${!p.team ? 'db-team-fa' : ''}`}>{p.team ?? 'F/A'}</span>
                         {p.age && <span className="db-age">{p.age}y</span>}
                         {rosterOwner && <span className="db-rostered-tag">on {rosterOwner}</span>}
                       </div>
