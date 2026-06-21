@@ -2,7 +2,8 @@ import { useState, useCallback, useMemo } from 'react';
 import type { PlayersMap } from '../types/sleeper';
 
 // Normalize player names for fuzzy matching (handles A.J. vs AJ, Jr./Sr. suffixes, etc.)
-function normalizeName(name: string): string {
+function normalizeName(name: string | null | undefined): string {
+  if (!name) return '';
   return name
     .toLowerCase()
     .replace(/\./g, '')        // A.J. -> aj
