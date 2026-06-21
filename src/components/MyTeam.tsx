@@ -95,7 +95,7 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
   const oppAv = oppUser ? avatarUrl(oppUser.avatar) : null;
 
   // Starters this week
-  const starters = (myMatchup?.starters ?? myRoster.starters ?? []).filter(pid => pid !== '0');
+  const starters = myMatchup?.starters ?? myRoster.starters ?? [];
   const starterPts = myMatchup?.players_points ?? {};
 
   // Recent transactions (last 5 involving my roster)
@@ -140,7 +140,7 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
 
   // Bench players and optimal swap detection
   const starterSet = new Set(starters);
-  const benchPids = (myRoster.players ?? []).filter(pid => !starterSet.has(pid) && pid !== '0' && !!players?.[pid]);
+  const benchPids = (myRoster.players ?? []).filter(pid => !starterSet.has(pid));
   const suboptimalStarters = new Set<string>(); // starter pids outscored by a bench player same position
   for (const starterId of starters) {
     const starterPos = players?.[starterId]?.position;
@@ -184,7 +184,7 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
   myNews.sort((a, b) => new Date(b.published).getTime() - new Date(a.published).getTime());
 
 
-  const allPids = (myRoster.players ?? []).filter(pid => pid !== '0');
+  const allPids = myRoster.players ?? [];
   const totalSalary = salaries ? allPids.reduce((sum, pid) => sum + (salaries[pid] ?? 0), 0) : 0;
   const hasCap = !!(cap && cap > 0);
   const capPct = hasCap ? Math.min(totalSalary / cap!, 1) : 0;
@@ -379,6 +379,13 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
           {/* Player-by-player rows */}
           <div className="mu-lineup">
             {starters.map((myPid, i) => {
+              if (myPid === '0') return (
+                <div key={`open-${i}`} className="mu-row">
+                  <div className="mu-player mu-player-left mu-empty-slot"><span className="myteam-open-badge">Open</span></div>
+                  <div className="mu-slot">{(league?.roster_positions?.[i] ?? '').replace('DEF', 'DST')}</div>
+                  <div className="mu-player mu-player-right" />
+                </div>
+              );
               const oppPid = oppMatchup?.starters?.[i];
               const slot = (league?.roster_positions?.[i] ?? '').replace('DEF', 'DST');
               const myP = players[myPid];
@@ -452,7 +459,12 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
         <div className="myteam-section">
           <div className="myteam-section-title">Current Starters</div>
           <ul className="myteam-starters">
-            {starters.map(pid => {
+            {starters.map((pid, i) => {
+              if (pid === '0') return (
+                <li key={`open-${i}`} className="myteam-starter-row myteam-open-slot">
+                  <span className="myteam-open-badge">Open</span>
+                </li>
+              );
               const p = players[pid];
               const pos = p?.position ?? '—';
               return (
@@ -478,7 +490,12 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
         <div className="myteam-section">
           <div className="myteam-section-title">Bench</div>
           <ul className="myteam-starters">
-            {benchPids.map(pid => {
+            {benchPids.map((pid, i) => {
+              if (pid === '0') return (
+                <li key={`open-bench-${i}`} className="myteam-starter-row myteam-open-slot">
+                  <span className="myteam-open-badge">Open</span>
+                </li>
+              );
               const p = players[pid];
               const pos = p?.position ?? '—';
               const name = p?.full_name ?? p?.last_name ?? pid;

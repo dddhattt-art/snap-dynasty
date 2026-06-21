@@ -3213,3 +3213,17 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .db-cap-breakdown strong { color: var(--text); font-weight: 700; }
 
 .db-team-fa { color: var(--text-dim); font-style: italic; }
+
+.myteam-open-slot {
+  opacity: 0.5;
+}
+.myteam-open-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+  padding: 3px 10px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
