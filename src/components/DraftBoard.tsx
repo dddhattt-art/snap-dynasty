@@ -84,7 +84,7 @@ export default function DraftBoard({ players, leagueId, teamCount = 12, isLoadin
       .filter(p =>
         p.full_name &&
         ['QB', 'RB', 'WR', 'TE', 'K', 'DEF'].includes(p.position) &&
-        p.search_rank > 0 && p.search_rank < 999
+        p.search_rank > 0 && p.search_rank < 9999
       )
       .sort((a, b) => a.search_rank - b.search_rank);
   }, [players]);
