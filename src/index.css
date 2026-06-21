@@ -3203,3 +3203,11 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   background: var(--surface2);
   white-space: nowrap;
 }
+
+.db-cap-breakdown {
+  display: flex;
+  gap: 12px;
+  font-size: 0.68rem;
+  color: var(--text-dim);
+}
+.db-cap-breakdown strong { color: var(--text); font-weight: 700; }

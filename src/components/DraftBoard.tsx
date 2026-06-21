@@ -13,6 +13,7 @@ interface Props {
   cap?: number;
   rosters?: SleeperRoster[];
   userMap?: Map<string, SleeperUser>;
+  userId?: string;
 }
 
 function fmtM(n: number): string {
@@ -43,7 +44,7 @@ function saveState(leagueId: string, state: { drafted: string[]; queue: string[]
   localStorage.setItem(storageKey(leagueId), JSON.stringify(state));
 }
 
-export default function DraftBoard({ players, leagueId, teamCount = 12, isLoading, salaries, cap, rosters, userMap }: Props) {
+export default function DraftBoard({ players, leagueId, teamCount = 12, isLoading, salaries, cap, rosters, userMap, userId }: Props) {
   const [pos, setPos] = useState<string>('ALL');
   const [hideDrafted, setHideDrafted] = useState(false);
   const [hideRostered, setHideRostered] = useState(true);
@@ -134,10 +135,14 @@ export default function DraftBoard({ players, leagueId, teamCount = 12, isLoadin
   if (!players) return <div className="loading">Loading draft board…</div>;
 
   // Cap calculations
+  const myRoster = userId ? rosters?.find(r => r.owner_id === userId) : undefined;
+  const rosterPids = myRoster?.players ?? [];
+  const rosterSalary = rosterPids.reduce((sum, pid) => sum + (salaries?.[pid] ?? 0), 0);
   const myPicksSalary = myPicks.reduce((sum, pid) => sum + (salaries?.[pid] ?? 0), 0);
+  const totalCommitted = rosterSalary + myPicksSalary;
   const hasCap = !!(cap && cap > 0);
-  const capPct = hasCap ? Math.min(myPicksSalary / cap, 1) : 0;
-  const capOver = hasCap && myPicksSalary > cap;
+  const capPct = hasCap ? Math.min(totalCommitted / cap, 1) : 0;
+  const capOver = hasCap && totalCommitted > cap;
 
   let lastTier = 0;
   const rankedWithTiers = ranked.map((p, i) => ({ p, rank: i + 1, tier: tierLabel(i + 1) }));
@@ -184,19 +189,25 @@ export default function DraftBoard({ players, leagueId, teamCount = 12, isLoadin
           </div>
 
           {/* Cap strip */}
-          {(myPicksSalary > 0 || hasCap) && (
+          {(totalCommitted > 0 || hasCap) && (
             <div className="db-cap-strip">
               <div className="db-cap-strip-row">
-                <span className="db-cap-label">My Picks</span>
-                <span className={`db-cap-committed ${capOver ? 'over' : ''}`}>{myPicksSalary > 0 ? fmtM(myPicksSalary) : '—'}</span>
+                <span className={`db-cap-committed ${capOver ? 'over' : ''}`}>{totalCommitted > 0 ? fmtM(totalCommitted) : '—'}</span>
+                <span className="db-cap-sep">used</span>
                 {hasCap && <>
-                  <span className="db-cap-sep">/</span>
+                  <span className="db-cap-sep">of</span>
                   <span className="db-cap-total">{fmtM(cap)}</span>
                   <span className={`db-cap-rem ${capOver ? 'over' : ''}`}>
-                    {capOver ? `${fmtM(myPicksSalary - cap)} over` : `${fmtM(cap - myPicksSalary)} left`}
+                    {capOver ? `${fmtM(totalCommitted - cap)} over cap` : `${fmtM(cap - totalCommitted)} available`}
                   </span>
                 </>}
               </div>
+              {rosterSalary > 0 && (
+                <div className="db-cap-breakdown">
+                  <span>Roster <strong>{fmtM(rosterSalary)}</strong></span>
+                  {myPicksSalary > 0 && <span>+ Draft picks <strong>{fmtM(myPicksSalary)}</strong></span>}
+                </div>
+              )}
               {hasCap && (
                 <div className="db-cap-bar">
                   <div className={`db-cap-bar-fill ${capOver ? 'over' : ''}`} style={{ width: `${capPct * 100}%` }} />
@@ -240,7 +251,7 @@ export default function DraftBoard({ players, leagueId, teamCount = 12, isLoadin
                     </div>
                     {(() => {
                       const salary = salaries?.[p.player_id];
-                      const newTotal = myPicksSalary + (salary ?? 0);
+                      const newTotal = totalCommitted + (salary ?? 0);
                       const wouldOverCap = hasCap && salary != null && newTotal > cap!;
                       return salary != null ? (
                         <div className="db-salary-col">
@@ -270,7 +281,7 @@ export default function DraftBoard({ players, leagueId, teamCount = 12, isLoadin
                         </button>
                       ) : (() => {
                         const salary = salaries?.[p.player_id];
-                        const wouldOver = hasCap && salary != null && (myPicksSalary + salary) > cap!;
+                        const wouldOver = hasCap && salary != null && (totalCommitted + salary) > cap!;
                         return (
                           <button
                             className={`db-draft-btn ${wouldOver ? 'db-draft-btn--over' : ''}`}
