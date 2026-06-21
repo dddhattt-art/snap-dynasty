@@ -8,10 +8,11 @@ function normalizeName(name: string | null | undefined): string {
     .toLowerCase()
     .replace(/\./g, '')        // A.J. -> aj
     .replace(/'/g, "'")        // smart quotes
-    .replace(/\s+jr\.?$/i, '') // remove Jr suffix
-    .replace(/\s+sr\.?$/i, '') // remove Sr suffix
-    .replace(/\s+ii$/i, '')    // remove II suffix
-    .replace(/\s+iii$/i, '')   // remove III suffix
+    .replace(/,?\s+jr\.?$/i, '') // remove Jr suffix (with or without comma: "Pittman, Jr.")
+    .replace(/,?\s+sr\.?$/i, '') // remove Sr suffix
+    .replace(/,?\s+ii$/i, '')    // remove II suffix
+    .replace(/,?\s+iii$/i, '')   // remove III suffix
+    .replace(/,/g, '')           // strip any remaining commas
     .trim();
 }
 

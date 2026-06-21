@@ -140,7 +140,7 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
 
   // Bench players and optimal swap detection
   const starterSet = new Set(starters);
-  const benchPids = (myRoster.players ?? []).filter(pid => !starterSet.has(pid));
+  const benchPids = (myRoster.players ?? []).filter(pid => !starterSet.has(pid) && pid !== '0' && !!players?.[pid]);
   const suboptimalStarters = new Set<string>(); // starter pids outscored by a bench player same position
   for (const starterId of starters) {
     const starterPos = players?.[starterId]?.position;
@@ -184,7 +184,7 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
   myNews.sort((a, b) => new Date(b.published).getTime() - new Date(a.published).getTime());
 
 
-  const allPids = myRoster.players ?? [];
+  const allPids = (myRoster.players ?? []).filter(pid => pid !== '0');
   const totalSalary = salaries ? allPids.reduce((sum, pid) => sum + (salaries[pid] ?? 0), 0) : 0;
   const hasCap = !!(cap && cap > 0);
   const capPct = hasCap ? Math.min(totalSalary / cap!, 1) : 0;
@@ -193,7 +193,7 @@ export default function MyTeam({ userId, rosters, userMap, players, seasonMatchu
 
   // Sorted player salary list for Contracts tab
   const contractRows = allPids
-    .filter(pid => salaries?.[pid])
+    .filter(pid => pid !== '0' && salaries?.[pid])
     .map(pid => ({ pid, salary: salaries![pid] ?? 0, player: players?.[pid] }))
     .sort((a, b) => b.salary - a.salary);
 
