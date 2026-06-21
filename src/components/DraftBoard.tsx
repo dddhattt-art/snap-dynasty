@@ -1,6 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
 import type { SleeperPlayer, PlayersMap, SleeperRoster, SleeperUser } from '../types/sleeper';
-import { avatarUrl } from '../api/sleeper';
 import PlayerAvatar from './PlayerAvatar';
 import PlayerPanel from './PlayerPanel';
 import type { SalaryMap } from '../hooks/useSalaries';
