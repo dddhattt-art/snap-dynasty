@@ -3227,3 +3227,33 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
+
+.pp-salary-display {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+.pp-salary-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-dim);
+}
+.pp-salary-value {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--green);
+}
+.pp-salary-edit-btn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 2px 4px;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  transition: color 0.12s;
+}
+.pp-salary-edit-btn:hover { color: var(--text); }

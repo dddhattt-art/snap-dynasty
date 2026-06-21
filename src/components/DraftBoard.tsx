@@ -154,7 +154,7 @@ export default function DraftBoard({ players, leagueId, teamCount = 12, isLoadin
 
   return (
     <div className="db-wrap">
-      <PlayerPanel playerId={selectedPlayerId} players={players} onClose={() => setSelectedPlayerId(null)} />
+      <PlayerPanel playerId={selectedPlayerId} players={players} onClose={() => setSelectedPlayerId(null)} salaries={salaries} />
 
       <div className="db-layout">
 

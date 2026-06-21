@@ -164,43 +164,53 @@ export default function PlayerPanel({ playerId, players, onClose, salaries, setS
               {player.years_exp != null && <span>{player.years_exp === 0 ? 'Rookie' : `Yr ${player.years_exp + 1}`}</span>}
               {player.college && <span>{player.college}</span>}
             </div>
-            {setSalary && (
-              <div className="pp-salary-row">
-                {editingSalary ? (
-                  <form
-                    className="pp-salary-edit"
-                    onSubmit={e => {
-                      e.preventDefault();
-                      const val = parseFloat(salaryInput);
-                      if (!isNaN(val) && val >= 0) setSalary(playerId, val);
-                      setEditingSalary(false);
-                    }}
-                  >
-                    <span className="pp-salary-dollar">$</span>
-                    <input
-                      className="pp-salary-input"
-                      type="number"
-                      min="0"
-                      step="0.1"
-                      autoFocus
-                      value={salaryInput}
-                      onChange={e => setSalaryInput(e.target.value)}
-                      onBlur={() => setEditingSalary(false)}
-                    />
-                    <button type="submit" className="pp-salary-save">Save</button>
-                  </form>
-                ) : (
-                  <button
-                    className="pp-salary-badge"
-                    onClick={() => { setSalaryInput(String(salaries?.[playerId] ?? '')); setEditingSalary(true); }}
-                  >
-                    {salaries?.[playerId] != null
-                      ? `$${salaries[playerId].toLocaleString()}`
-                      : '+ Set Salary'}
-                  </button>
-                )}
-              </div>
-            )}
+            <div className="pp-salary-row">
+              {editingSalary ? (
+                <form
+                  className="pp-salary-edit"
+                  onSubmit={e => {
+                    e.preventDefault();
+                    const val = parseFloat(salaryInput);
+                    if (!isNaN(val) && val >= 0) setSalary?.(playerId, val);
+                    setEditingSalary(false);
+                  }}
+                >
+                  <span className="pp-salary-dollar">$</span>
+                  <input
+                    className="pp-salary-input"
+                    type="number"
+                    min="0"
+                    step="0.1"
+                    autoFocus
+                    value={salaryInput}
+                    onChange={e => setSalaryInput(e.target.value)}
+                    onBlur={() => setEditingSalary(false)}
+                  />
+                  <button type="submit" className="pp-salary-save">Save</button>
+                </form>
+              ) : salaries?.[playerId] != null ? (
+                <div className="pp-salary-display">
+                  <span className="pp-salary-label">APY</span>
+                  <span className="pp-salary-value">${salaries[playerId].toLocaleString()}</span>
+                  {setSalary && (
+                    <button
+                      className="pp-salary-edit-btn"
+                      onClick={() => { setSalaryInput(String(salaries[playerId])); setEditingSalary(true); }}
+                      title="Edit salary"
+                    >
+                      <i className="ti ti-pencil" />
+                    </button>
+                  )}
+                </div>
+              ) : setSalary ? (
+                <button
+                  className="pp-salary-badge"
+                  onClick={() => { setSalaryInput(''); setEditingSalary(true); }}
+                >
+                  + Set Salary
+                </button>
+              ) : null}
+            </div>
           </div>
         </div>
 
