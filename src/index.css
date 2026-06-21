@@ -3081,3 +3081,99 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   font-size: 0.82rem;
   line-height: 1.6;
 }
+
+/* ==========================================
+   DRAFT BOARD — CAP INTEGRATION
+   ========================================== */
+
+.db-cap-strip {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.db-cap-strip-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+}
+.db-cap-label {
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  flex-shrink: 0;
+}
+.db-cap-committed {
+  font-weight: 800;
+  color: var(--text);
+}
+.db-cap-committed.over { color: var(--red); }
+.db-cap-sep { color: var(--text-dim); }
+.db-cap-total { font-weight: 600; color: var(--text-dim); }
+.db-cap-rem {
+  margin-left: auto;
+  font-weight: 700;
+  font-size: 0.72rem;
+  color: var(--green);
+}
+.db-cap-rem.over { color: var(--red); }
+
+.db-cap-bar {
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.db-cap-bar-fill {
+  height: 100%;
+  background: var(--blue);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+.db-cap-bar-fill.over { background: var(--red); }
+
+/* Salary column on player rows */
+.db-salary-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+  min-width: 72px;
+}
+.db-salary-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--green);
+  background: rgba(22,163,74,0.1);
+  border: 1px solid rgba(22,163,74,0.25);
+  border-radius: 5px;
+  padding: 1px 6px;
+  white-space: nowrap;
+}
+.db-salary-delta {
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+.db-salary-delta.over {
+  color: var(--red);
+  font-weight: 700;
+}
+
+/* Draft button over-cap state */
+.db-draft-btn--over {
+  border-color: var(--red) !important;
+  color: var(--red) !important;
+}
+.db-draft-btn--over:hover {
+  background: #fef2f2 !important;
+  border-color: var(--red) !important;
+  color: var(--red) !important;
+}

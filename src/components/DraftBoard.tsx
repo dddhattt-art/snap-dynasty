@@ -2,12 +2,19 @@ import { useState, useMemo, useEffect } from 'react';
 import type { SleeperPlayer, PlayersMap } from '../types/sleeper';
 import PlayerAvatar from './PlayerAvatar';
 import PlayerPanel from './PlayerPanel';
+import type { SalaryMap } from '../hooks/useSalaries';
 
 interface Props {
   players: PlayersMap | undefined;
   leagueId: string;
   teamCount?: number;
   isLoading: boolean;
+  salaries?: SalaryMap;
+  cap?: number;
+}
+
+function fmtM(n: number): string {
+  return `$${(n / 1_000_000).toFixed(1)}M`;
 }
 
 const POSITIONS = ['ALL', 'QB', 'RB', 'WR', 'TE', 'K', 'DEF'] as const;
@@ -34,7 +41,7 @@ function saveState(leagueId: string, state: { drafted: string[]; queue: string[]
   localStorage.setItem(storageKey(leagueId), JSON.stringify(state));
 }
 
-export default function DraftBoard({ players, leagueId, teamCount = 12, isLoading }: Props) {
+export default function DraftBoard({ players, leagueId, teamCount = 12, isLoading, salaries, cap }: Props) {
   const [pos, setPos] = useState<string>('ALL');
   const [hideDrafted, setHideDrafted] = useState(false);
   const [search, setSearch] = useState('');
@@ -108,6 +115,12 @@ export default function DraftBoard({ players, leagueId, teamCount = 12, isLoadin
   if (isLoading) return <div className="loading">Loading players…</div>;
   if (!players) return <div className="loading">Loading draft board…</div>;
 
+  // Cap calculations
+  const myPicksSalary = myPicks.reduce((sum, pid) => sum + (salaries?.[pid] ?? 0), 0);
+  const hasCap = !!(cap && cap > 0);
+  const capPct = hasCap ? Math.min(myPicksSalary / cap, 1) : 0;
+  const capOver = hasCap && myPicksSalary > cap;
+
   let lastTier = 0;
   const rankedWithTiers = ranked.map((p, i) => ({ p, rank: i + 1, tier: tierLabel(i + 1) }));
 
@@ -147,6 +160,28 @@ export default function DraftBoard({ players, leagueId, teamCount = 12, isLoadin
             </div>
           </div>
 
+          {/* Cap strip */}
+          {(myPicksSalary > 0 || hasCap) && (
+            <div className="db-cap-strip">
+              <div className="db-cap-strip-row">
+                <span className="db-cap-label">My Picks</span>
+                <span className={`db-cap-committed ${capOver ? 'over' : ''}`}>{myPicksSalary > 0 ? fmtM(myPicksSalary) : '—'}</span>
+                {hasCap && <>
+                  <span className="db-cap-sep">/</span>
+                  <span className="db-cap-total">{fmtM(cap)}</span>
+                  <span className={`db-cap-rem ${capOver ? 'over' : ''}`}>
+                    {capOver ? `${fmtM(myPicksSalary - cap)} over` : `${fmtM(cap - myPicksSalary)} left`}
+                  </span>
+                </>}
+              </div>
+              {hasCap && (
+                <div className="db-cap-bar">
+                  <div className={`db-cap-bar-fill ${capOver ? 'over' : ''}`} style={{ width: `${capPct * 100}%` }} />
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="db-list">
             {filtered.length === 0 && <div className="empty">No players match.</div>}
             {filtered.map(p => {
@@ -178,6 +213,21 @@ export default function DraftBoard({ players, leagueId, teamCount = 12, isLoadin
                         {p.age && <span className="db-age">{p.age}y</span>}
                       </div>
                     </div>
+                    {(() => {
+                      const salary = salaries?.[p.player_id];
+                      const newTotal = myPicksSalary + (salary ?? 0);
+                      const wouldOverCap = hasCap && salary != null && newTotal > cap!;
+                      return salary != null ? (
+                        <div className="db-salary-col">
+                          <span className="db-salary-badge">{fmtM(salary)}</span>
+                          {!isDrafted && hasCap && (
+                            <span className={`db-salary-delta ${wouldOverCap ? 'over' : ''}`}>
+                              {wouldOverCap ? `⚠ ${fmtM(newTotal - cap!)} over` : `→ ${fmtM(cap! - newTotal)} left`}
+                            </span>
+                          )}
+                        </div>
+                      ) : null;
+                    })()}
                     <div className="db-row-actions">
                       <button
                         className={`db-queue-btn ${inQueue ? 'active' : ''}`}
@@ -191,11 +241,19 @@ export default function DraftBoard({ players, leagueId, teamCount = 12, isLoadin
                         <button className="db-undraft-btn" onClick={() => undraft(p.player_id)} title="Undo draft">
                           <i className="ti ti-arrow-back-up" />
                         </button>
-                      ) : (
-                        <button className="db-draft-btn" onClick={() => draft(p)} title="Mark as drafted">
-                          Draft
-                        </button>
-                      )}
+                      ) : (() => {
+                        const salary = salaries?.[p.player_id];
+                        const wouldOver = hasCap && salary != null && (myPicksSalary + salary) > cap!;
+                        return (
+                          <button
+                            className={`db-draft-btn ${wouldOver ? 'db-draft-btn--over' : ''}`}
+                            onClick={() => draft(p)}
+                            title={wouldOver ? 'Over cap — you\'ll need to drop someone' : 'Mark as drafted'}
+                          >
+                            {wouldOver ? '⚠ Draft' : 'Draft'}
+                          </button>
+                        );
+                      })()}
                     </div>
                   </div>
                 </div>

@@ -469,7 +469,7 @@ export default function LeagueDashboard() {
         {tab === 'trade-history' && <TradeHistory seasonTransactions={stx} rosters={r} userMap={userMap} players={players} isLoading={seasonTxLoading || playersLoading} />}
         {tab === 'predictor'    && <MatchupPredictor rosters={r} userMap={userMap} seasonMatchups={sm} league={league} isLoading={seasonLoading} />}
         {tab === 'report-card'  && <ReportCard rosters={r} userMap={userMap} seasonMatchups={sm} league={league} isLoading={seasonLoading} />}
-        {tab === 'draft-board'  && <DraftBoard players={players} leagueId={leagueId!} teamCount={league?.settings?.num_teams ?? 12} isLoading={playersLoading} />}
+        {tab === 'draft-board'  && <DraftBoard players={players} leagueId={leagueId!} teamCount={league?.settings?.num_teams ?? 12} isLoading={playersLoading} salaries={salaries} cap={cap} />}
         </div>
         </div>
       </main>
