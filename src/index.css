@@ -1086,6 +1086,16 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .cap-bar-fill { height: 100%; background: var(--green, #1c6b46); border-radius: 99px; transition: width 0.3s ease; }
 .cap-bar-fill--over { background: var(--red, #dc2626); }
 
+/* Roster tab salary */
+.roster-btn-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.roster-btn-salary { font-size: 0.7rem; font-weight: 700; color: var(--text-dim); flex-shrink: 0; }
+.roster-cap-info { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; margin-left: auto; font-size: 0.82rem; }
+.roster-cap-total { font-weight: 700; }
+.roster-cap-sep { color: var(--text-dim); font-size: 0.78rem; }
+.roster-cap-rem { font-size: 0.75rem; font-weight: 600; }
+.roster-cap-bar-track { width: 100%; height: 4px; background: var(--surface2); border-radius: 99px; overflow: hidden; flex-basis: 100%; margin-top: 2px; }
+.roster-cap-bar-fill { height: 100%; background: var(--green, #1c6b46); border-radius: 99px; transition: width 0.3s ease; }
+
 /* League settings cap row */
 .settings-cap-row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; padding: 0.5rem 0; }
 .settings-cap-form { display: flex; align-items: center; gap: 5px; }

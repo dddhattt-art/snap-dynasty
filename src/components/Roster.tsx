@@ -13,6 +13,7 @@ interface Props {
   isLoading: boolean;
   salaries?: SalaryMap;
   setSalary?: (playerId: string, amount: number) => void;
+  cap?: number;
 }
 
 const POS_ORDER = ['QB', 'RB', 'WR', 'TE', 'K', 'DEF', 'DL', 'LB', 'DB'];
@@ -29,7 +30,16 @@ function posColor(pos: string) {
   return POS_COLOR[pos] ?? 'var(--text-dim)';
 }
 
-export default function Roster({ rosters, userMap, players, userId, isLoading, salaries, setSalary }: Props) {
+function teamTotal(roster: SleeperRoster, salaries: SalaryMap | undefined): number {
+  if (!salaries) return 0;
+  return (roster.players ?? []).reduce((sum, pid) => sum + (salaries[pid] ?? 0), 0);
+}
+
+function fmtM(n: number): string {
+  return `$${(n / 1_000_000).toFixed(1)}M`;
+}
+
+export default function Roster({ rosters, userMap, players, userId, isLoading, salaries, setSalary, cap }: Props) {
   const myRoster = userId ? rosters.find(r => r.owner_id === userId) : undefined;
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
   const [selectedRosterId, setSelectedRosterId] = useState<number | null>(
@@ -62,6 +72,9 @@ export default function Roster({ rosters, userMap, players, userId, isLoading, s
         {rosters.map(r => {
           const u = userMap.get(r.owner_id);
           const av = u ? avatarUrl(u.avatar) : null;
+          const total = teamTotal(r, salaries);
+          const hasCap = cap && cap > 0;
+          const over = hasCap && total > cap;
           return (
             <button
               key={r.roster_id}
@@ -69,18 +82,45 @@ export default function Roster({ rosters, userMap, players, userId, isLoading, s
               onClick={() => setSelectedRosterId(r.roster_id)}
             >
               {av && <img loading="lazy" src={av} alt="" className="avatar-xs" />}
-              <span>{u?.display_name ?? u?.username ?? `Team ${r.roster_id}`}</span>
+              <span className="roster-btn-name">{u?.display_name ?? u?.username ?? `Team ${r.roster_id}`}</span>
+              {total > 0 && (
+                <span className={`roster-btn-salary ${over ? 'cap-over' : ''}`}>{fmtM(total)}</span>
+              )}
             </button>
           );
         })}
       </div>
 
+      {/* Roster header + cap bar */}
       <div className="roster-header">
         {user && avatarUrl(user.avatar) && (
           <img loading="lazy" src={avatarUrl(user.avatar)!} alt="" className="avatar-sm" />
         )}
         <span className="roster-owner">{user?.display_name ?? user?.username ?? `Team ${roster.roster_id}`}</span>
         <span className="roster-count">{allPlayers.length} players</span>
+        {salaries && (() => {
+          const total = teamTotal(roster, salaries);
+          const hasCap = cap && cap > 0;
+          const over = hasCap && total > cap;
+          const pct = hasCap ? Math.min(total / cap, 1) : 0;
+          if (total === 0) return null;
+          return (
+            <div className="roster-cap-info">
+              <span className={`roster-cap-total ${over ? 'cap-over' : ''}`}>{fmtM(total)}</span>
+              {hasCap && (
+                <>
+                  <span className="roster-cap-sep">/ {fmtM(cap)}</span>
+                  <span className={`roster-cap-rem ${over ? 'cap-over' : 'cap-under'}`}>
+                    {over ? `${fmtM(total - cap)} over` : `${fmtM(cap - total)} under`}
+                  </span>
+                  <div className="roster-cap-bar-track">
+                    <div className={`roster-cap-bar-fill ${over ? 'cap-bar-fill--over' : ''}`} style={{ width: `${pct * 100}%` }} />
+                  </div>
+                </>
+              )}
+            </div>
+          );
+        })()}
       </div>
 
       <section className="roster-section">
