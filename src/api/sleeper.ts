@@ -140,7 +140,7 @@ export const playerFullImg = (playerId: string) =>
   `${CDN}/content/nfl/players/${playerId}.jpg`;
 
 export const teamLogoUrl = (team: string) =>
-  `${CDN}/images/team_logos/nfl/${team}.jpg`;
+  `${CDN}/images/team_logos/nfl/${team.toLowerCase()}.png`;
 
 export interface PlayerWeekStats {
   week: number;
