@@ -52,7 +52,7 @@ export const getDraftPicks = (draftId: string) =>
   get<SleeperDraftPick[]>(`${BASE}/draft/${draftId}/picks`);
 
 const PLAYERS_CACHE_KEY = 'snap_players_cache';
-const PLAYERS_CACHE_TTL = 24 * 60 * 60 * 1000;
+const PLAYERS_CACHE_TTL = 4 * 60 * 60 * 1000;
 
 export const getAllPlayers = async (): Promise<PlayersMap> => {
   try {
