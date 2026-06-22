@@ -214,7 +214,7 @@ export default function LeagueDashboard() {
     queryKey: ['rosters', leagueId],
     queryFn: () => getRosters(leagueId!),
     enabled: !!leagueId,
-    staleTime: 30 * 60 * 1000,
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: users } = useQuery<SleeperUser[]>({
