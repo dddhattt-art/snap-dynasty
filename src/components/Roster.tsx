@@ -14,6 +14,26 @@ interface Props {
   salaries?: SalaryMap;
   setSalary?: (playerId: string, amount: number) => void;
   cap?: number;
+  leagueId?: string;
+}
+
+function planKey(leagueId: string | undefined, rosterId: number) {
+  return `plan-roster-${leagueId ?? 'x'}-${rosterId}`;
+}
+
+function loadPlan(key: string): { dropped: string[]; added: string[] } {
+  try {
+    const raw = localStorage.getItem(key);
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return { dropped: [], added: [] };
+}
+
+function savePlan(key: string, dropped: string[], added: string[]) {
+  try {
+    if (dropped.length === 0 && added.length === 0) localStorage.removeItem(key);
+    else localStorage.setItem(key, JSON.stringify({ dropped, added }));
+  } catch {}
 }
 
 const POS_ORDER = ['QB', 'RB', 'WR', 'TE', 'K', 'DEF', 'DL', 'LB', 'DB'];
@@ -39,7 +59,7 @@ function fmtM(n: number): string {
   return `$${(n / 1_000_000).toFixed(1)}M`;
 }
 
-export default function Roster({ rosters, userMap, players, userId, isLoading, salaries, setSalary, cap }: Props) {
+export default function Roster({ rosters, userMap, players, userId, isLoading, salaries, setSalary, cap, leagueId }: Props) {
   const myRoster = userId ? rosters.find(r => r.owner_id === userId) : undefined;
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
   const [selectedRosterId, setSelectedRosterId] = useState<number | null>(
@@ -52,13 +72,21 @@ export default function Roster({ rosters, userMap, players, userId, isLoading, s
   const [addedIds, setAddedIds] = useState<string[]>([]);
   const [addSearch, setAddSearch] = useState('');
 
-  // Exit planning mode when switching teams
+  // Load saved plan when switching teams
   useEffect(() => {
     setPlanningMode(false);
-    setDroppedIds(new Set());
-    setAddedIds([]);
     setAddSearch('');
-  }, [selectedRosterId]);
+    if (selectedRosterId == null) return;
+    const { dropped, added } = loadPlan(planKey(leagueId, selectedRosterId));
+    setDroppedIds(new Set(dropped));
+    setAddedIds(added);
+  }, [selectedRosterId, leagueId]);
+
+  // Persist plan to localStorage whenever it changes (only while something is planned)
+  useEffect(() => {
+    if (selectedRosterId == null) return;
+    savePlan(planKey(leagueId, selectedRosterId), [...droppedIds], addedIds);
+  }, [droppedIds, addedIds, selectedRosterId, leagueId]);
 
   if (isLoading) return <div className="loading">Loading players…</div>;
   if (!players) return <div className="loading">Loading roster…</div>;
@@ -110,7 +138,20 @@ export default function Roster({ rosters, userMap, players, userId, isLoading, s
     return [...keptIds, ...addedIds].reduce((sum, id) => sum + (salaries[id] ?? 0), 0);
   }, [allPlayers, droppedIds, addedIds, salaries]);
 
-  const displayTotal = planningMode ? planningTotal : teamTotal(roster, salaries);
+  const originalTotal = teamTotal(roster, salaries);
+  const displayTotal = planningMode ? planningTotal : originalTotal;
+  const capDelta = planningTotal - originalTotal;
+
+  // Validity checker
+  const hasSavedPlan = droppedIds.size > 0 || addedIds.length > 0;
+  const plannedSize = allPlayers.length - droppedIds.size + addedIds.length;
+  const starterCount = (roster.starters ?? []).filter(id => id !== '0').length;
+  const validityIssues: string[] = [];
+  if (planningMode || hasSavedPlan) {
+    if (plannedSize < starterCount) validityIssues.push(`only ${plannedSize} players, need ${starterCount} to fill starters`);
+    if (cap && cap > 0 && planningTotal > cap) validityIssues.push(`${fmtM(planningTotal - cap)} over cap`);
+  }
+  const planValid = validityIssues.length === 0;
 
   return (
     <div className="roster-wrap">
@@ -147,15 +188,24 @@ export default function Roster({ rosters, userMap, players, userId, isLoading, s
         <span className="roster-count">{allPlayers.length} players</span>
         {isMyTeam && (
           planningMode ? (
-            <button
-              className="plan-exit-btn"
-              onClick={() => { setPlanningMode(false); setDroppedIds(new Set()); setAddedIds([]); setAddSearch(''); }}
-            >
-              Exit Planning
-            </button>
+            <div className="plan-mode-btns">
+              <button
+                className="plan-clear-btn"
+                onClick={() => { setDroppedIds(new Set()); setAddedIds([]); }}
+                disabled={!hasSavedPlan}
+              >
+                Clear
+              </button>
+              <button
+                className="plan-exit-btn"
+                onClick={() => { setPlanningMode(false); setAddSearch(''); }}
+              >
+                Save & Exit
+              </button>
+            </div>
           ) : (
-            <button className="plan-enter-btn" onClick={() => setPlanningMode(true)}>
-              Plan Roster
+            <button className={`plan-enter-btn${hasSavedPlan ? ' plan-enter-btn--saved' : ''}`} onClick={() => setPlanningMode(true)}>
+              {hasSavedPlan ? 'Edit Plan' : 'Plan Roster'}
             </button>
           )
         )}
@@ -186,15 +236,23 @@ export default function Roster({ rosters, userMap, players, userId, isLoading, s
 
       {/* Planning mode banner */}
       {planningMode && (
-        <div className="plan-banner">
-          <span>Planning Mode — changes are local only</span>
-          {(droppedIds.size > 0 || addedIds.length > 0) && (
-            <span className="plan-banner-delta">
+        <div className={`plan-banner ${planValid ? '' : 'plan-banner--warn'}`}>
+          <span className="plan-banner-title">Planning Mode</span>
+          {hasSavedPlan && (
+            <span className="plan-banner-moves">
               {droppedIds.size > 0 && `−${droppedIds.size} dropped`}
               {droppedIds.size > 0 && addedIds.length > 0 && ' · '}
               {addedIds.length > 0 && `+${addedIds.length} added`}
             </span>
           )}
+          {salaries && hasSavedPlan && capDelta !== 0 && (
+            <span className={`plan-banner-cap-delta ${capDelta < 0 ? 'plan-delta-save' : 'plan-delta-cost'}`}>
+              {capDelta < 0 ? `saves ${fmtM(-capDelta)}` : `costs ${fmtM(capDelta)}`}
+            </span>
+          )}
+          <span className={`plan-validity ${planValid ? 'plan-validity--ok' : 'plan-validity--err'}`}>
+            {planValid ? '✓ Valid' : `✗ ${validityIssues[0]}`}
+          </span>
         </div>
       )}
 
